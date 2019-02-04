@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  mongodb:
+    image: mongo:3.4.19-jessie
+    container_name: vimonga-testdb
+    ports:
+      - '27020:27017'

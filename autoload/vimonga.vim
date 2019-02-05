@@ -12,6 +12,14 @@ function! vimonga#collections(database_name) abort
     call s:buffer(collection_names)
 endfunction
 
+function! vimonga#documents(database_name, collection_name) abort
+    let database_name = shellescape(a:database_name)
+    let collection_name = shellescape(a:collection_name)
+    let documents = s:execute(['-d', database_name, '-c', collection_name, '-m', 'document'])
+
+    call s:buffer(documents)
+endfunction
+
 function! s:buffer(contents) abort
     tabnew
 

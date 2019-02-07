@@ -522,6 +522,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "vimonga"
 version = "0.1.0"
 dependencies = [
+ "bson 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "getopts 0.2.18 (registry+https://github.com/rust-lang/crates.io-index)",
  "mongodb 0.3.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_json 1.0.38 (registry+https://github.com/rust-lang/crates.io-index)",

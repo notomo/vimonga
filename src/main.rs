@@ -6,57 +6,91 @@ use mongodb::coll::options::FindOptions;
 use mongodb::db::ThreadedDatabase;
 use mongodb::{doc, Client, ThreadedClient};
 
-extern crate getopts;
-use getopts::Options;
-
 extern crate serde_json;
 use serde_json::Value;
 
+extern crate clap;
+use clap::{App, AppSettings, Arg, SubCommand};
+
 use std::collections::HashMap;
 
-use std::env;
-
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    let mut options = Options::new();
-    options.optopt("h", "host", "host string", "");
-    options.optopt("p", "port", "port number", "");
-    options.optopt("m", "method", "method name", "");
-    options.optopt("d", "db-name", "database name", "");
-    options.optopt("c", "collection-name", "collection name", "");
-    options.optopt("q", "query", "find query", "");
-    options.optopt("r", "projection", "find projection", "");
+    let app = App::new("monga")
+        .version("0.0.1")
+        .setting(AppSettings::ArgRequiredElseHelp)
+        .arg(
+            Arg::with_name("host")
+                .short("h")
+                .long("host")
+                .default_value("localhost")
+                .required(false),
+        )
+        .arg(
+            Arg::with_name("port")
+                .short("p")
+                .long("port")
+                .default_value("27020")
+                .required(false),
+        )
+        .subcommand(SubCommand::with_name("database"))
+        .subcommand(
+            SubCommand::with_name("collection").arg(
+                Arg::with_name("database_name")
+                    .long("database")
+                    .takes_value(true)
+                    .required(true),
+            ),
+        )
+        .subcommand(
+            SubCommand::with_name("document")
+                .arg(
+                    Arg::with_name("database_name")
+                        .long("database")
+                        .takes_value(true)
+                        .required(true),
+                )
+                .arg(
+                    Arg::with_name("collection_name")
+                        .long("collection")
+                        .takes_value(true)
+                        .required(true),
+                )
+                .arg(
+                    Arg::with_name("query")
+                        .long("query")
+                        .takes_value(true)
+                        .default_value("{}")
+                        .required(false),
+                )
+                .arg(
+                    Arg::with_name("projection")
+                        .long("projection")
+                        .takes_value(true)
+                        .default_value("{}")
+                        .required(false),
+                ),
+        );
+    let matches = app.get_matches();
 
-    let matches = match options.parse(&args[1..]) {
-        Ok(m) => m,
-        Err(f) => panic!(f.to_string()),
-    };
-
-    let host = matches.opt_str("h").unwrap_or("localhost".to_string());
-    let port = matches
-        .opt_str("p")
-        .unwrap_or("27020".to_string())
-        .parse()
-        .unwrap();
-
-    let database_name = matches.opt_str("d").unwrap_or("".to_string());
-    let collection_name = matches.opt_str("c").unwrap_or("".to_string());
-    let query = matches.opt_str("q").unwrap_or("{}".to_string());
-    let projection = matches.opt_str("r").unwrap_or("{}".to_string());
-
+    let host = matches.value_of("host").unwrap();
+    let port = matches.value_of("port").unwrap().parse().unwrap();
     let client = Client::connect(&host, port).expect("Failed to initialize client.");
 
-    let content = match matches.opt_str("m").unwrap_or("".to_string()).as_str() {
-        "db" => get_database_names(&client),
-        "collection" => get_collection_names(&client, database_name.as_str()),
-        "document" => get_documents(
-            &client,
-            database_name.as_str(),
-            collection_name.as_str(),
-            query.as_str(),
-            projection.as_str(),
-        ),
-        _ => get_database_names(&client),
+    let content = match matches.subcommand() {
+        ("database", Some(_)) => get_database_names(&client),
+        ("collection", Some(cmd)) => {
+            let database_name = cmd.value_of("database_name").unwrap();
+            get_collection_names(&client, database_name)
+        }
+        ("document", Some(cmd)) => {
+            let database_name = cmd.value_of("database_name").unwrap();
+            let collection_name = cmd.value_of("collection_name").unwrap();
+            let query = cmd.value_of("query").unwrap();
+            let projection = cmd.value_of("projection").unwrap();
+
+            get_documents(&client, database_name, collection_name, query, projection)
+        }
+        _ => "".to_string(),
     };
 
     println!("{}", content);
@@ -108,11 +142,11 @@ fn get_documents(
 }
 
 fn to_document_from_str(json_str: &str) -> Document {
-    let json_value: HashMap<String, Value> = serde_json::from_str(json_str).unwrap();
+    let decoded_json: HashMap<String, Value> = serde_json::from_str(json_str).unwrap();
 
     let mut document = Document::new();
-    for (key, value) in json_value {
-        document.insert_bson(key.to_string(), value.into());
+    for (key, value) in decoded_json {
+        document.insert_bson(key, value.into());
     }
     document
 }

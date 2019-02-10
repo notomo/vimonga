@@ -1,10 +1,10 @@
 [package]
-name = "vimonga"
+name = "monga"
 version = "0.0.1"
 authors = ["notomo"]
 edition = "2018"
 
 [dependencies]
-clap = "~2.32"
+mongodb = "0.3.12"
+bson = "0.13.0"
 serde_json = "1.0"
-monga = { path = './lib/monga' }

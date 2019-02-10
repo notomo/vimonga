@@ -4,7 +4,7 @@ function! vimonga#request#execute(args) abort
     let port = vimonga#config#get('default_port')
     let default_args = [
         \ 'RUST_BACKTRACE=1',
-        \ 'monga',
+        \ 'vimonga',
         \ vimonga#request#option('host', host),
         \ vimonga#request#option('port', port)
     \ ]

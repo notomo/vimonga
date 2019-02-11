@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate serde_derive;
+
 extern crate clap;
 use clap::{App, AppSettings, Arg, SubCommand};
 
@@ -6,8 +9,10 @@ use monga::Client;
 
 extern crate serde_json;
 
+mod server;
+
 fn main() {
-    let app = App::new("vimonga")
+    let app = App::new("monga")
         .version("0.0.1")
         .setting(AppSettings::ArgRequiredElseHelp)
         .arg(
@@ -24,6 +29,7 @@ fn main() {
                 .default_value("27020")
                 .required(false),
         )
+        .subcommand(SubCommand::with_name("server"))
         .subcommand(SubCommand::with_name("database"))
         .subcommand(
             SubCommand::with_name("collection").arg(
@@ -69,6 +75,7 @@ fn main() {
     let client = monga::connect(&host, port).expect("Failed to initialize client.");
 
     let content = match matches.subcommand() {
+        ("server", Some(_)) => start_server(),
         ("database", Some(_)) => get_database_names(&client),
         ("collection", Some(cmd)) => {
             let database_name = cmd.value_of("database_name").unwrap();
@@ -120,4 +127,9 @@ fn get_documents(
     .expect("Failed to get documents");
 
     serde_json::to_string_pretty(&documents).unwrap()
+}
+
+fn start_server() -> String {
+    server::listen();
+    "".to_string()
 }

@@ -1,0 +1,1 @@
+REPLACE INTO mongo VALUES (?1, ?2);

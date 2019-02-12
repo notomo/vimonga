@@ -1,1 +1,1 @@
-REPLACE INTO mongo VALUES (?1, ?2);
+REPLACE INTO mongo VALUES (:key, :body);

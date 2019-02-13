@@ -5,6 +5,7 @@ function! vimonga#request#execute(args) abort
     let default_args = [
         \ 'RUST_BACKTRACE=1',
         \ 'vimonga',
+        \ vimonga#request#option('pid', getpid()),
         \ vimonga#request#option('host', host),
         \ vimonga#request#option('port', port)
     \ ]

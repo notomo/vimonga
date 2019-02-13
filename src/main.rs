@@ -9,6 +9,8 @@ use monga::Client;
 
 extern crate serde_json;
 
+use std::collections::HashMap;
+
 mod server;
 
 fn main() {
@@ -16,10 +18,17 @@ fn main() {
         .version("0.0.1")
         .setting(AppSettings::ArgRequiredElseHelp)
         .arg(
+            Arg::with_name("pid")
+                .long("pid")
+                .takes_value(true)
+                .required(true),
+        )
+        .arg(
             Arg::with_name("host")
                 .short("h")
                 .long("host")
                 .default_value("localhost")
+                .takes_value(true)
                 .required(false),
         )
         .arg(
@@ -27,6 +36,7 @@ fn main() {
                 .short("p")
                 .long("port")
                 .default_value("27020")
+                .takes_value(true)
                 .required(false),
         )
         .subcommand(SubCommand::with_name("server"))
@@ -74,9 +84,10 @@ fn main() {
     let port = matches.value_of("port").unwrap().parse().unwrap();
     let client = monga::connect(&host, port).expect("Failed to initialize client.");
 
+    let pid = matches.value_of("pid").unwrap();
     let content = match matches.subcommand() {
         ("server", Some(_)) => start_server(),
-        ("database", Some(_)) => get_database_names(&client),
+        ("database", Some(_)) => get_database_names(&client, host, port, pid),
         ("collection", Some(cmd)) => {
             let database_name = cmd.value_of("database_name").unwrap();
             get_collection_names(&client, database_name)
@@ -95,11 +106,25 @@ fn main() {
     println!("{}", content);
 }
 
-fn get_database_names(client: &Client) -> String {
-    monga::get_database_names(client)
+fn get_database_names(client: &Client, host: &str, port: u16, pid: &str) -> String {
+    let names = monga::get_database_names(client)
         .ok()
-        .expect("Failed to get database names")
-        .join("\n")
+        .expect("Failed to get database names");
+
+    let url = format!(
+        "http://localhost:8000/ps/{pid}/conns/{host}/{port}/dbs",
+        pid = pid,
+        host = host,
+        port = port,
+    );
+
+    let mut value = HashMap::new();
+    value.insert("body", &names);
+
+    let reqwest_client = reqwest::Client::new();
+    reqwest_client.post(&url).json(&value).send().unwrap();
+
+    names.join("\n")
 }
 
 fn get_collection_names(client: &Client, database_name: &str) -> String {

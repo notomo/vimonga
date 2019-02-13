@@ -13,4 +13,5 @@ actix-web = "0.7.18"
 rusqlite = "0.16.0"
 futures = "0.1"
 json = "*"
+reqwest = "0.9.9"
 monga = { path = "./lib/monga" }

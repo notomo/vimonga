@@ -8,8 +8,8 @@ use rusqlite::{Connection, NO_PARAMS};
 use serde_json::json;
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Info {
-    body: String,
+pub struct Info {
+    pub body: Vec<String>,
 }
 
 fn upsert_db(info: Json<Info>, req: HttpRequest) -> &'static str {
@@ -22,7 +22,7 @@ fn upsert_db(info: Json<Info>, req: HttpRequest) -> &'static str {
         include_str!("upsert_mongo.sql"),
         &[
             (":key", &format!("/ps/{}/conns/{}/{}/dbs", pid, host, port)),
-            (":body", &info.body),
+            (":body", &info.body.join(",")),
         ],
     )
     .unwrap();
@@ -51,8 +51,9 @@ fn select_db(req: HttpRequest) -> HttpResponse {
         None => "",
     };
 
+    let names: Vec<String> = body.split(",").map(|x| x.to_string()).collect();
     HttpResponse::Ok().json(json!({
-        "body": body,
+        "body": names,
     }))
 }
 

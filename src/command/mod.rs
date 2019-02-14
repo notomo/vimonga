@@ -1,4 +1,7 @@
+pub mod collection;
 pub mod database;
+pub mod document;
+
 mod error;
 
 pub trait Command {

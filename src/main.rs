@@ -4,15 +4,14 @@ extern crate serde_derive;
 extern crate clap;
 use clap::{App, AppSettings, Arg, SubCommand};
 
-extern crate monga;
-use monga::Client;
-
 extern crate serde_json;
 
 mod server;
 
 mod command;
+use command::collection::CollectionListCommand;
 use command::database::DatabaseListCommand;
+use command::document::DocumentListCommand;
 use command::Command;
 
 fn main() {
@@ -99,49 +98,34 @@ fn main() {
         .unwrap(),
         ("collection", Some(cmd)) => {
             let database_name = cmd.value_of("database_name").unwrap();
-            get_collection_names(&client, database_name)
+            CollectionListCommand {
+                client,
+                database_name,
+            }
+            .run()
+            .unwrap()
         }
         ("document", Some(cmd)) => {
             let database_name = cmd.value_of("database_name").unwrap();
             let collection_name = cmd.value_of("collection_name").unwrap();
-            let query = cmd.value_of("query").unwrap();
-            let projection = cmd.value_of("projection").unwrap();
+            let query_json = cmd.value_of("query").unwrap();
+            let projection_json = cmd.value_of("projection").unwrap();
 
-            get_documents(&client, database_name, collection_name, query, projection)
+            DocumentListCommand {
+                client,
+                database_name,
+                collection_name,
+                query_json,
+                projection_json,
+            }
+            .run()
+            .unwrap()
         }
         _ => "".to_string(),
     };
 
     println!("{}", content);
 }
-
-fn get_collection_names(client: &Client, database_name: &str) -> String {
-    monga::get_collection_names(client, database_name)
-        .ok()
-        .expect("Failed to get collection names")
-        .join("\n")
-}
-
-fn get_documents(
-    client: &Client,
-    database_name: &str,
-    collection_name: &str,
-    query_json: &str,
-    projection_json: &str,
-) -> String {
-    let documents = monga::get_documents(
-        client,
-        database_name,
-        collection_name,
-        query_json,
-        projection_json,
-    )
-    .ok()
-    .expect("Failed to get documents");
-
-    serde_json::to_string_pretty(&documents).unwrap()
-}
-
 fn start_server() -> String {
     server::listen();
     "".to_string()

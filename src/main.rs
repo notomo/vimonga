@@ -9,9 +9,11 @@ use monga::Client;
 
 extern crate serde_json;
 
-use std::collections::HashMap;
-
 mod server;
+
+mod command;
+use command::database::DatabaseListCommand;
+use command::Command;
 
 fn main() {
     let app = App::new("monga")
@@ -87,7 +89,14 @@ fn main() {
     let pid = matches.value_of("pid").unwrap();
     let content = match matches.subcommand() {
         ("server", Some(_)) => start_server(),
-        ("database", Some(_)) => get_database_names(&client, host, port, pid),
+        ("database", Some(_)) => DatabaseListCommand {
+            client,
+            pid,
+            host,
+            port,
+        }
+        .run()
+        .unwrap(),
         ("collection", Some(cmd)) => {
             let database_name = cmd.value_of("database_name").unwrap();
             get_collection_names(&client, database_name)
@@ -104,27 +113,6 @@ fn main() {
     };
 
     println!("{}", content);
-}
-
-fn get_database_names(client: &Client, host: &str, port: u16, pid: &str) -> String {
-    let names = monga::get_database_names(client)
-        .ok()
-        .expect("Failed to get database names");
-
-    let url = format!(
-        "http://localhost:8000/ps/{pid}/conns/{host}/{port}/dbs",
-        pid = pid,
-        host = host,
-        port = port,
-    );
-
-    let mut value = HashMap::new();
-    value.insert("body", &names);
-
-    let reqwest_client = reqwest::Client::new();
-    reqwest_client.post(&url).json(&value).send().unwrap();
-
-    names.join("\n")
 }
 
 fn get_collection_names(client: &Client, database_name: &str) -> String {

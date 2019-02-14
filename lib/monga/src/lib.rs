@@ -12,7 +12,7 @@ use serde_json::Value;
 
 use std::collections::HashMap;
 
-mod error;
+pub mod error;
 
 pub fn connect(host: &str, port: u16) -> Result<Client, error::AppError> {
     let client = Client::connect(&host, port)?;

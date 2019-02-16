@@ -29,7 +29,7 @@ fn main() {
             Arg::with_name("port")
                 .short("p")
                 .long("port")
-                .default_value("27020")
+                .default_value("27017")
                 .takes_value(true)
                 .required(false),
         )

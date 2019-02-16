@@ -11,6 +11,7 @@ function! vimonga#request#execute(args) abort
     \ ]
 
     let cmd = join(default_args + a:args, ' ')
+    echomsg cmd
     return systemlist(cmd)
 endfunction
 

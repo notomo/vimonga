@@ -1,11 +1,13 @@
+#[macro_use]
+extern crate serde_derive;
+
 extern crate serde_json;
+use serde_json::json;
 
 extern crate actix_web;
 use actix_web::{http::Method, server, App, HttpRequest, HttpResponse, Json};
 
 use rusqlite::{Connection, NO_PARAMS};
-
-use serde_json::json;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Info {
@@ -19,7 +21,7 @@ fn upsert_db(info: Json<Info>, req: HttpRequest) -> &'static str {
 
     let conn = get_connection();
     conn.execute_named(
-        include_str!("upsert_mongo.sql"),
+        include_str!("sql/upsert_mongo.sql"),
         &[
             (":key", &format!("/ps/{}/conns/{}/{}/dbs", pid, host, port)),
             (":body", &info.body.join(",")),
@@ -36,7 +38,7 @@ fn select_db(req: HttpRequest) -> HttpResponse {
     let port = req.match_info().get("port").unwrap();
 
     let conn = get_connection();
-    let mut stmt = conn.prepare(include_str!("select_mongo.sql")).unwrap();
+    let mut stmt = conn.prepare(include_str!("sql/select_mongo.sql")).unwrap();
 
     let mut rows = stmt
         .query_named(&[(":key", &format!("/ps/{}/conns/{}/{}/dbs", pid, host, port))])
@@ -63,7 +65,7 @@ fn get_connection() -> Connection {
 
 pub fn listen() {
     let conn = get_connection();
-    conn.execute(include_str!("create_tables.sql"), NO_PARAMS)
+    conn.execute(include_str!("sql/create_tables.sql"), NO_PARAMS)
         .unwrap();
 
     server::new(|| {

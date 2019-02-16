@@ -1,17 +1,13 @@
-#[macro_use]
-extern crate serde_derive;
-
 extern crate clap;
 use clap::{App, AppSettings, Arg, SubCommand};
 
 extern crate serde_json;
 
-mod server;
-
 mod command;
 use command::collection::CollectionListCommand;
 use command::database::DatabaseListCommand;
 use command::document::DocumentListCommand;
+use command::server::ServerStartCommand;
 use command::Command;
 
 fn main() {
@@ -87,7 +83,7 @@ fn main() {
 
     let pid = matches.value_of("pid").unwrap();
     let content = match matches.subcommand() {
-        ("server", Some(_)) => start_server(),
+        ("server", Some(_)) => ServerStartCommand {}.run().unwrap(),
         ("database", Some(_)) => DatabaseListCommand {
             client,
             pid,
@@ -125,8 +121,4 @@ fn main() {
     };
 
     println!("{}", content);
-}
-fn start_server() -> String {
-    server::listen();
-    "".to_string()
 }

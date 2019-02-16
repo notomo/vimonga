@@ -1,7 +1,17 @@
-pub mod collection;
-pub mod database;
-pub mod document;
-pub mod server;
+mod collection;
+pub use collection::CollectionListCommand;
+
+mod database;
+pub use database::DatabaseListCommand;
+
+mod document;
+pub use document::DocumentListCommand;
+
+mod help;
+pub use help::HelpCommand;
+
+mod server;
+pub use server::ServerStartCommand;
 
 mod error;
 

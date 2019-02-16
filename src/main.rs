@@ -1,14 +1,11 @@
 extern crate clap;
 use clap::{App, AppSettings, Arg, SubCommand};
 
-extern crate serde_json;
-
 mod command;
-use command::collection::CollectionListCommand;
-use command::database::DatabaseListCommand;
-use command::document::DocumentListCommand;
-use command::server::ServerStartCommand;
-use command::Command;
+use command::{
+    CollectionListCommand, Command, DatabaseListCommand, DocumentListCommand, HelpCommand,
+    ServerStartCommand,
+};
 
 fn main() {
     let app = App::new("monga")
@@ -83,15 +80,14 @@ fn main() {
 
     let pid = matches.value_of("pid").unwrap();
     let content = match matches.subcommand() {
-        ("server", Some(_)) => ServerStartCommand {}.run().unwrap(),
+        ("server", Some(_)) => ServerStartCommand {}.run(),
         ("database", Some(_)) => DatabaseListCommand {
             client,
             pid,
             host,
             port,
         }
-        .run()
-        .unwrap(),
+        .run(),
         ("collection", Some(cmd)) => {
             let database_name = cmd.value_of("database_name").unwrap();
             CollectionListCommand {
@@ -99,7 +95,6 @@ fn main() {
                 database_name,
             }
             .run()
-            .unwrap()
         }
         ("document", Some(cmd)) => {
             let database_name = cmd.value_of("database_name").unwrap();
@@ -115,10 +110,12 @@ fn main() {
                 projection_json,
             }
             .run()
-            .unwrap()
         }
-        _ => "".to_string(),
-    };
+        _ => HelpCommand {}.run(),
+    }
+    .or_else(|e| -> Result<String, String> { Ok(e.to_string()) })
+    .ok()
+    .unwrap();
 
     println!("{}", content);
 }

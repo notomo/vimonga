@@ -4,6 +4,8 @@ use crate::command::Command;
 extern crate monga;
 use monga::Client;
 
+extern crate serde_json;
+
 pub struct DocumentListCommand<'a> {
     pub client: Client,
     pub database_name: &'a str,

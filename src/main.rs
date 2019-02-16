@@ -36,12 +36,20 @@ fn main() {
         .subcommand(SubCommand::with_name("server"))
         .subcommand(SubCommand::with_name("database"))
         .subcommand(
-            SubCommand::with_name("collection").arg(
-                Arg::with_name("database_name")
-                    .long("database")
-                    .takes_value(true)
-                    .required(true),
-            ),
+            SubCommand::with_name("collection")
+                .arg(
+                    Arg::with_name("database_name")
+                        .long("database")
+                        .takes_value(true)
+                        .default_value(""),
+                )
+                .arg(
+                    Arg::with_name("index")
+                        .long("index")
+                        .takes_value(true)
+                        .default_value("0")
+                        .requires_if("", "database_name"),
+                ),
         )
         .subcommand(
             SubCommand::with_name("document")
@@ -90,9 +98,14 @@ fn main() {
         .run(),
         ("collection", Some(cmd)) => {
             let database_name = cmd.value_of("database_name").unwrap();
+            let index = cmd.value_of("index").unwrap().parse().unwrap();
             CollectionListCommand {
                 client,
                 database_name,
+                index,
+                pid,
+                host,
+                port,
             }
             .run()
         }

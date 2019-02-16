@@ -12,6 +12,5 @@ function! vimonga#buffer#database#open() abort
         throw '&filetype must be ' . s:filetype . ' but actual: ' . &filetype
     endif
 
-    let database_name = getline(line('.'))
-    call vimonga#buffer#collection#open_list(database_name)
+    call vimonga#buffer#collection#open_list_by_index(line('.') - 1)
 endfunction

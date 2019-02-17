@@ -17,6 +17,12 @@ function! vimonga#buffer#base#open(contents, filetype, path) abort
     let &filetype = a:filetype
 endfunction
 
+function! vimonga#buffer#base#assert_filetype(filetype) abort
+    if &filetype !=? a:filetype
+        throw '&filetype must be ' . a:filetype . ' but actual: ' . &filetype
+    endif
+endfunction
+
 function! s:clear_buffer() abort
     if has('nvim')
         call nvim_buf_set_lines(bufnr('%'), 0, line('$') - 1, v:false, [])

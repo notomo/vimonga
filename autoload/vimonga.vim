@@ -12,7 +12,7 @@ function! vimonga#documents(database_name, collection_name, ...) abort
 endfunction
 
 let s:database_actions = {
-    \ 'open': 'vimonga#buffer#database#open',
+    \ 'open': { -> vimonga#buffer#collection#action_open_list() },
 \ }
 
 function! vimonga#database_action(action_name) abort
@@ -20,12 +20,11 @@ function! vimonga#database_action(action_name) abort
         throw a:action_name . ' does not exist in database actions.'
     endif
 
-    let func_name = s:database_actions[a:action_name]
-    call call(func_name, [])
+    call s:database_actions[a:action_name]()
 endfunction
 
 let s:collection_actions = {
-    \ 'open': 'vimonga#buffer#collection#open',
+    \ 'open': { -> vimonga#buffer#document#action_find() },
 \ }
 
 function! vimonga#collection_action(action_name) abort
@@ -33,6 +32,5 @@ function! vimonga#collection_action(action_name) abort
         throw a:action_name . ' does not exist in collection actions.'
     endif
 
-    let func_name = s:collection_actions[a:action_name]
-    call call(func_name, [])
+    call s:collection_actions[a:action_name]()
 endfunction

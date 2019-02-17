@@ -63,7 +63,14 @@ fn main() {
                     Arg::with_name("collection_name")
                         .long("collection")
                         .takes_value(true)
-                        .required(true),
+                        .default_value(""),
+                )
+                .arg(
+                    Arg::with_name("index")
+                        .long("index")
+                        .takes_value(true)
+                        .default_value("0")
+                        .requires_if("", "collection_name"),
                 )
                 .arg(
                     Arg::with_name("query")
@@ -112,6 +119,7 @@ fn main() {
         ("document", Some(cmd)) => {
             let database_name = cmd.value_of("database_name").unwrap();
             let collection_name = cmd.value_of("collection_name").unwrap();
+            let index = cmd.value_of("index").unwrap().parse().unwrap();
             let query_json = cmd.value_of("query").unwrap();
             let projection_json = cmd.value_of("projection").unwrap();
 
@@ -119,8 +127,12 @@ fn main() {
                 client,
                 database_name,
                 collection_name,
+                index,
                 query_json,
                 projection_json,
+                pid,
+                host,
+                port,
             }
             .run()
         }

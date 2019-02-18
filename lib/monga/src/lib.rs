@@ -40,13 +40,16 @@ pub fn get_documents(
     collection_name: &str,
     query_json: &str,
     projection_json: &str,
+    limit: i64,
+    skip: i64,
 ) -> Result<Vec<Document>, error::AppError> {
     let query = Some(to_document_from_str(query_json));
     let projection = Some(to_document_from_str(projection_json));
 
     let mut find_option = FindOptions::new();
-    find_option.limit = Some(10);
+    find_option.limit = Some(limit);
     find_option.projection = projection;
+    find_option.skip = Some(skip);
 
     let cursor = client
         .db(database_name)

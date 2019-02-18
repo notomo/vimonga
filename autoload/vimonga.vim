@@ -40,6 +40,8 @@ endfunction
 
 let s:document_actions = {
     \ 'open_parent': { -> vimonga#buffer#collection#action_open_from_doc('edit') },
+    \ 'open_next': { -> vimonga#buffer#document#action_move_page('edit', 1) },
+    \ 'open_prev': { -> vimonga#buffer#document#action_move_page('edit', -1) },
 \ }
 
 function! vimonga#document_action(action_name) abort

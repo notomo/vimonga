@@ -18,6 +18,8 @@ pub struct DocumentListCommand<'a> {
     pub index: usize,
     pub query_json: &'a str,
     pub projection_json: &'a str,
+    pub limit: i64,
+    pub offset: i64,
     pub pid: &'a str,
     pub host: &'a str,
     pub port: u16,
@@ -54,6 +56,8 @@ impl<'a> Command for DocumentListCommand<'a> {
             collection_name.as_str(),
             self.query_json,
             self.projection_json,
+            self.limit,
+            self.offset,
         )?;
 
         let mut view = HashMap::new();

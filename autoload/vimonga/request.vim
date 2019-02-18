@@ -15,5 +15,8 @@ function! vimonga#request#execute(args) abort
 endfunction
 
 function! vimonga#request#option(key, value) abort
+    if len(a:value) == 0
+        return ''
+    endif
     return '--' . a:key . '=' . shellescape(a:value)
 endfunction

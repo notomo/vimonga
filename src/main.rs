@@ -73,6 +73,20 @@ fn main() {
                         .requires_if("", "collection_name"),
                 )
                 .arg(
+                    Arg::with_name("limit")
+                        .long("limit")
+                        .takes_value(true)
+                        .default_value("10")
+                        .required(false),
+                )
+                .arg(
+                    Arg::with_name("offset")
+                        .long("offset")
+                        .takes_value(true)
+                        .default_value("0")
+                        .required(false),
+                )
+                .arg(
                     Arg::with_name("query")
                         .long("query")
                         .takes_value(true)
@@ -122,6 +136,8 @@ fn main() {
             let index = cmd.value_of("index").unwrap().parse().unwrap();
             let query_json = cmd.value_of("query").unwrap();
             let projection_json = cmd.value_of("projection").unwrap();
+            let limit = cmd.value_of("limit").unwrap().parse().unwrap();
+            let offset = cmd.value_of("offset").unwrap().parse().unwrap();
 
             DocumentListCommand {
                 client,
@@ -130,6 +146,8 @@ fn main() {
                 index,
                 query_json,
                 projection_json,
+                limit,
+                offset,
                 pid,
                 host,
                 port,

@@ -7,6 +7,11 @@ use command::{
     ServerStartCommand,
 };
 
+#[macro_use]
+extern crate serde_derive;
+
+mod config;
+
 fn main() {
     let app = App::new("monga")
         .version("0.0.1")
@@ -30,6 +35,13 @@ fn main() {
                 .short("p")
                 .long("port")
                 .default_value("27017")
+                .takes_value(true)
+                .required(false),
+        )
+        .arg(
+            Arg::with_name("config")
+                .long("config")
+                .default_value("./vimonga.toml")
                 .takes_value(true)
                 .required(false),
         )
@@ -106,15 +118,17 @@ fn main() {
     let host = matches.value_of("host").unwrap();
     let port = matches.value_of("port").unwrap().parse().unwrap();
     let client = monga::connect(&host, port).expect("Failed to initialize client.");
+    let setting = config::Setting::new(matches.value_of("config").unwrap()).unwrap();
 
     let pid = matches.value_of("pid").unwrap();
     let content = match matches.subcommand() {
-        ("server", Some(_)) => ServerStartCommand {}.run(),
+        ("server", Some(_)) => ServerStartCommand { setting }.run(),
         ("database", Some(_)) => DatabaseListCommand {
             client,
             pid,
             host,
             port,
+            setting,
         }
         .run(),
         ("collection", Some(cmd)) => {
@@ -127,6 +141,7 @@ fn main() {
                 pid,
                 host,
                 port,
+                setting,
             }
             .run()
         }
@@ -151,6 +166,7 @@ fn main() {
                 pid,
                 host,
                 port,
+                setting,
             }
             .run()
         }

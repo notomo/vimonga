@@ -128,11 +128,12 @@ fn get_connection() -> Connection {
     Connection::open("file::memory:?cache=shared").unwrap()
 }
 
-pub fn listen() {
+pub fn listen(host_name: &str, port: u16) {
     let conn = get_connection();
     conn.execute(include_str!("sql/create_tables.sql"), NO_PARAMS)
         .unwrap();
 
+    let host = format!("{}:{}", host_name, port);
     server::new(|| {
         App::new()
             .resource("/ps/{pid}/conns/{host}/{port}/dbs", |r| {
@@ -146,7 +147,7 @@ pub fn listen() {
                 r.route().f(|_| HttpResponse::MethodNotAllowed());
             })
     })
-    .bind("127.0.0.1:8000")
-    .expect("Can not bind to port 8000")
+    .bind(host)
+    .expect("Can not bind to port")
     .run();
 }

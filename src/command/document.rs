@@ -11,6 +11,8 @@ extern crate serde_json;
 extern crate mongad;
 use mongad::Info;
 
+use crate::config::Setting;
+
 pub struct DocumentListCommand<'a> {
     pub client: Client,
     pub database_name: &'a str,
@@ -23,6 +25,7 @@ pub struct DocumentListCommand<'a> {
     pub pid: &'a str,
     pub host: &'a str,
     pub port: u16,
+    pub setting: Setting,
 }
 
 impl<'a> Command for DocumentListCommand<'a> {
@@ -30,7 +33,9 @@ impl<'a> Command for DocumentListCommand<'a> {
         let collection_name = match self.collection_name {
             "" => {
                 let url = format!(
-                    "http://localhost:8000/ps/{pid}/conns/{host}/{port}/dbs/{db_name}/colls",
+                    "http://{server_host}:{server_port}/ps/{pid}/conns/{host}/{port}/dbs/{db_name}/colls",
+                    server_host = &self.setting.server_host,
+                    server_port = &self.setting.server_port,
                     pid = &self.pid,
                     host = &self.host,
                     port = &self.port,

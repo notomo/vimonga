@@ -11,6 +11,8 @@ use mongad::Info;
 
 extern crate serde_json;
 
+use crate::config::Setting;
+
 pub struct CollectionListCommand<'a> {
     pub client: Client,
     pub database_name: &'a str,
@@ -18,6 +20,7 @@ pub struct CollectionListCommand<'a> {
     pub pid: &'a str,
     pub host: &'a str,
     pub port: u16,
+    pub setting: Setting,
 }
 
 impl<'a> Command for CollectionListCommand<'a> {
@@ -25,7 +28,9 @@ impl<'a> Command for CollectionListCommand<'a> {
         let database_name = match self.database_name {
             "" => {
                 let url = format!(
-                    "http://localhost:8000/ps/{pid}/conns/{host}/{port}/dbs",
+                    "http://{server_host}:{server_port}/ps/{pid}/conns/{host}/{port}/dbs",
+                    server_host = &self.setting.server_host,
+                    server_port = &self.setting.server_port,
                     pid = &self.pid,
                     host = &self.host,
                     port = &self.port,
@@ -47,7 +52,9 @@ impl<'a> Command for CollectionListCommand<'a> {
         let names = monga::get_collection_names(&self.client, database_name.as_str())?;
 
         let url = format!(
-            "http://localhost:8000/ps/{pid}/conns/{host}/{port}/dbs/{db_name}/colls",
+            "http://{server_host}:{server_port}/ps/{pid}/conns/{host}/{port}/dbs/{db_name}/colls",
+            server_host = &self.setting.server_host,
+            server_port = &self.setting.server_port,
             pid = &self.pid,
             host = &self.host,
             port = &self.port,

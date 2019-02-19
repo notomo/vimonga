@@ -121,7 +121,7 @@ fn main() {
     let setting = config::Setting::new(matches.value_of("config").unwrap()).unwrap();
 
     let pid = matches.value_of("pid").unwrap();
-    let content = match matches.subcommand() {
+    let command_result = match matches.subcommand() {
         ("server", Some(_)) => ServerStartCommand { setting }.run(),
         ("database", Some(_)) => DatabaseListCommand {
             client,
@@ -171,10 +171,13 @@ fn main() {
             .run()
         }
         _ => HelpCommand {}.run(),
-    }
-    .or_else(|e| -> Result<String, String> { Ok(e.to_string()) })
-    .ok()
-    .unwrap();
+    };
 
-    println!("{}", content);
+    match command_result {
+        Ok(content) => println!("{}", content),
+        Err(err) => {
+            println!("{}", err);
+            std::process::exit(1);
+        }
+    }
 }

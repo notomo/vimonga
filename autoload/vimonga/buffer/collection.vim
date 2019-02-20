@@ -29,7 +29,7 @@ function! s:open(args, open_cmd) abort
 
     let json = json_decode(result)
     let database_name = json['database_name']
-    let collection_names = json['body']
+    let collection_names = split(json['body'], '\%x00')
 
     let path = printf('dbs/%s/colls', database_name)
     call vimonga#buffer#base#open(collection_names, s:filetype, path, a:open_cmd)

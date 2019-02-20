@@ -6,3 +6,5 @@ services:
     container_name: vimonga-testdb
     ports:
       - '27020:27017'
+    volumes:
+      - "./example:/provision"

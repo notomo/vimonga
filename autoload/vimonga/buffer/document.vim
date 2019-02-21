@@ -72,7 +72,7 @@ function! s:open(args, options, open_cmd) abort
     let database_name = json['database_name']
     let collection_name = json['collection_name']
 
-    let path = printf('dbs/%s/colls/%s/documents', database_name, collection_name)
+    let path = printf('dbs/%s/colls/%s/docs', database_name, collection_name)
     call vimonga#buffer#base#open(documents, s:filetype, path, a:open_cmd)
     let b:vimonga_options = a:options
 endfunction

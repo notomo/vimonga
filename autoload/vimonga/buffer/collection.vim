@@ -12,8 +12,8 @@ endfunction
 function! vimonga#buffer#collection#action_open_list(open_cmd) abort
     call vimonga#buffer#base#assert_filetype(vimonga#buffer#database#filetype())
 
-    let index = vimonga#request#option('index', line('.') - 1)
-    call s:open([index], a:open_cmd)
+    let number = vimonga#request#option('number', line('.') - 1)
+    call s:open([number], a:open_cmd)
 endfunction
 
 function! vimonga#buffer#collection#action_open_from_doc(open_cmd) abort

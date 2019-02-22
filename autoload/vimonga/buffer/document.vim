@@ -20,8 +20,8 @@ function! vimonga#buffer#document#action_find(open_cmd) abort
 
     let database_name = fnamemodify(bufname('%'), ':h:t')
     let database = vimonga#request#option('database', database_name)
-    let index = vimonga#request#option('index', line('.') - 1)
-    call s:open([index, database], {}, a:open_cmd)
+    let number = vimonga#request#option('number', line('.') - 1)
+    call s:open([number, database], {}, a:open_cmd)
 endfunction
 
 function! vimonga#buffer#document#action_move_page(open_cmd, direction) abort

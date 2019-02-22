@@ -56,8 +56,8 @@ fn main() {
                         .default_value(""),
                 )
                 .arg(
-                    Arg::with_name("index")
-                        .long("index")
+                    Arg::with_name("number")
+                        .long("number")
                         .takes_value(true)
                         .default_value("0")
                         .requires_if("", "database_name"),
@@ -79,8 +79,8 @@ fn main() {
                         .default_value(""),
                 )
                 .arg(
-                    Arg::with_name("index")
-                        .long("index")
+                    Arg::with_name("number")
+                        .long("number")
                         .takes_value(true)
                         .default_value("0")
                         .requires_if("", "collection_name"),
@@ -142,11 +142,11 @@ fn main() {
         ("collection", Some(cmd)) => match cmd.subcommand() {
             ("list", Some(_)) => {
                 let database_name = cmd.value_of("database_name").unwrap();
-                let index = cmd.value_of("index").unwrap().parse().unwrap();
+                let number = cmd.value_of("number").unwrap().parse().unwrap();
                 CollectionListCommand {
                     client,
                     database_name,
-                    index,
+                    number,
                     pid,
                     host,
                     port,
@@ -160,7 +160,7 @@ fn main() {
             ("find", Some(_)) => {
                 let database_name = cmd.value_of("database_name").unwrap();
                 let collection_name = cmd.value_of("collection_name").unwrap();
-                let index = cmd.value_of("index").unwrap().parse().unwrap();
+                let number = cmd.value_of("number").unwrap().parse().unwrap();
                 let query_json = cmd.value_of("query").unwrap();
                 let projection_json = cmd.value_of("projection").unwrap();
                 let limit = cmd.value_of("limit").unwrap().parse().unwrap();
@@ -170,7 +170,7 @@ fn main() {
                     client,
                     database_name,
                     collection_name,
-                    index,
+                    number,
                     query_json,
                     projection_json,
                     limit,

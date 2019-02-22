@@ -17,7 +17,7 @@ pub struct DocumentListCommand<'a> {
     pub client: Client,
     pub database_name: &'a str,
     pub collection_name: &'a str,
-    pub index: usize,
+    pub number: usize,
     pub query_json: &'a str,
     pub projection_json: &'a str,
     pub limit: i64,
@@ -48,7 +48,7 @@ impl<'a> Command for DocumentListCommand<'a> {
                     .send()?
                     .json::<Info>()?
                     .body
-                    .get(self.index)
+                    .get(self.number)
                     .ok_or(error::CommandError::OutOfIndex)
                     .map(|name| String::from(name.as_str()).clone())
             }

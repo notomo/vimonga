@@ -16,7 +16,7 @@ use crate::config::Setting;
 pub struct CollectionListCommand<'a> {
     pub client: Client,
     pub database_name: &'a str,
-    pub index: usize,
+    pub number: usize,
     pub pid: &'a str,
     pub host: &'a str,
     pub port: u16,
@@ -42,7 +42,7 @@ impl<'a> Command for CollectionListCommand<'a> {
                     .send()?
                     .json::<Info>()?
                     .body
-                    .get(self.index)
+                    .get(self.number)
                     .ok_or(error::CommandError::OutOfIndex)
                     .map(|name| String::from(name.as_str()).clone())
             }

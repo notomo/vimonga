@@ -25,7 +25,7 @@ function! vimonga#buffer#collection#action_open_from_doc(open_cmd) abort
 endfunction
 
 function! s:open(args, open_cmd) abort
-    let result = vimonga#request#execute(['collection'] + a:args)
+    let result = vimonga#request#execute(['collection'] + a:args + ['list'])
 
     let json = json_decode(result)
     let database_name = json['database_name']

@@ -45,8 +45,8 @@ fn main() {
                 .takes_value(true)
                 .required(false),
         )
-        .subcommand(SubCommand::with_name("server"))
-        .subcommand(SubCommand::with_name("database"))
+        .subcommand(SubCommand::with_name("server").subcommand(SubCommand::with_name("start")))
+        .subcommand(SubCommand::with_name("database").subcommand(SubCommand::with_name("list")))
         .subcommand(
             SubCommand::with_name("collection")
                 .arg(
@@ -61,7 +61,8 @@ fn main() {
                         .takes_value(true)
                         .default_value("0")
                         .requires_if("", "database_name"),
-                ),
+                )
+                .subcommand(SubCommand::with_name("list")),
         )
         .subcommand(
             SubCommand::with_name("document")
@@ -111,7 +112,8 @@ fn main() {
                         .takes_value(true)
                         .default_value("{}")
                         .required(false),
-                ),
+                )
+                .subcommand(SubCommand::with_name("find")),
         );
     let matches = app.get_matches();
 
@@ -122,54 +124,66 @@ fn main() {
 
     let pid = matches.value_of("pid").unwrap();
     let command_result = match matches.subcommand() {
-        ("server", Some(_)) => ServerStartCommand { setting }.run(),
-        ("database", Some(_)) => DatabaseListCommand {
-            client,
-            pid,
-            host,
-            port,
-            setting,
-        }
-        .run(),
-        ("collection", Some(cmd)) => {
-            let database_name = cmd.value_of("database_name").unwrap();
-            let index = cmd.value_of("index").unwrap().parse().unwrap();
-            CollectionListCommand {
+        ("server", Some(cmd)) => match cmd.subcommand() {
+            ("start", Some(_)) => ServerStartCommand { setting }.run(),
+            _ => HelpCommand {}.run(),
+        },
+        ("database", Some(cmd)) => match cmd.subcommand() {
+            ("list", Some(_)) => DatabaseListCommand {
                 client,
-                database_name,
-                index,
                 pid,
                 host,
                 port,
                 setting,
             }
-            .run()
-        }
-        ("document", Some(cmd)) => {
-            let database_name = cmd.value_of("database_name").unwrap();
-            let collection_name = cmd.value_of("collection_name").unwrap();
-            let index = cmd.value_of("index").unwrap().parse().unwrap();
-            let query_json = cmd.value_of("query").unwrap();
-            let projection_json = cmd.value_of("projection").unwrap();
-            let limit = cmd.value_of("limit").unwrap().parse().unwrap();
-            let offset = cmd.value_of("offset").unwrap().parse().unwrap();
+            .run(),
+            _ => HelpCommand {}.run(),
+        },
+        ("collection", Some(cmd)) => match cmd.subcommand() {
+            ("list", Some(_)) => {
+                let database_name = cmd.value_of("database_name").unwrap();
+                let index = cmd.value_of("index").unwrap().parse().unwrap();
+                CollectionListCommand {
+                    client,
+                    database_name,
+                    index,
+                    pid,
+                    host,
+                    port,
+                    setting,
+                }
+                .run()
+            }
+            _ => HelpCommand {}.run(),
+        },
+        ("document", Some(cmd)) => match cmd.subcommand() {
+            ("find", Some(_)) => {
+                let database_name = cmd.value_of("database_name").unwrap();
+                let collection_name = cmd.value_of("collection_name").unwrap();
+                let index = cmd.value_of("index").unwrap().parse().unwrap();
+                let query_json = cmd.value_of("query").unwrap();
+                let projection_json = cmd.value_of("projection").unwrap();
+                let limit = cmd.value_of("limit").unwrap().parse().unwrap();
+                let offset = cmd.value_of("offset").unwrap().parse().unwrap();
 
-            DocumentListCommand {
-                client,
-                database_name,
-                collection_name,
-                index,
-                query_json,
-                projection_json,
-                limit,
-                offset,
-                pid,
-                host,
-                port,
-                setting,
+                DocumentListCommand {
+                    client,
+                    database_name,
+                    collection_name,
+                    index,
+                    query_json,
+                    projection_json,
+                    limit,
+                    offset,
+                    pid,
+                    host,
+                    port,
+                    setting,
+                }
+                .run()
             }
-            .run()
-        }
+            _ => HelpCommand {}.run(),
+        },
         _ => HelpCommand {}.run(),
     };
 

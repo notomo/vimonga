@@ -13,6 +13,6 @@ function! vimonga#buffer#database#action_open(open_cmd) abort
 endfunction
 
 function! s:open(args, open_cmd) abort
-    let db_names = vimonga#request#execute(['database'] + a:args)
+    let db_names = vimonga#request#execute(['database', 'list'] + a:args)
     call vimonga#buffer#base#open(db_names, s:filetype, 'dbs', a:open_cmd)
 endfunction

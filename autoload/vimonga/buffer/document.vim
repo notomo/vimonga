@@ -64,7 +64,7 @@ function! s:open(args, options, open_cmd) abort
         call add(option_args, vimonga#request#option('offset', a:options['offset']))
     endif
 
-    let args = ['document'] + a:args + option_args
+    let args = ['document'] + a:args + option_args + ['find']
     let result = vimonga#request#execute(args)
 
     let json = json_decode(result)

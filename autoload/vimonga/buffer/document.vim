@@ -35,9 +35,19 @@ function! vimonga#buffer#document#action_move_page(open_cmd, direction) abort
     if exists('b:vimonga_options')
         let options = b:vimonga_options
     endif
+
+    if has_key(options, 'is_last') && options['is_last'] && a:direction > 0
+        return
+    endif
+
     if !has_key(options, 'offset')
         let options['offset'] = 0
     endif
+
+    if options['offset'] == 0 && a:direction < 0
+        return
+    endif
+
     if !has_key(options, 'limit')
         let options['limit'] = 10
     endif
@@ -71,8 +81,10 @@ function! s:open(args, options, open_cmd) abort
     let documents = split(json['body'], '\%x00')
     let database_name = json['database_name']
     let collection_name = json['collection_name']
+    let is_last = json['is_last'] ==# 'true'
 
     let path = printf('dbs/%s/colls/%s/docs', database_name, collection_name)
     call vimonga#buffer#base#open(documents, s:filetype, path, a:open_cmd)
     let b:vimonga_options = a:options
+    let b:vimonga_options['is_last'] = is_last
 endfunction

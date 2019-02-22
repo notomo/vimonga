@@ -65,10 +65,20 @@ impl<'a> Command for DocumentListCommand<'a> {
             self.offset,
         )?;
 
+        let count = monga::get_count(
+            &self.client,
+            self.database_name,
+            collection_name.as_str(),
+            self.query_json,
+        )?;
+
         let mut view = HashMap::new();
         view.insert("body", serde_json::to_string_pretty(&documents)?);
         view.insert("database_name", self.database_name.to_string());
         view.insert("collection_name", collection_name);
+        let is_last = (count - self.offset) <= self.limit;
+        view.insert("is_last", is_last.to_string());
+        view.insert("count", count.to_string());
 
         Ok(serde_json::to_string(&view)?)
     }

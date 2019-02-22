@@ -61,6 +61,22 @@ pub fn get_documents(
     Ok(documents)
 }
 
+pub fn get_count(
+    client: &Client,
+    database_name: &str,
+    collection_name: &str,
+    query_json: &str,
+) -> Result<i64, error::AppError> {
+    let query = Some(to_document_from_str(query_json));
+
+    let count = client
+        .db(database_name)
+        .collection(collection_name)
+        .count(query, None)?;
+
+    Ok(count)
+}
+
 fn to_document_from_str(json_str: &str) -> Document {
     // TODO: remove unwrap()
     let decoded_json: HashMap<String, Value> = serde_json::from_str(json_str).unwrap();

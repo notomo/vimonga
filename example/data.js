@@ -1,10 +1,10 @@
-const exampleDb = new Mongo().getDB("example");
+let exampleDb = new Mongo().getDB("example");
 
 exampleDb.dropDatabase();
 
-exampleDb.persons.insert({ name: "a" });
-exampleDb.persons.insert({ name: "b" });
-exampleDb.persons.insert({ name: "c" });
+for (let i = 0; i < 25; ++i) {
+  exampleDb.persons.insert({ name: i });
+}
 
 exampleDb.teams.insert({ name: "A" });
 exampleDb.teams.insert({ name: "B" });

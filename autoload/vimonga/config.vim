@@ -23,12 +23,12 @@ let s:validations = {
 
 function! vimonga#config#set(key, value) abort
     if !has_key(s:config, a:key)
-        throw a:key . ' does not exist in config options.'
+        throw printf('`%s` does not exist in config options.', a:key)
     endif
 
     let validation = s:validations[a:key]
     if !validation['func'](a:value)
-        throw a:key . ' must be ' . validation['description'] . '.'
+        throw printf('`%s` must be %s.', a:key, validation['description'])
     endif
 
     let s:config[a:key] = a:value
@@ -36,7 +36,7 @@ endfunction
 
 function! vimonga#config#get(key) abort
     if !has_key(s:config, a:key)
-        throw a:key . ' does not exist in config options.'
+        throw printf('`%s` does not exist in config options.', a:key)
     endif
     return s:config[a:key]
 endfunction

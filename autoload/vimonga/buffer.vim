@@ -23,7 +23,7 @@ endfunction
 
 function! vimonga#buffer#assert_filetype(...) abort
     if index(a:000, &filetype) == -1
-        throw '&filetype must be in ' . join(a:000, ', ') . ' but actual: ' . &filetype
+        throw printf('&filetype must be in [%s] but actual: %s', join(a:000, ', '), &filetype)
     endif
 endfunction
 

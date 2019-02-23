@@ -87,3 +87,17 @@ fn to_document_from_str(json_str: &str) -> Document {
     }
     document
 }
+
+pub fn get_indexes(
+    client: &Client,
+    database_name: &str,
+    collection_name: &str,
+) -> Result<Vec<Document>, error::AppError> {
+    let cursor = client
+        .db(database_name)
+        .collection(collection_name)
+        .list_indexes()?;
+
+    let documents: Vec<Document> = cursor.map(|index| index.unwrap()).collect();
+    Ok(documents)
+}

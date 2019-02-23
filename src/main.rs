@@ -4,7 +4,7 @@ use clap::{App, AppSettings, Arg, SubCommand};
 mod command;
 use command::{
     CollectionListCommand, Command, DatabaseListCommand, DocumentListCommand, HelpCommand,
-    ServerStartCommand,
+    IndexListCommand, ServerStartCommand,
 };
 
 #[macro_use]
@@ -52,6 +52,29 @@ fn main() {
                 .arg(
                     Arg::with_name("database_name")
                         .long("database")
+                        .takes_value(true)
+                        .default_value(""),
+                )
+                .arg(
+                    Arg::with_name("number")
+                        .long("number")
+                        .takes_value(true)
+                        .default_value("0")
+                        .requires_if("", "database_name"),
+                )
+                .subcommand(SubCommand::with_name("list")),
+        )
+        .subcommand(
+            SubCommand::with_name("index")
+                .arg(
+                    Arg::with_name("database_name")
+                        .long("database")
+                        .takes_value(true)
+                        .default_value(""),
+                )
+                .arg(
+                    Arg::with_name("collection_name")
+                        .long("collection")
                         .takes_value(true)
                         .default_value(""),
                 )
@@ -146,6 +169,26 @@ fn main() {
                 CollectionListCommand {
                     client,
                     database_name,
+                    number,
+                    pid,
+                    host,
+                    port,
+                    setting,
+                }
+                .run()
+            }
+            _ => HelpCommand {}.run(),
+        },
+        ("index", Some(cmd)) => match cmd.subcommand() {
+            ("list", Some(_)) => {
+                let database_name = cmd.value_of("database_name").unwrap();
+                let collection_name = cmd.value_of("collection_name").unwrap();
+                let number = cmd.value_of("number").unwrap().parse().unwrap();
+
+                IndexListCommand {
+                    client,
+                    database_name,
+                    collection_name,
                     number,
                     pid,
                     host,

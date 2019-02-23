@@ -4,6 +4,9 @@ pub use collection::CollectionListCommand;
 mod database;
 pub use database::DatabaseListCommand;
 
+mod index;
+pub use index::IndexListCommand;
+
 mod document;
 pub use document::DocumentListCommand;
 

@@ -16,8 +16,11 @@ function! vimonga#buffer#collection#action_open_list(open_cmd) abort
     call s:open([number], a:open_cmd)
 endfunction
 
-function! vimonga#buffer#collection#action_open_from_doc(open_cmd) abort
-    call vimonga#buffer#base#assert_filetype(vimonga#buffer#document#filetype())
+function! vimonga#buffer#collection#action_open_from_child(open_cmd) abort
+    call vimonga#buffer#base#assert_filetype(
+        \ vimonga#buffer#document#filetype(),
+        \ vimonga#buffer#index#filetype(),
+    \ )
 
     let database_name = fnamemodify(bufname('%'), ':h:h:h:t')
     let database = vimonga#request#option('database', database_name)

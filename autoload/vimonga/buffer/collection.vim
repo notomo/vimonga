@@ -4,11 +4,6 @@ function! vimonga#buffer#collection#filetype() abort
     return s:filetype
 endfunction
 
-function! vimonga#buffer#collection#open_list(database_name) abort
-    let database = vimonga#request#option('database', a:database_name)
-    call s:open([database], 'tabedit')
-endfunction
-
 function! vimonga#buffer#collection#action_open_list(open_cmd) abort
     call vimonga#buffer#base#assert_filetype(vimonga#buffer#database#filetype())
 

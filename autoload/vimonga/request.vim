@@ -1,3 +1,4 @@
+let s:pid = getpid()
 
 function! vimonga#request#execute(args) abort
     let config_path = vimonga#config#get('config_path')
@@ -6,7 +7,7 @@ function! vimonga#request#execute(args) abort
     let default_args = [
         \ 'RUST_BACKTRACE=1',
         \ 'vimonga',
-        \ vimonga#request#option('pid', getpid()),
+        \ vimonga#request#option('pid', s:pid),
         \ vimonga#request#option('config', config_path),
         \ vimonga#request#option('host', host),
         \ vimonga#request#option('port', port)

@@ -1,5 +1,5 @@
 
-function! vimonga#buffer#base#open(contents, filetype, path, open_cmd) abort
+function! vimonga#buffer#open(contents, filetype, path, open_cmd) abort
     let host = vimonga#config#get('default_host')
     let port = vimonga#config#get('default_port')
     let path = printf('vimonga://%s/%s/%s', host, port, a:path)
@@ -21,7 +21,7 @@ function! vimonga#buffer#base#open(contents, filetype, path, open_cmd) abort
     call setpos('.', cursor)
 endfunction
 
-function! vimonga#buffer#base#assert_filetype(...) abort
+function! vimonga#buffer#assert_filetype(...) abort
     if index(a:000, &filetype) == -1
         throw '&filetype must be in ' . join(a:000, ', ') . ' but actual: ' . &filetype
     endif

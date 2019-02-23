@@ -5,7 +5,7 @@ function! vimonga#buffer#document#filetype() abort
 endfunction
 
 function! vimonga#buffer#document#action_find(open_cmd) abort
-    call vimonga#buffer#base#assert_filetype(vimonga#buffer#collection#filetype())
+    call vimonga#buffer#assert_filetype(vimonga#buffer#collection#filetype())
 
     let database_name = fnamemodify(bufname('%'), ':h:t')
     let database = vimonga#request#option('database', database_name)
@@ -14,7 +14,7 @@ function! vimonga#buffer#document#action_find(open_cmd) abort
 endfunction
 
 function! vimonga#buffer#document#action_move_page(open_cmd, direction) abort
-    call vimonga#buffer#base#assert_filetype(s:filetype)
+    call vimonga#buffer#assert_filetype(s:filetype)
 
     let database_name = fnamemodify(bufname('%'), ':h:h:h:t')
     let database = vimonga#request#option('database', database_name)
@@ -73,7 +73,7 @@ function! s:open(args, options, open_cmd) abort
     let is_last = json['is_last'] ==# 'true'
 
     let path = printf('dbs/%s/colls/%s/docs', database_name, collection_name)
-    call vimonga#buffer#base#open(documents, s:filetype, path, a:open_cmd)
+    call vimonga#buffer#open(documents, s:filetype, path, a:open_cmd)
     let b:vimonga_options = a:options
     let b:vimonga_options['is_last'] = is_last
 endfunction

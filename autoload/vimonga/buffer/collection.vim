@@ -5,14 +5,14 @@ function! vimonga#buffer#collection#filetype() abort
 endfunction
 
 function! vimonga#buffer#collection#action_open_list(open_cmd) abort
-    call vimonga#buffer#base#assert_filetype(vimonga#buffer#database#filetype())
+    call vimonga#buffer#assert_filetype(vimonga#buffer#database#filetype())
 
     let number = vimonga#request#option('number', line('.') - 1)
     call s:open([number], a:open_cmd)
 endfunction
 
 function! vimonga#buffer#collection#action_open_from_child(open_cmd) abort
-    call vimonga#buffer#base#assert_filetype(
+    call vimonga#buffer#assert_filetype(
         \ vimonga#buffer#document#filetype(),
         \ vimonga#buffer#index#filetype(),
     \ )
@@ -30,5 +30,5 @@ function! s:open(args, open_cmd) abort
     let collection_names = split(json['body'], '\%x00')
 
     let path = printf('dbs/%s/colls', database_name)
-    call vimonga#buffer#base#open(collection_names, s:filetype, path, a:open_cmd)
+    call vimonga#buffer#open(collection_names, s:filetype, path, a:open_cmd)
 endfunction

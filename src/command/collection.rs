@@ -3,69 +3,27 @@ use crate::command::Command;
 
 use std::collections::HashMap;
 
-extern crate monga;
-use monga::Client;
-
-extern crate mongad;
-use mongad::Info;
+use crate::domain::{CollectionRepository, DatabaseRepository};
 
 extern crate serde_json;
 
-use crate::config::Setting;
-
 pub struct CollectionListCommand<'a> {
-    pub client: Client,
+    pub collection_repository: &'a CollectionRepository,
+    pub database_repository: &'a DatabaseRepository,
     pub database_name: &'a str,
     pub number: usize,
-    pub pid: &'a str,
-    pub host: &'a str,
-    pub port: u16,
-    pub setting: Setting,
 }
 
 impl<'a> Command for CollectionListCommand<'a> {
     fn run(&self) -> Result<String, error::CommandError> {
         let database_name = match self.database_name {
-            "" => {
-                let url = format!(
-                    "http://{server_host}:{server_port}/ps/{pid}/conns/{host}/{port}/dbs",
-                    server_host = &self.setting.server_host,
-                    server_port = &self.setting.server_port,
-                    pid = &self.pid,
-                    host = &self.host,
-                    port = &self.port,
-                );
-
-                let reqwest_client = reqwest::Client::new();
-                reqwest_client
-                    .get(&url)
-                    .send()?
-                    .json::<Info>()?
-                    .body
-                    .get(self.number)
-                    .ok_or(error::CommandError::OutOfIndex)
-                    .map(|name| String::from(name.as_str()).clone())
-            }
+            "" => self.database_repository.get_name_by_number(self.number),
             _ => Ok(String::from(self.database_name)),
         }?;
 
-        let names = monga::get_collection_names(&self.client, database_name.as_str())?;
-
-        let url = format!(
-            "http://{server_host}:{server_port}/ps/{pid}/conns/{host}/{port}/dbs/{db_name}/colls",
-            server_host = &self.setting.server_host,
-            server_port = &self.setting.server_port,
-            pid = &self.pid,
-            host = &self.host,
-            port = &self.port,
-            db_name = database_name,
-        );
-
-        let mut value = HashMap::new();
-        value.insert("body", &names);
-
-        let reqwest_client = reqwest::Client::new();
-        reqwest_client.post(&url).json(&value).send().unwrap();
+        let names = self
+            .collection_repository
+            .get_names(database_name.as_str())?;
 
         let mut view = HashMap::new();
         view.insert("body", names.join("\n"));

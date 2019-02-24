@@ -17,6 +17,7 @@ impl fmt::Display for RepositoryError {
             RepositoryError::InternalError(ref message) => {
                 f.write_str(&format!("InternalError: {}", message))
             }
+            RepositoryError::OutOfIndex => f.write_str("OutOfIndex"),
         }
     }
 }
@@ -25,6 +26,7 @@ impl Error for RepositoryError {
     fn description(&self) -> &str {
         match *self {
             RepositoryError::InternalError(_) => "InternalError",
+            RepositoryError::OutOfIndex => "OutOfIndex",
         }
     }
 }

@@ -8,7 +8,7 @@ use command::{
 };
 
 mod datastore;
-use datastore::DatabaseRepositoryImpl;
+use datastore::{CollectionRepositoryImpl, DatabaseRepositoryImpl};
 
 mod domain;
 
@@ -159,11 +159,11 @@ fn main() {
         ("database", Some(cmd)) => match cmd.subcommand() {
             ("list", Some(_)) => {
                 let repo = DatabaseRepositoryImpl {
-                    client,
+                    client: &client,
                     pid,
                     host,
                     port,
-                    setting,
+                    setting: &setting,
                 };
 
                 DatabaseListCommand {
@@ -177,14 +177,28 @@ fn main() {
             ("list", Some(_)) => {
                 let database_name = cmd.value_of("database_name").unwrap();
                 let number = cmd.value_of("number").unwrap().parse().unwrap();
-                CollectionListCommand {
-                    client,
-                    database_name,
-                    number,
+
+                let db_repo = DatabaseRepositoryImpl {
+                    client: &client,
                     pid,
                     host,
                     port,
-                    setting,
+                    setting: &setting,
+                };
+
+                let repo = CollectionRepositoryImpl {
+                    client: &client,
+                    pid,
+                    host,
+                    port,
+                    setting: &setting,
+                };
+
+                CollectionListCommand {
+                    collection_repository: &repo,
+                    database_repository: &db_repo,
+                    database_name,
+                    number,
                 }
                 .run()
             }

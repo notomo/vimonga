@@ -8,7 +8,7 @@ use command::{
 };
 
 mod datastore;
-use datastore::{CollectionRepositoryImpl, DatabaseRepositoryImpl};
+use datastore::{CollectionRepositoryImpl, DatabaseRepositoryImpl, IndexRepositoryImpl};
 
 mod domain;
 
@@ -210,15 +210,28 @@ fn main() {
                 let collection_name = cmd.value_of("collection_name").unwrap();
                 let number = cmd.value_of("number").unwrap().parse().unwrap();
 
-                IndexListCommand {
-                    client,
-                    database_name,
-                    collection_name,
-                    number,
+                let collection_repo = CollectionRepositoryImpl {
+                    client: &client,
                     pid,
                     host,
                     port,
-                    setting,
+                    setting: &setting,
+                };
+
+                let repo = IndexRepositoryImpl {
+                    client: &client,
+                    pid,
+                    host,
+                    port,
+                    setting: &setting,
+                };
+
+                IndexListCommand {
+                    index_repository: &repo,
+                    collection_repository: &collection_repo,
+                    database_name,
+                    collection_name,
+                    number,
                 }
                 .run()
             }

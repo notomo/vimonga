@@ -1,2 +1,2 @@
 mod repository;
-pub use repository::{CollectionRepository, DatabaseRepository, RepositoryError};
+pub use repository::{CollectionRepository, DatabaseRepository, IndexRepository, RepositoryError};

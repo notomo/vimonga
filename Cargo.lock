@@ -2257,6 +2257,7 @@ dependencies = [
  "config 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "monga 0.0.1",
  "mongad 0.1.0",
+ "mongodb 0.3.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "reqwest 0.9.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.87 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.87 (registry+https://github.com/rust-lang/crates.io-index)",

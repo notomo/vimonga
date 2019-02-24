@@ -7,6 +7,11 @@ use command::{
     IndexListCommand, ServerStartCommand,
 };
 
+mod datastore;
+use datastore::DatabaseRepositoryImpl;
+
+mod domain;
+
 #[macro_use]
 extern crate serde_derive;
 
@@ -152,14 +157,20 @@ fn main() {
             _ => HelpCommand {}.run(),
         },
         ("database", Some(cmd)) => match cmd.subcommand() {
-            ("list", Some(_)) => DatabaseListCommand {
-                client,
-                pid,
-                host,
-                port,
-                setting,
+            ("list", Some(_)) => {
+                let repo = DatabaseRepositoryImpl {
+                    client,
+                    pid,
+                    host,
+                    port,
+                    setting,
+                };
+
+                DatabaseListCommand {
+                    database_repository: &repo,
+                }
+                .run()
             }
-            .run(),
             _ => HelpCommand {}.run(),
         },
         ("collection", Some(cmd)) => match cmd.subcommand() {

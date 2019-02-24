@@ -4,6 +4,8 @@ use std::fmt;
 extern crate monga;
 use monga::error::AppError;
 
+use crate::domain::RepositoryError;
+
 use reqwest::Error as ReqwestError;
 
 extern crate serde_json;
@@ -53,6 +55,14 @@ impl From<ReqwestError> for CommandError {
 
 impl From<SerdeJsonError> for CommandError {
     fn from(e: SerdeJsonError) -> Self {
+        match e {
+            _ => CommandError::InternalError(e.to_string()),
+        }
+    }
+}
+
+impl From<RepositoryError> for CommandError {
+    fn from(e: RepositoryError) -> Self {
         match e {
             _ => CommandError::InternalError(e.to_string()),
         }

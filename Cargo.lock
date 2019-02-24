@@ -1007,15 +1007,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "monga"
-version = "0.0.1"
-dependencies = [
- "bson 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "mongodb 0.3.12 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde_json 1.0.38 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "mongad"
 version = "0.1.0"
 dependencies = [
@@ -2256,7 +2247,6 @@ dependencies = [
  "bson 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "clap 2.32.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "config 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "monga 0.0.1",
  "mongad 0.1.0",
  "mongodb 0.3.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "reqwest 0.9.9 (registry+https://github.com/rust-lang/crates.io-index)",

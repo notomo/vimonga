@@ -1,9 +1,6 @@
 use std::error::Error;
 use std::fmt;
 
-extern crate monga;
-use monga::error::AppError;
-
 use crate::domain::RepositoryError;
 
 use reqwest::Error as ReqwestError;
@@ -14,7 +11,6 @@ use serde_json::Error as SerdeJsonError;
 #[derive(Debug)]
 pub enum CommandError {
     InternalError(String),
-    OutOfIndex,
 }
 
 impl fmt::Display for CommandError {
@@ -23,7 +19,6 @@ impl fmt::Display for CommandError {
             CommandError::InternalError(ref message) => {
                 f.write_str(&format!("InternalError: {}", message))
             }
-            CommandError::OutOfIndex => f.write_str("OutOfIndex"),
         }
     }
 }
@@ -32,15 +27,6 @@ impl Error for CommandError {
     fn description(&self) -> &str {
         match *self {
             CommandError::InternalError(_) => "InternalError",
-            CommandError::OutOfIndex => "OutOfIndex",
-        }
-    }
-}
-
-impl From<AppError> for CommandError {
-    fn from(e: AppError) -> Self {
-        match e {
-            _ => CommandError::InternalError(e.to_string()),
         }
     }
 }

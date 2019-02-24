@@ -8,7 +8,12 @@ use command::{
 };
 
 mod datastore;
-use datastore::{CollectionRepositoryImpl, DatabaseRepositoryImpl, IndexRepositoryImpl};
+use datastore::{
+    CollectionRepositoryImpl, DatabaseRepositoryImpl, DocumentRepositoryImpl, IndexRepositoryImpl,
+};
+
+extern crate mongodb;
+use mongodb::{Client, ThreadedClient};
 
 mod domain;
 
@@ -147,7 +152,7 @@ fn main() {
 
     let host = matches.value_of("host").unwrap();
     let port = matches.value_of("port").unwrap().parse().unwrap();
-    let client = monga::connect(&host, port).expect("Failed to initialize client.");
+    let client = Client::connect(&host, port).expect("Failed to initialize client.");
     let setting = config::Setting::new(matches.value_of("config").unwrap()).unwrap();
 
     let pid = matches.value_of("pid").unwrap();
@@ -247,8 +252,19 @@ fn main() {
                 let limit = cmd.value_of("limit").unwrap().parse().unwrap();
                 let offset = cmd.value_of("offset").unwrap().parse().unwrap();
 
+                let collection_repo = CollectionRepositoryImpl {
+                    client: &client,
+                    pid,
+                    host,
+                    port,
+                    setting: &setting,
+                };
+
+                let repo = DocumentRepositoryImpl { client: &client };
+
                 DocumentListCommand {
-                    client,
+                    document_repository: &repo,
+                    collection_repository: &collection_repo,
                     database_name,
                     collection_name,
                     number,
@@ -256,10 +272,6 @@ fn main() {
                     projection_json,
                     limit,
                     offset,
-                    pid,
-                    host,
-                    port,
-                    setting,
                 }
                 .run()
             }

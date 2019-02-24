@@ -3,18 +3,13 @@ use crate::command::Command;
 
 use std::collections::HashMap;
 
-extern crate monga;
-use monga::Client;
+use crate::domain::{CollectionRepository, DocumentRepository};
 
 extern crate serde_json;
 
-extern crate mongad;
-use mongad::Info;
-
-use crate::config::Setting;
-
 pub struct DocumentListCommand<'a> {
-    pub client: Client,
+    pub document_repository: &'a DocumentRepository,
+    pub collection_repository: &'a CollectionRepository,
     pub database_name: &'a str,
     pub collection_name: &'a str,
     pub number: usize,
@@ -22,41 +17,18 @@ pub struct DocumentListCommand<'a> {
     pub projection_json: &'a str,
     pub limit: i64,
     pub offset: i64,
-    pub pid: &'a str,
-    pub host: &'a str,
-    pub port: u16,
-    pub setting: Setting,
 }
 
 impl<'a> Command for DocumentListCommand<'a> {
     fn run(&self) -> Result<String, error::CommandError> {
         let collection_name = match self.collection_name {
-            "" => {
-                let url = format!(
-                    "http://{server_host}:{server_port}/ps/{pid}/conns/{host}/{port}/dbs/{db_name}/colls",
-                    server_host = &self.setting.server_host,
-                    server_port = &self.setting.server_port,
-                    pid = &self.pid,
-                    host = &self.host,
-                    port = &self.port,
-                    db_name = &self.database_name,
-                );
-
-                let reqwest_client = reqwest::Client::new();
-                reqwest_client
-                    .get(&url)
-                    .send()?
-                    .json::<Info>()?
-                    .body
-                    .get(self.number)
-                    .ok_or(error::CommandError::OutOfIndex)
-                    .map(|name| String::from(name.as_str()).clone())
-            }
+            "" => self
+                .collection_repository
+                .get_name_by_number(self.database_name, self.number),
             _ => Ok(String::from(self.collection_name)),
         }?;
 
-        let documents = monga::get_documents(
-            &self.client,
+        let documents = self.document_repository.find(
             self.database_name,
             collection_name.as_str(),
             self.query_json,
@@ -65,8 +37,7 @@ impl<'a> Command for DocumentListCommand<'a> {
             self.offset,
         )?;
 
-        let count = monga::get_count(
-            &self.client,
+        let count = self.document_repository.get_count(
             self.database_name,
             collection_name.as_str(),
             self.query_json,

@@ -17,6 +17,17 @@ function! vimonga#request#execute(args) abort
     return systemlist(cmd)
 endfunction
 
+function! vimonga#request#json(args) abort
+    let result = vimonga#request#execute(a:args)
+    try
+        let json = json_decode(result)
+        let json['body'] = split(json['body'], '\%x00')
+        return [json, []]
+    catch /^Vim\%((\a\+)\)\=:E474/
+        return [v:null, result]
+    endtry
+endfunction
+
 function! vimonga#request#option(key, value) abort
     if len(a:value) == 0
         return ''

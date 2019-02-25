@@ -64,13 +64,15 @@ function! s:open(args, options, open_cmd) abort
     endif
 
     let args = ['document'] + a:args + option_args + ['find']
-    let result = vimonga#request#execute(args)
+    let [result, err] = vimonga#request#json(args)
+    if err
+        return vimonga#buffer#error(err, a:open_cmd)
+    endif
 
-    let json = json_decode(result)
-    let documents = split(json['body'], '\%x00')
-    let database_name = json['database_name']
-    let collection_name = json['collection_name']
-    let is_last = json['is_last'] ==# 'true'
+    let documents = result['body']
+    let database_name = result['database_name']
+    let collection_name = result['collection_name']
+    let is_last = result['is_last'] ==# 'true'
 
     let path = printf('dbs/%s/colls/%s/docs', database_name, collection_name)
     call vimonga#buffer#open(documents, s:filetype, path, a:open_cmd)

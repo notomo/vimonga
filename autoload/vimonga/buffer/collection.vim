@@ -23,11 +23,13 @@ function! vimonga#buffer#collection#action_open_from_child(open_cmd) abort
 endfunction
 
 function! s:open(args, open_cmd) abort
-    let result = vimonga#request#execute(['collection'] + a:args + ['list'])
+    let [result, err] = vimonga#request#json(['collection'] + a:args + ['list'])
+    if err
+        return vimonga#buffer#error(err, a:open_cmd)
+    endif
 
-    let json = json_decode(result)
-    let database_name = json['database_name']
-    let collection_names = split(json['body'], '\%x00')
+    let database_name = result['database_name']
+    let collection_names = result['body']
 
     let path = printf('dbs/%s/colls', database_name)
     call vimonga#buffer#open(collection_names, s:filetype, path, a:open_cmd)

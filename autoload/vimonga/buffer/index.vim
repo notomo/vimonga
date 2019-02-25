@@ -15,12 +15,14 @@ endfunction
 
 function! s:open(args, open_cmd) abort
     let args = ['index'] + a:args + ['list']
-    let result = vimonga#request#execute(args)
+    let [result, err] = vimonga#request#json(args)
+    if err
+        return vimonga#buffer#error(err, a:open_cmd)
+    endif
 
-    let json = json_decode(result)
-    let documents = split(json['body'], '\%x00')
-    let database_name = json['database_name']
-    let collection_name = json['collection_name']
+    let documents = result['body']
+    let database_name = result['database_name']
+    let collection_name = result['collection_name']
 
     let path = printf('dbs/%s/colls/%s/index', database_name, collection_name)
     call vimonga#buffer#open(documents, s:filetype, path, a:open_cmd)

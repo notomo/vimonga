@@ -7,7 +7,7 @@ endfunction
 function! vimonga#buffer#collection#action_open_list(open_cmd) abort
     call vimonga#buffer#assert_filetype(vimonga#buffer#database#filetype())
 
-    let number = vimonga#request#option('number', line('.') - 1)
+    let number = vimonga#request#number_option()
     call s:open([number], a:open_cmd)
 endfunction
 

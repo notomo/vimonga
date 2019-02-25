@@ -34,3 +34,7 @@ function! vimonga#request#option(key, value) abort
     endif
     return '--' . a:key . '=' . shellescape(a:value)
 endfunction
+
+function! vimonga#request#number_option() abort
+    return vimonga#request#option('number', line('.') - 1)
+endfunction

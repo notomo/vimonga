@@ -9,7 +9,7 @@ function! vimonga#buffer#index#action_list(open_cmd) abort
 
     let database_name = fnamemodify(bufname('%'), ':h:t')
     let database = vimonga#request#option('database', database_name)
-    let number = vimonga#request#option('number', line('.') - 1)
+    let number = vimonga#request#number_option()
     call s:open([number, database], a:open_cmd)
 endfunction
 

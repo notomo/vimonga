@@ -24,7 +24,7 @@ endfunction
 
 function! s:open(args, open_cmd) abort
     let [result, err] = vimonga#request#json(['collection'] + a:args + ['list'])
-    if err
+    if !empty(err)
         return vimonga#buffer#error(err, a:open_cmd)
     endif
 

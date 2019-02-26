@@ -5,8 +5,6 @@ use std::collections::HashMap;
 
 use crate::domain::{CollectionRepository, IndexRepository};
 
-extern crate serde_json;
-
 pub struct IndexListCommand<'a> {
     pub index_repository: &'a IndexRepository,
     pub collection_repository: &'a CollectionRepository,

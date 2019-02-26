@@ -4,11 +4,9 @@ use std::collections::HashMap;
 
 use crate::config::Setting;
 
-extern crate mongodb;
 use mongodb::Client;
 use mongodb::ThreadedClient;
 
-extern crate mongad;
 use mongad::Info;
 
 pub struct DatabaseRepositoryImpl<'a> {

@@ -1,6 +1,5 @@
 use super::error::RepositoryError;
 
-extern crate bson;
 use bson::Document;
 
 pub trait DocumentRepository {

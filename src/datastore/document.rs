@@ -2,13 +2,10 @@ use crate::domain::{DocumentRepository, RepositoryError};
 
 use std::collections::HashMap;
 
-extern crate bson;
 use bson::Document;
 
-extern crate serde_json;
 use serde_json::Value;
 
-extern crate mongodb;
 use mongodb::coll::options::FindOptions;
 use mongodb::db::ThreadedDatabase;
 use mongodb::Client;

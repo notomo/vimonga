@@ -5,7 +5,6 @@ use crate::domain::RepositoryError;
 
 use reqwest::Error as ReqwestError;
 
-extern crate serde_json;
 use serde_json::Error as SerdeJsonError;
 
 #[derive(Debug)]

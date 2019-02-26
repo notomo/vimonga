@@ -2,10 +2,8 @@ use crate::domain::{IndexRepository, RepositoryError};
 
 use crate::config::Setting;
 
-extern crate bson;
 use bson::Document;
 
-extern crate mongodb;
 use mongodb::db::ThreadedDatabase;
 use mongodb::Client;
 use mongodb::ThreadedClient;

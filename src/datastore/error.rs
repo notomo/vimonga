@@ -5,10 +5,8 @@ use std::fmt;
 
 use reqwest::Error as ReqwestError;
 
-extern crate mongodb;
 use mongodb::Error as MongodbError;
 
-extern crate serde_json;
 use serde_json::Error as SerdeJsonError;
 
 impl fmt::Display for RepositoryError {

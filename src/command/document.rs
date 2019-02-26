@@ -5,8 +5,6 @@ use std::collections::HashMap;
 
 use crate::domain::{CollectionRepository, DocumentRepository};
 
-extern crate serde_json;
-
 pub struct DocumentListCommand<'a> {
     pub document_repository: &'a DocumentRepository,
     pub collection_repository: &'a CollectionRepository,

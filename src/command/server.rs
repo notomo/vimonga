@@ -3,8 +3,6 @@ use crate::command::Command;
 
 use crate::config::Setting;
 
-extern crate mongad;
-
 pub struct ServerStartCommand {
     pub setting: Setting,
 }

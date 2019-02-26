@@ -1,4 +1,3 @@
-extern crate clap;
 use clap::{App, AppSettings, Arg, SubCommand};
 
 mod command;
@@ -12,7 +11,6 @@ use datastore::{
     CollectionRepositoryImpl, DatabaseRepositoryImpl, DocumentRepositoryImpl, IndexRepositoryImpl,
 };
 
-extern crate mongodb;
 use mongodb::{Client, ThreadedClient};
 
 mod domain;

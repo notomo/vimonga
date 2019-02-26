@@ -1,15 +1,16 @@
 use crate::domain::{IndexRepository, RepositoryError};
 
+use super::connection::ConnectionFactory;
+
 use crate::config::Setting;
 
 use bson::Document;
 
 use mongodb::db::ThreadedDatabase;
-use mongodb::Client;
 use mongodb::ThreadedClient;
 
 pub struct IndexRepositoryImpl<'a> {
-    pub client: &'a Client,
+    pub connection_factory: &'a ConnectionFactory<'a>,
     pub pid: &'a str,
     pub host: &'a str,
     pub port: u16,
@@ -22,8 +23,8 @@ impl<'a> IndexRepository for IndexRepositoryImpl<'a> {
         database_name: &str,
         collection_name: &str,
     ) -> Result<Vec<Document>, RepositoryError> {
-        let cursor = self
-            .client
+        let client = self.connection_factory.get()?;
+        let cursor = client
             .db(database_name)
             .collection(collection_name)
             .list_indexes()?;

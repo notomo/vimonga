@@ -1,5 +1,7 @@
 use crate::domain::{DocumentRepository, RepositoryError};
 
+use super::connection::ConnectionFactory;
+
 use std::collections::HashMap;
 
 use bson::Document;
@@ -8,11 +10,10 @@ use serde_json::Value;
 
 use mongodb::coll::options::FindOptions;
 use mongodb::db::ThreadedDatabase;
-use mongodb::Client;
 use mongodb::ThreadedClient;
 
 pub struct DocumentRepositoryImpl<'a> {
-    pub client: &'a Client,
+    pub connection_factory: &'a ConnectionFactory<'a>,
 }
 impl<'a> DocumentRepositoryImpl<'a> {
     fn to_document_from_str(&self, json_str: &str) -> Document {
@@ -45,8 +46,8 @@ impl<'a> DocumentRepository for DocumentRepositoryImpl<'a> {
         find_option.projection = projection;
         find_option.skip = Some(skip);
 
-        let cursor = self
-            .client
+        let client = self.connection_factory.get()?;
+        let cursor = client
             .db(database_name)
             .collection(collection_name)
             .find(query, Some(find_option))?;
@@ -64,8 +65,8 @@ impl<'a> DocumentRepository for DocumentRepositoryImpl<'a> {
     ) -> Result<i64, RepositoryError> {
         let query = Some(self.to_document_from_str(query_json));
 
-        let count = self
-            .client
+        let client = self.connection_factory.get()?;
+        let count = client
             .db(database_name)
             .collection(collection_name)
             .count(query, None)?;

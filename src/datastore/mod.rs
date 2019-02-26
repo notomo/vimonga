@@ -12,3 +12,6 @@ pub use document::DocumentRepositoryImpl;
 
 mod error;
 pub use error::RepositoryError;
+
+mod connection;
+pub use connection::ConnectionFactory;

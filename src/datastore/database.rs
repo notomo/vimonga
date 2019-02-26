@@ -4,13 +4,14 @@ use std::collections::HashMap;
 
 use crate::config::Setting;
 
-use mongodb::Client;
+use super::connection::ConnectionFactory;
+
 use mongodb::ThreadedClient;
 
 use mongad::Info;
 
 pub struct DatabaseRepositoryImpl<'a> {
-    pub client: &'a Client,
+    pub connection_factory: &'a ConnectionFactory<'a>,
     pub pid: &'a str,
     pub host: &'a str,
     pub port: u16,
@@ -32,7 +33,8 @@ impl<'a> DatabaseRepositoryImpl<'a> {
 
 impl<'a> DatabaseRepository for DatabaseRepositoryImpl<'a> {
     fn get_names(&self) -> Result<Vec<String>, RepositoryError> {
-        let names = self.client.database_names()?;
+        let client = self.connection_factory.get()?;
+        let names = client.database_names()?;
 
         let mut value = HashMap::new();
         value.insert("body", &names);

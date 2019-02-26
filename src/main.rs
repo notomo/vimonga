@@ -8,10 +8,9 @@ use command::{
 
 mod datastore;
 use datastore::{
-    CollectionRepositoryImpl, DatabaseRepositoryImpl, DocumentRepositoryImpl, IndexRepositoryImpl,
+    CollectionRepositoryImpl, ConnectionFactory, DatabaseRepositoryImpl, DocumentRepositoryImpl,
+    IndexRepositoryImpl,
 };
-
-use mongodb::{Client, ThreadedClient};
 
 mod domain;
 
@@ -150,7 +149,7 @@ fn main() {
 
     let host = matches.value_of("host").unwrap();
     let port = matches.value_of("port").unwrap().parse().unwrap();
-    let client = Client::connect(&host, port).expect("Failed to initialize client.");
+    let connection_factory = ConnectionFactory::new(host, port);
     let setting = config::Setting::new(matches.value_of("config").unwrap()).unwrap();
 
     let pid = matches.value_of("pid").unwrap();
@@ -162,7 +161,7 @@ fn main() {
         ("database", Some(cmd)) => match cmd.subcommand() {
             ("list", Some(_)) => {
                 let repo = DatabaseRepositoryImpl {
-                    client: &client,
+                    connection_factory: &connection_factory,
                     pid,
                     host,
                     port,
@@ -182,7 +181,7 @@ fn main() {
                 let number = cmd.value_of("number").unwrap().parse().unwrap();
 
                 let db_repo = DatabaseRepositoryImpl {
-                    client: &client,
+                    connection_factory: &connection_factory,
                     pid,
                     host,
                     port,
@@ -190,7 +189,7 @@ fn main() {
                 };
 
                 let repo = CollectionRepositoryImpl {
-                    client: &client,
+                    connection_factory: &connection_factory,
                     pid,
                     host,
                     port,
@@ -214,7 +213,7 @@ fn main() {
                 let number = cmd.value_of("number").unwrap().parse().unwrap();
 
                 let collection_repo = CollectionRepositoryImpl {
-                    client: &client,
+                    connection_factory: &connection_factory,
                     pid,
                     host,
                     port,
@@ -222,7 +221,7 @@ fn main() {
                 };
 
                 let repo = IndexRepositoryImpl {
-                    client: &client,
+                    connection_factory: &connection_factory,
                     pid,
                     host,
                     port,
@@ -251,14 +250,16 @@ fn main() {
                 let offset = cmd.value_of("offset").unwrap().parse().unwrap();
 
                 let collection_repo = CollectionRepositoryImpl {
-                    client: &client,
+                    connection_factory: &connection_factory,
                     pid,
                     host,
                     port,
                     setting: &setting,
                 };
 
-                let repo = DocumentRepositoryImpl { client: &client };
+                let repo = DocumentRepositoryImpl {
+                    connection_factory: &connection_factory,
+                };
 
                 DocumentListCommand {
                     document_repository: &repo,

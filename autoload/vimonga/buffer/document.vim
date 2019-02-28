@@ -63,7 +63,8 @@ function! s:open(args, options, open_cmd) abort
         call add(option_args, vimonga#request#option('offset', a:options['offset']))
     endif
 
-    let args = ['document'] + a:args + option_args + ['find']
+    let pid = vimonga#request#pid_option()
+    let args = ['document', pid] + a:args + option_args + ['find']
     let [result, err] = vimonga#request#json(args)
     if !empty(err)
         return vimonga#buffer#error(err, a:open_cmd)

@@ -24,12 +24,6 @@ fn main() {
         .version("0.0.1")
         .setting(AppSettings::ArgRequiredElseHelp)
         .arg(
-            Arg::with_name("pid")
-                .long("pid")
-                .takes_value(true)
-                .required(true),
-        )
-        .arg(
             Arg::with_name("host")
                 .short("h")
                 .long("host")
@@ -53,7 +47,16 @@ fn main() {
                 .required(false),
         )
         .subcommand(SubCommand::with_name("server").subcommand(SubCommand::with_name("start")))
-        .subcommand(SubCommand::with_name("database").subcommand(SubCommand::with_name("list")))
+        .subcommand(
+            SubCommand::with_name("database")
+                .arg(
+                    Arg::with_name("pid")
+                        .long("pid")
+                        .takes_value(true)
+                        .required(true),
+                )
+                .subcommand(SubCommand::with_name("list")),
+        )
         .subcommand(
             SubCommand::with_name("collection")
                 .arg(
@@ -68,6 +71,12 @@ fn main() {
                         .takes_value(true)
                         .default_value("0")
                         .requires_if("", "database_name"),
+                )
+                .arg(
+                    Arg::with_name("pid")
+                        .long("pid")
+                        .takes_value(true)
+                        .required(true),
                 )
                 .subcommand(SubCommand::with_name("list")),
         )
@@ -91,6 +100,12 @@ fn main() {
                         .takes_value(true)
                         .default_value("0")
                         .requires_if("", "database_name"),
+                )
+                .arg(
+                    Arg::with_name("pid")
+                        .long("pid")
+                        .takes_value(true)
+                        .required(true),
                 )
                 .subcommand(SubCommand::with_name("list")),
         )
@@ -143,6 +158,12 @@ fn main() {
                         .default_value("{}")
                         .required(false),
                 )
+                .arg(
+                    Arg::with_name("pid")
+                        .long("pid")
+                        .takes_value(true)
+                        .required(true),
+                )
                 .subcommand(SubCommand::with_name("find")),
         );
     let matches = app.get_matches();
@@ -152,7 +173,6 @@ fn main() {
     let connection_factory = ConnectionFactory::new(host, port);
     let setting = config::Setting::new(matches.value_of("config").unwrap()).unwrap();
 
-    let pid = matches.value_of("pid").unwrap();
     let command_result = match matches.subcommand() {
         ("server", Some(cmd)) => match cmd.subcommand() {
             ("start", Some(_)) => ServerStartCommand { setting }.run(),
@@ -160,6 +180,7 @@ fn main() {
         },
         ("database", Some(cmd)) => match cmd.subcommand() {
             ("list", Some(_)) => {
+                let pid = cmd.value_of("pid").unwrap();
                 let repo = DatabaseRepositoryImpl {
                     connection_factory: &connection_factory,
                     pid,
@@ -177,6 +198,7 @@ fn main() {
         },
         ("collection", Some(cmd)) => match cmd.subcommand() {
             ("list", Some(_)) => {
+                let pid = cmd.value_of("pid").unwrap();
                 let database_name = cmd.value_of("database_name").unwrap();
                 let number = cmd.value_of("number").unwrap().parse().unwrap();
 
@@ -208,6 +230,7 @@ fn main() {
         },
         ("index", Some(cmd)) => match cmd.subcommand() {
             ("list", Some(_)) => {
+                let pid = cmd.value_of("pid").unwrap();
                 let database_name = cmd.value_of("database_name").unwrap();
                 let collection_name = cmd.value_of("collection_name").unwrap();
                 let number = cmd.value_of("number").unwrap().parse().unwrap();
@@ -241,6 +264,7 @@ fn main() {
         },
         ("document", Some(cmd)) => match cmd.subcommand() {
             ("find", Some(_)) => {
+                let pid = cmd.value_of("pid").unwrap();
                 let database_name = cmd.value_of("database_name").unwrap();
                 let collection_name = cmd.value_of("collection_name").unwrap();
                 let number = cmd.value_of("number").unwrap().parse().unwrap();

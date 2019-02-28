@@ -23,7 +23,8 @@ function! vimonga#buffer#collection#action_open_from_child(open_cmd) abort
 endfunction
 
 function! s:open(args, open_cmd) abort
-    let [result, err] = vimonga#request#json(['collection'] + a:args + ['list'])
+    let pid = vimonga#request#pid_option()
+    let [result, err] = vimonga#request#json(['collection', pid] + a:args + ['list'])
     if !empty(err)
         return vimonga#buffer#error(err, a:open_cmd)
     endif

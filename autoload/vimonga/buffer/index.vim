@@ -14,7 +14,8 @@ function! vimonga#buffer#index#action_list(open_cmd) abort
 endfunction
 
 function! s:open(args, open_cmd) abort
-    let args = ['index'] + a:args + ['list']
+    let pid = vimonga#request#pid_option()
+    let args = ['index', pid] + a:args + ['list']
     let [result, err] = vimonga#request#json(args)
     if !empty(err)
         return vimonga#buffer#error(err, a:open_cmd)

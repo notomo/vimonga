@@ -3,6 +3,7 @@ let s:default_config = {
     \ 'config_path': '',
     \ 'default_port': 27017,
     \ 'default_host': 'localhost',
+    \ 'executable': 'vimonga',
 \ }
 let s:config = deepcopy(s:default_config)
 
@@ -18,6 +19,10 @@ let s:validations = {
     \ 'default_host': {
         \ 'description': 'a string',
         \ 'func': {x -> type(x) ==? v:t_string},
+    \ },
+    \ 'executable': {
+        \ 'description': 'an executable string',
+        \ 'func': {x -> type(x) ==? v:t_string && executable(x)},
     \ },
 \ }
 

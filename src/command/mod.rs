@@ -14,7 +14,7 @@ mod help;
 pub use help::HelpCommand;
 
 mod server;
-pub use server::ServerStartCommand;
+pub use server::{ServerPingCommand, ServerStartCommand};
 
 mod error;
 

@@ -128,6 +128,10 @@ fn get_connection() -> Connection {
     Connection::open("file::memory:?cache=shared").unwrap()
 }
 
+fn ping(_req: HttpRequest) -> &'static str {
+    "pong"
+}
+
 pub fn listen(host_name: &str, port: u16) {
     let conn = get_connection();
     conn.execute(include_str!("sql/create_tables.sql"), NO_PARAMS)
@@ -136,6 +140,10 @@ pub fn listen(host_name: &str, port: u16) {
     let host = format!("{}:{}", host_name, port);
     server::new(|| {
         App::new()
+            .resource("/ping", |r| {
+                r.method(Method::GET).with(ping);
+                r.route().f(|_| HttpResponse::MethodNotAllowed());
+            })
             .resource("/ps/{pid}/conns/{host}/{port}/dbs", |r| {
                 r.method(Method::POST).with(upsert_db);
                 r.method(Method::GET).with(select_db);

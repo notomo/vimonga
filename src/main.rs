@@ -3,7 +3,7 @@ use clap::{App, AppSettings, Arg, SubCommand};
 mod command;
 use command::{
     CollectionListCommand, Command, DatabaseListCommand, DocumentListCommand, HelpCommand,
-    IndexListCommand, ServerStartCommand,
+    IndexListCommand, ServerPingCommand, ServerStartCommand,
 };
 
 mod datastore;
@@ -46,7 +46,11 @@ fn main() {
                 .takes_value(true)
                 .required(false),
         )
-        .subcommand(SubCommand::with_name("server").subcommand(SubCommand::with_name("start")))
+        .subcommand(
+            SubCommand::with_name("server")
+                .subcommand(SubCommand::with_name("start"))
+                .subcommand(SubCommand::with_name("ping")),
+        )
         .subcommand(
             SubCommand::with_name("database")
                 .arg(
@@ -176,6 +180,7 @@ fn main() {
     let command_result = match matches.subcommand() {
         ("server", Some(cmd)) => match cmd.subcommand() {
             ("start", Some(_)) => ServerStartCommand { setting }.run(),
+            ("ping", Some(_)) => ServerPingCommand { setting }.run(),
             _ => HelpCommand {}.run(),
         },
         ("database", Some(cmd)) => match cmd.subcommand() {

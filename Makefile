@@ -9,4 +9,7 @@ start:
 setup_data:
 	docker-compose exec mongodb mongo /provision/data.js
 
+ping:
+	RUST_BACKTRACE=full ./target/debug/vimonga --config=./example/vimonga.toml server ping
+
 .PHONY: build

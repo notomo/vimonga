@@ -9,6 +9,7 @@ pub trait DocumentRepository {
         collection_name: &str,
         query_json: &str,
         projection_json: &str,
+        sort_json: &str,
         limit: i64,
         skip: i64,
     ) -> Result<Vec<Document>, RepositoryError>;

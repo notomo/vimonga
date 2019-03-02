@@ -35,15 +35,18 @@ impl<'a> DocumentRepository for DocumentRepositoryImpl<'a> {
         collection_name: &str,
         query_json: &str,
         projection_json: &str,
+        sort_json: &str,
         limit: i64,
         skip: i64,
     ) -> Result<Vec<Document>, RepositoryError> {
         let query = Some(self.to_document_from_str(query_json));
         let projection = Some(self.to_document_from_str(projection_json));
+        let sort = Some(self.to_document_from_str(sort_json));
 
         let mut find_option = FindOptions::new();
         find_option.limit = Some(limit);
         find_option.projection = projection;
+        find_option.sort = sort;
         find_option.skip = Some(skip);
 
         let client = self.connection_factory.get()?;

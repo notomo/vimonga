@@ -13,6 +13,7 @@ pub struct DocumentListCommand<'a> {
     pub number: usize,
     pub query_json: &'a str,
     pub projection_json: &'a str,
+    pub sort_json: &'a str,
     pub limit: i64,
     pub offset: i64,
 }
@@ -31,6 +32,7 @@ impl<'a> Command for DocumentListCommand<'a> {
             collection_name.as_str(),
             self.query_json,
             self.projection_json,
+            self.sort_json,
             self.limit,
             self.offset,
         )?;

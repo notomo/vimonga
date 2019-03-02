@@ -56,6 +56,9 @@ function! s:open(args, options, open_cmd) abort
     if has_key(a:options, 'projection')
         call add(option_args, vimonga#request#option('projection', a:options['projection']))
     endif
+    if has_key(a:options, 'sort')
+        call add(option_args, vimonga#request#option('sort', a:options['sort']))
+    endif
     if has_key(a:options, 'limit')
         call add(option_args, vimonga#request#option('limit', a:options['limit']))
     endif

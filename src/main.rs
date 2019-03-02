@@ -163,6 +163,13 @@ fn main() {
                         .required(false),
                 )
                 .arg(
+                    Arg::with_name("sort")
+                        .long("sort")
+                        .takes_value(true)
+                        .default_value("{}")
+                        .required(false),
+                )
+                .arg(
                     Arg::with_name("pid")
                         .long("pid")
                         .takes_value(true)
@@ -275,6 +282,7 @@ fn main() {
                 let number = cmd.value_of("number").unwrap().parse().unwrap();
                 let query_json = cmd.value_of("query").unwrap();
                 let projection_json = cmd.value_of("projection").unwrap();
+                let sort_json = cmd.value_of("sort").unwrap();
                 let limit = cmd.value_of("limit").unwrap().parse().unwrap();
                 let offset = cmd.value_of("offset").unwrap().parse().unwrap();
 
@@ -298,6 +306,7 @@ fn main() {
                     number,
                     query_json,
                     projection_json,
+                    sort_json,
                     limit,
                     offset,
                 }

@@ -1,6 +1,6 @@
 use crate::domain::RepositoryError;
 
-use mongodb::{Client, ThreadedClient};
+use mongodb::{Client, ClientOptions, ThreadedClient};
 
 pub struct ConnectionFactory<'a> {
     pub host: &'a str,
@@ -16,7 +16,9 @@ impl<'a> ConnectionFactory<'a> {
     }
 
     pub fn get(&self) -> Result<Client, RepositoryError> {
-        let client = Client::connect(self.host, self.port)?;
+        let mut options = ClientOptions::new();
+        options.server_selection_timeout_ms = 100;
+        let client = Client::connect_with_options(self.host, self.port, options)?;
         Ok(client)
     }
 }

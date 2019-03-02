@@ -3,8 +3,12 @@ function! vimonga#buffer#open(contents, filetype, path, open_cmd) abort
     let host = vimonga#config#get('default_host')
     let port = vimonga#config#get('default_port')
     let path = printf('vimonga://%s/%s/%s', host, port, a:path)
+    let cursor = getpos('.')
+
     execute printf('%s %s', a:open_cmd, path)
     call s:buffer(a:contents, a:filetype)
+
+    call setpos('.', cursor)
 endfunction
 
 function! vimonga#buffer#error(contents, open_cmd) abort
@@ -19,8 +23,6 @@ function! vimonga#buffer#assert_filetype(...) abort
 endfunction
 
 function! s:buffer(contents, filetype) abort
-    let cursor = getpos('.')
-
     setlocal buftype=nofile
     setlocal nobuflisted
     setlocal noswapfile
@@ -31,8 +33,6 @@ function! s:buffer(contents, filetype) abort
 
     setlocal nomodifiable
     let &filetype = a:filetype
-
-    call setpos('.', cursor)
 endfunction
 
 function! s:clear_buffer() abort

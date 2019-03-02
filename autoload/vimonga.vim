@@ -26,6 +26,11 @@ let s:actions = {
         \ 'open_parent': { -> vimonga#buffer#collection#action_open_from_child('edit') },
         \ 'open_next': { -> vimonga#buffer#document#action_move_page('edit', 1) },
         \ 'open_prev': { -> vimonga#buffer#document#action_move_page('edit', -1) },
+        \ 'sort_ascending': { -> vimonga#buffer#document#action_sort(1) },
+        \ 'sort_descending': { -> vimonga#buffer#document#action_sort(-1) },
+        \ 'sort_toggle': { -> vimonga#buffer#document#action_sort_toggle() },
+        \ 'sort_reset': { -> vimonga#buffer#document#action_sort(0) },
+        \ 'sort_reset_all': { -> vimonga#buffer#document#action_sort_reset_all() },
     \ },
 \ }
 function! vimonga#action(namespace, action_name) abort

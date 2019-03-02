@@ -13,6 +13,32 @@ function! vimonga#buffer#document#action_find(open_cmd) abort
     call s:open([number, database], {}, a:open_cmd)
 endfunction
 
+function! vimonga#buffer#document#action_projection_reset_all() abort
+    let options = s:options()
+    if !has_key(options, 'projection')
+        return
+    endif
+    unlet options['projection']
+
+    call s:open_from_doc(options, 'edit')
+endfunction
+
+function! vimonga#buffer#document#action_projection_hide() abort
+    let options = s:options()
+    if !has_key(options, 'projection')
+        let options['projection'] = {}
+    endif
+
+    let field_name = s:field_name(line('.'))
+    if empty(field_name)
+        return
+    endif
+
+    let options['projection'][field_name] = 0
+
+    call s:open_from_doc(options, 'edit')
+endfunction
+
 function! vimonga#buffer#document#action_sort_toggle() abort
     let options = s:options()
     if !has_key(options, 'sort')
@@ -62,7 +88,7 @@ function! vimonga#buffer#document#action_sort_reset_all() abort
     if !has_key(options, 'sort')
         return
     endif
-    unlet! options['sort']
+    unlet options['sort']
     let options['offset'] = 0
 
     call s:open_from_doc(options, 'edit')
@@ -110,7 +136,8 @@ function! s:open(args, options, open_cmd) abort
         call add(option_args, vimonga#request#option('query', a:options['query']))
     endif
     if has_key(a:options, 'projection')
-        call add(option_args, vimonga#request#option('projection', a:options['projection']))
+        let projection = json_encode(a:options['projection'])
+        call add(option_args, vimonga#request#option('projection', projection))
     endif
     if has_key(a:options, 'sort')
         let sort = json_encode(a:options['sort'])

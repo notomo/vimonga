@@ -31,6 +31,8 @@ let s:actions = {
         \ 'sort_toggle': { -> vimonga#buffer#document#action_sort_toggle() },
         \ 'sort_reset': { -> vimonga#buffer#document#action_sort(0) },
         \ 'sort_reset_all': { -> vimonga#buffer#document#action_sort_reset_all() },
+        \ 'projection_hide': { -> vimonga#buffer#document#action_projection_hide() },
+        \ 'projection_reset_all': { -> vimonga#buffer#document#action_projection_reset_all() },
     \ },
 \ }
 function! vimonga#action(namespace, action_name) abort

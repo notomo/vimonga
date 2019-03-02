@@ -4,11 +4,14 @@ function! vimonga#buffer#open(contents, filetype, path, open_cmd) abort
     let port = vimonga#config#get('default_port')
     let path = printf('vimonga://%s/%s/%s', host, port, a:path)
     let cursor = getpos('.')
+    let buffer_id = bufnr('%')
 
     execute printf('%s %s', a:open_cmd, path)
     call s:buffer(a:contents, a:filetype)
 
-    call setpos('.', cursor)
+    if buffer_id == bufnr('%')
+        call setpos('.', cursor)
+    endif
 endfunction
 
 function! vimonga#buffer#error(contents, open_cmd) abort
@@ -28,8 +31,10 @@ function! s:buffer(contents, filetype) abort
     setlocal noswapfile
 
     setlocal modifiable
+    let cursor = getpos('.')
     call s:clear_buffer()
     call setline(1, a:contents)
+    call setpos('.', cursor)
 
     setlocal nomodifiable
     let &filetype = a:filetype

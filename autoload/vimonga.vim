@@ -45,3 +45,23 @@ function! vimonga#action(namespace, action_name) abort
 
     call s:actions[a:namespace][a:action_name]()
 endfunction
+
+let s:statuses = {
+    \ 'document': {
+        \ 'count': { -> vimonga#view#document#count() },
+        \ 'first_number': { -> vimonga#view#document#first() },
+        \ 'last_number': { -> vimonga#view#document#last() },
+        \ 'is_first': { -> vimonga#view#document#is_first() },
+        \ 'is_last': { -> vimonga#view#document#is_last() },
+    \ },
+\ }
+function! vimonga#status(namespace, name) abort
+    if !has_key(s:statuses, a:namespace)
+        return 'INVALID_NAMESPACE'
+    endif
+    if !has_key(s:statuses[a:namespace], a:name)
+        return 'INVALID_NAME'
+    endif
+
+    return s:statuses[a:namespace][a:name]()
+endfunction

@@ -158,12 +158,15 @@ function! s:open(args, options, open_cmd) abort
     endif
 
     let documents = result['body']
-    let is_last = result['is_last'] ==# 'true'
     let path = result['path']
 
     call vimonga#buffer#open(documents, s:filetype, path, a:open_cmd)
     let b:vimonga_options = a:options
-    let b:vimonga_options['is_last'] = is_last
+    let b:vimonga_options['is_first'] = result['offset'] == 0
+    let b:vimonga_options['is_last'] = result['is_last'] ==# 'true'
+    let b:vimonga_options['first_number'] = result['first_number']
+    let b:vimonga_options['last_number'] = result['last_number']
+    let b:vimonga_options['count'] = result['count']
 endfunction
 
 let s:INDENT_SIZE = 2

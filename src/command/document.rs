@@ -49,6 +49,11 @@ impl<'a> Command for DocumentListCommand<'a> {
         view.insert("database_name", self.database_name.to_string());
         let is_last = (count - self.offset) <= self.limit;
         view.insert("is_last", is_last.to_string());
+        let first = self.offset + 1;
+        view.insert("first_number", first.to_string());
+        let last = first + documents.len() as i64 - 1;
+        view.insert("last_number", last.to_string());
+        view.insert("offset", self.offset.to_string());
         view.insert("count", count.to_string());
         view.insert(
             "path",

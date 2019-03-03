@@ -3,11 +3,12 @@ use crate::command::Command;
 
 use std::collections::HashMap;
 
-use crate::domain::{CollectionRepository, DatabaseRepository};
+use crate::domain::{BufferRepository, CollectionRepository, DatabaseRepository};
 
 pub struct CollectionListCommand<'a> {
     pub collection_repository: &'a CollectionRepository,
     pub database_repository: &'a DatabaseRepository,
+    pub buffer_repository: &'a BufferRepository,
     pub database_name: &'a str,
     pub number: usize,
 }
@@ -25,6 +26,11 @@ impl<'a> Command for CollectionListCommand<'a> {
 
         let mut view = HashMap::new();
         view.insert("body", names.join("\n"));
+        view.insert(
+            "path",
+            self.buffer_repository
+                .get_collections_path(database_name.as_str()),
+        );
         view.insert("database_name", database_name);
 
         Ok(serde_json::to_string(&view)?)

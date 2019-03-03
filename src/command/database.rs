@@ -1,16 +1,23 @@
 use crate::command::error;
 use crate::command::Command;
 
-use crate::domain::DatabaseRepository;
+use std::collections::HashMap;
+
+use crate::domain::{BufferRepository, DatabaseRepository};
 
 pub struct DatabaseListCommand<'a> {
     pub database_repository: &'a DatabaseRepository,
+    pub buffer_repository: &'a BufferRepository,
 }
 
 impl<'a> Command for DatabaseListCommand<'a> {
     fn run(&self) -> Result<String, error::CommandError> {
         let names = self.database_repository.get_names()?;
 
-        Ok(names.join("\n"))
+        let mut view = HashMap::new();
+        view.insert("body", names.join("\n"));
+        view.insert("path", self.buffer_repository.get_dbs_path());
+
+        Ok(serde_json::to_string(&view)?)
     }
 }

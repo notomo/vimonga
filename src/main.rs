@@ -8,8 +8,8 @@ use command::{
 
 mod datastore;
 use datastore::{
-    CollectionRepositoryImpl, ConnectionFactory, DatabaseRepositoryImpl, DocumentRepositoryImpl,
-    IndexRepositoryImpl,
+    BufferRepositoryImpl, CollectionRepositoryImpl, ConnectionFactory, DatabaseRepositoryImpl,
+    DocumentRepositoryImpl, IndexRepositoryImpl,
 };
 
 mod domain;
@@ -182,6 +182,7 @@ fn main() {
     let host = matches.value_of("host").unwrap();
     let port = matches.value_of("port").unwrap().parse().unwrap();
     let connection_factory = ConnectionFactory::new(host, port);
+    let buffer_repo = BufferRepositoryImpl::new(host, port);
     let setting = config::Setting::new(matches.value_of("config").unwrap()).unwrap();
 
     let command_result = match matches.subcommand() {
@@ -203,6 +204,7 @@ fn main() {
 
                 DatabaseListCommand {
                     database_repository: &repo,
+                    buffer_repository: &buffer_repo,
                 }
                 .run()
             }
@@ -233,6 +235,7 @@ fn main() {
                 CollectionListCommand {
                     collection_repository: &repo,
                     database_repository: &db_repo,
+                    buffer_repository: &buffer_repo,
                     database_name,
                     number,
                 }
@@ -266,6 +269,7 @@ fn main() {
                 IndexListCommand {
                     index_repository: &repo,
                     collection_repository: &collection_repo,
+                    buffer_repository: &buffer_repo,
                     database_name,
                     collection_name,
                     number,
@@ -301,6 +305,7 @@ fn main() {
                 DocumentListCommand {
                     document_repository: &repo,
                     collection_repository: &collection_repo,
+                    buffer_repository: &buffer_repo,
                     database_name,
                     collection_name,
                     number,

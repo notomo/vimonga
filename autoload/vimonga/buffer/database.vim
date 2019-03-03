@@ -10,6 +10,13 @@ endfunction
 
 function! s:open(args, open_cmd) abort
     let pid = vimonga#request#pid_option()
-    let db_names = vimonga#request#execute(['database', pid, 'list'] + a:args)
-    call vimonga#buffer#open(db_names, s:filetype, 'dbs', a:open_cmd)
+    let [result, err] = vimonga#request#json(['database', pid, 'list'] + a:args)
+    if !empty(err)
+        return vimonga#buffer#error(err, a:open_cmd)
+    endif
+
+    let database_names = result['body']
+    let path = result['path']
+
+    call vimonga#buffer#open(database_names, s:filetype, path, a:open_cmd)
 endfunction

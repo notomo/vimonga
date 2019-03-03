@@ -158,11 +158,9 @@ function! s:open(args, options, open_cmd) abort
     endif
 
     let documents = result['body']
-    let database_name = result['database_name']
-    let collection_name = result['collection_name']
     let is_last = result['is_last'] ==# 'true'
+    let path = result['path']
 
-    let path = printf('dbs/%s/colls/%s/docs', database_name, collection_name)
     call vimonga#buffer#open(documents, s:filetype, path, a:open_cmd)
     let b:vimonga_options = a:options
     let b:vimonga_options['is_last'] = is_last

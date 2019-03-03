@@ -29,9 +29,8 @@ function! s:open(args, open_cmd) abort
         return vimonga#buffer#error(err, a:open_cmd)
     endif
 
-    let database_name = result['database_name']
     let collection_names = result['body']
+    let path = result['path']
 
-    let path = printf('dbs/%s/colls', database_name)
     call vimonga#buffer#open(collection_names, s:filetype, path, a:open_cmd)
 endfunction

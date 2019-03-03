@@ -12,3 +12,6 @@ pub use document::DocumentRepository;
 
 mod error;
 pub use error::RepositoryError;
+
+mod buffer;
+pub use buffer::BufferRepository;

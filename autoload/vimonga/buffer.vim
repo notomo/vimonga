@@ -1,12 +1,9 @@
 
 function! vimonga#buffer#open(contents, filetype, path, open_cmd) abort
-    let host = vimonga#config#get('default_host')
-    let port = vimonga#config#get('default_port')
-    let path = printf('vimonga://%s/%s/%s', host, port, a:path)
     let cursor = getpos('.')
     let buffer_id = bufnr('%')
 
-    execute printf('%s %s', a:open_cmd, path)
+    execute printf('%s %s', a:open_cmd, a:path)
     call s:buffer(a:contents, a:filetype)
 
     if buffer_id == bufnr('%')

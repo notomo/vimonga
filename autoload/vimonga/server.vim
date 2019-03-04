@@ -26,6 +26,9 @@ function! vimonga#server#stop() abort
 endfunction
 
 function! vimonga#server#ping() abort
-    let pong = vimonga#request#execute(['server', 'ping'])[0]
-    return pong ==? 'pong'
+    let result = vimonga#request#execute(['server', 'ping'])
+    if empty(result)
+        return v:false
+    endif
+    return result[0] ==# 'pong'
 endfunction

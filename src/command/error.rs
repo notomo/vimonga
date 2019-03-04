@@ -1,55 +1,51 @@
-use std::error::Error;
-use std::fmt;
+use core::fmt::{self, Display};
+use failure::{Backtrace, Context, Fail};
 
 use crate::domain::RepositoryError;
-
 use reqwest::Error as ReqwestError;
-
 use serde_json::Error as SerdeJsonError;
 
 #[derive(Debug)]
-pub enum CommandError {
-    InternalError(String),
+pub struct CommandError {
+    inner: Context<String>,
 }
 
-impl fmt::Display for CommandError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            CommandError::InternalError(ref message) => {
-                f.write_str(&format!("InternalError: {}", message))
-            }
-        }
+impl Fail for CommandError {
+    fn cause(&self) -> Option<&Fail> {
+        self.inner.cause()
+    }
+
+    fn backtrace(&self) -> Option<&Backtrace> {
+        self.inner.backtrace()
     }
 }
 
-impl Error for CommandError {
-    fn description(&self) -> &str {
-        match *self {
-            CommandError::InternalError(_) => "InternalError",
-        }
+impl Display for CommandError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        Display::fmt(&self.inner, f)
     }
 }
 
 impl From<ReqwestError> for CommandError {
     fn from(e: ReqwestError) -> Self {
-        match e {
-            _ => CommandError::InternalError(e.to_string()),
+        CommandError {
+            inner: Context::new(e.to_string()),
         }
     }
 }
 
 impl From<SerdeJsonError> for CommandError {
     fn from(e: SerdeJsonError) -> Self {
-        match e {
-            _ => CommandError::InternalError(e.to_string()),
+        CommandError {
+            inner: Context::new(e.to_string()),
         }
     }
 }
 
 impl From<RepositoryError> for CommandError {
     fn from(e: RepositoryError) -> Self {
-        match e {
-            _ => CommandError::InternalError(e.to_string()),
+        CommandError {
+            inner: Context::new(e.to_string()),
         }
     }
 }

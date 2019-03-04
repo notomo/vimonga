@@ -17,6 +17,8 @@ mod domain;
 #[macro_use]
 extern crate serde_derive;
 
+use failure::Fail;
+
 mod config;
 
 fn main() {
@@ -326,6 +328,9 @@ fn main() {
         Ok(content) => println!("{}", content),
         Err(err) => {
             println!("{}", err);
+            if let Some(backtrace) = err.backtrace() {
+                println!("{}", backtrace);
+            }
             std::process::exit(1);
         }
     }

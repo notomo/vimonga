@@ -7,4 +7,5 @@ pub trait CollectionRepository {
         database_name: &str,
         number: usize,
     ) -> Result<String, RepositoryError>;
+    fn drop(&self, database_name: &str, collection_name: &str) -> Result<bool, RepositoryError>;
 }

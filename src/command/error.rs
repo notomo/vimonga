@@ -44,13 +44,12 @@ impl From<SerdeJsonError> for CommandError {
 
 impl From<RepositoryError> for CommandError {
     fn from(e: RepositoryError) -> Self {
-        match e.backtrace() {
-            Some(backtrace) => CommandError {
-                inner: Context::new(backtrace.to_string()),
-            },
-            None => CommandError {
-                inner: Context::new(e.to_string()),
-            },
+        let message = match e.backtrace() {
+            Some(backtrace) => format!("{}\n{}", e, backtrace),
+            None => e.to_string(),
+        };
+        CommandError {
+            inner: Context::new(message),
         }
     }
 }

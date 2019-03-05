@@ -2,8 +2,8 @@ use clap::{App, AppSettings, Arg, SubCommand};
 
 mod command;
 use command::{
-    CollectionListCommand, Command, DatabaseListCommand, DocumentListCommand, HelpCommand,
-    IndexListCommand, ServerPingCommand, ServerStartCommand,
+    CollectionDropCommand, CollectionListCommand, Command, DatabaseListCommand,
+    DocumentListCommand, HelpCommand, IndexListCommand, ServerPingCommand, ServerStartCommand,
 };
 
 mod datastore;
@@ -84,7 +84,23 @@ fn main() {
                         .takes_value(true)
                         .required(true),
                 )
-                .subcommand(SubCommand::with_name("list")),
+                .subcommand(SubCommand::with_name("list"))
+                .subcommand(
+                    SubCommand::with_name("drop")
+                        .arg(
+                            Arg::with_name("collection_name")
+                                .long("collection")
+                                .takes_value(true)
+                                .default_value(""),
+                        )
+                        .arg(
+                            Arg::with_name("number")
+                                .long("number")
+                                .takes_value(true)
+                                .default_value("0")
+                                .requires_if("", "collection_name"),
+                        ),
+                ),
         )
         .subcommand(
             SubCommand::with_name("index")
@@ -212,39 +228,51 @@ fn main() {
             }
             _ => HelpCommand {}.run(),
         },
-        ("collection", Some(cmd)) => match cmd.subcommand() {
-            ("list", Some(_)) => {
-                let pid = cmd.value_of("pid").unwrap();
-                let database_name = cmd.value_of("database_name").unwrap();
-                let number = cmd.value_of("number").unwrap().parse().unwrap();
+        ("collection", Some(cmd)) => {
+            let pid = cmd.value_of("pid").unwrap();
+            let database_name = cmd.value_of("database_name").unwrap();
+            let number = cmd.value_of("number").unwrap().parse().unwrap();
 
-                let db_repo = DatabaseRepositoryImpl {
-                    connection_factory: &connection_factory,
-                    pid,
-                    host,
-                    port,
-                    setting: &setting,
-                };
+            let db_repo = DatabaseRepositoryImpl {
+                connection_factory: &connection_factory,
+                pid,
+                host,
+                port,
+                setting: &setting,
+            };
 
-                let repo = CollectionRepositoryImpl {
-                    connection_factory: &connection_factory,
-                    pid,
-                    host,
-                    port,
-                    setting: &setting,
-                };
-
-                CollectionListCommand {
+            let repo = CollectionRepositoryImpl {
+                connection_factory: &connection_factory,
+                pid,
+                host,
+                port,
+                setting: &setting,
+            };
+            match cmd.subcommand() {
+                ("list", Some(_)) => CollectionListCommand {
                     collection_repository: &repo,
                     database_repository: &db_repo,
                     buffer_repository: &buffer_repo,
                     database_name,
                     number,
                 }
-                .run()
+                .run(),
+                ("drop", Some(cmd)) => {
+                    let collection_name = cmd.value_of("collection_name").unwrap();
+                    let number = cmd.value_of("number").unwrap().parse().unwrap();
+                    CollectionDropCommand {
+                        collection_repository: &repo,
+                        database_repository: &db_repo,
+                        buffer_repository: &buffer_repo,
+                        database_name,
+                        collection_name,
+                        number,
+                    }
+                    .run()
+                }
+                _ => HelpCommand {}.run(),
             }
-            _ => HelpCommand {}.run(),
-        },
+        }
         ("index", Some(cmd)) => match cmd.subcommand() {
             ("list", Some(_)) => {
                 let pid = cmd.value_of("pid").unwrap();

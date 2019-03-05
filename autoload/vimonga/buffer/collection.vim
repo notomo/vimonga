@@ -4,6 +4,27 @@ function! vimonga#buffer#collection#filetype() abort
     return s:filetype
 endfunction
 
+function! vimonga#buffer#collection#action_drop() abort
+    call vimonga#buffer#assert_filetype(s:filetype)
+
+    if input('Drop? YES/n: ') !=# 'YES'
+        redraw
+        echomsg 'Canceled'
+        return
+    endif
+
+    let number = vimonga#request#number_option()
+    let pid = vimonga#request#pid_option()
+    let database_name = fnamemodify(bufname('%'), ':h:t')
+    let database = vimonga#request#option('database', database_name)
+    let [result, err] = vimonga#request#json(['collection', pid, database, 'drop', number])
+    if !empty(err)
+        return vimonga#buffer#error(err, 'edit')
+    endif
+
+    call s:open([database], 'edit')
+endfunction
+
 function! vimonga#buffer#collection#action_open_list(open_cmd) abort
     call vimonga#buffer#assert_filetype(vimonga#buffer#database#filetype())
 

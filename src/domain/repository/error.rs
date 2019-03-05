@@ -4,8 +4,8 @@ use failure::{Context, Fail};
 pub enum RepositoryErrorKind {
     #[fail(display = "Out of index")]
     OutOfIndex,
-    #[fail(display = "Internal error")]
-    InternalError,
+    #[fail(display = "Internal error: {}", message)]
+    InternalError { message: String },
 }
 
 #[derive(Debug)]

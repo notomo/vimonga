@@ -39,24 +39,30 @@ impl From<Context<RepositoryErrorKind>> for RepositoryError {
 
 impl From<ReqwestError> for RepositoryError {
     fn from(e: ReqwestError) -> Self {
+        let message = match e.url() {
+            Some(url) => format!("{}: {}", e, url),
+            None => e.to_string(),
+        };
         RepositoryError {
-            inner: e.context(RepositoryErrorKind::InternalError),
+            inner: e.context(RepositoryErrorKind::InternalError { message }),
         }
     }
 }
 
 impl From<SerdeJsonError> for RepositoryError {
     fn from(e: SerdeJsonError) -> Self {
+        let message = e.to_string();
         RepositoryError {
-            inner: e.context(RepositoryErrorKind::InternalError),
+            inner: e.context(RepositoryErrorKind::InternalError { message }),
         }
     }
 }
 
 impl From<MongodbError> for RepositoryError {
     fn from(e: MongodbError) -> Self {
+        let message = e.to_string();
         RepositoryError {
-            inner: e.context(RepositoryErrorKind::InternalError),
+            inner: e.context(RepositoryErrorKind::InternalError { message }),
         }
     }
 }

@@ -1,5 +1,5 @@
 mod collection;
-pub use collection::CollectionListCommand;
+pub use collection::{CollectionDropCommand, CollectionListCommand};
 
 mod database;
 pub use database::DatabaseListCommand;

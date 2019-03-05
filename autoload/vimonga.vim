@@ -18,6 +18,7 @@ let s:actions = {
         \ 'tab_open': { -> vimonga#buffer#document#action_find('tabedit') },
         \ 'open_parent': { -> vimonga#buffer#database#action_open('edit') },
         \ 'open_indexes': { -> vimonga#buffer#index#action_list('edit') },
+        \ 'drop': { -> vimonga#buffer#collection#action_drop() },
     \ },
     \ 'indexes': {
         \ 'open_parent': { -> vimonga#buffer#collection#action_open_from_child('edit') },

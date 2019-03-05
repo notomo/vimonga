@@ -65,4 +65,13 @@ impl<'a> CollectionRepository for CollectionRepositoryImpl<'a> {
             .map(|name| String::from(name.as_str()).clone())?;
         Ok(name)
     }
+
+    fn drop(&self, database_name: &str, collection_name: &str) -> Result<bool, RepositoryError> {
+        let client = self.connection_factory.get()?;
+        client
+            .db(database_name)
+            .collection(collection_name)
+            .drop()?;
+        Ok(true)
+    }
 }

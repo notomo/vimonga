@@ -1,4 +1,4 @@
-use crate::domain::{CollectionRepository, RepositoryError};
+use crate::domain::{CollectionRepository, RepositoryError, RepositoryErrorKind};
 
 use super::connection::ConnectionFactory;
 
@@ -55,13 +55,14 @@ impl<'a> CollectionRepository for CollectionRepositoryImpl<'a> {
     ) -> Result<String, RepositoryError> {
         let reqwest_client = reqwest::Client::new();
         let url = self.url(database_name);
-        reqwest_client
+        let name = reqwest_client
             .get(&url)
             .send()?
             .json::<Info>()?
             .body
             .get(number)
-            .ok_or(RepositoryError::OutOfIndex)
-            .map(|name| String::from(name.as_str()).clone())
+            .ok_or(RepositoryErrorKind::OutOfIndex)
+            .map(|name| String::from(name.as_str()).clone())?;
+        Ok(name)
     }
 }

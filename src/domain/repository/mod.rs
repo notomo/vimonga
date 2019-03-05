@@ -11,7 +11,7 @@ mod document;
 pub use document::DocumentRepository;
 
 mod error;
-pub use error::RepositoryError;
+pub use error::{RepositoryError, RepositoryErrorKind};
 
 mod buffer;
 pub use buffer::BufferRepository;

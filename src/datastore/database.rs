@@ -1,4 +1,4 @@
-use crate::domain::{DatabaseRepository, RepositoryError};
+use crate::domain::{DatabaseRepository, RepositoryError, RepositoryErrorKind};
 
 use std::collections::HashMap;
 
@@ -49,13 +49,14 @@ impl<'a> DatabaseRepository for DatabaseRepositoryImpl<'a> {
     fn get_name_by_number(&self, number: usize) -> Result<String, RepositoryError> {
         let reqwest_client = reqwest::Client::new();
         let url = self.url();
-        reqwest_client
+        let name = reqwest_client
             .get(&url)
             .send()?
             .json::<Info>()?
             .body
             .get(number)
-            .ok_or(RepositoryError::OutOfIndex)
-            .map(|name| String::from(name.as_str()).clone())
+            .ok_or(RepositoryErrorKind::OutOfIndex)
+            .map(|name| String::from(name.as_str()).clone())?;
+        Ok(name)
     }
 }

@@ -13,6 +13,31 @@ function! vimonga#buffer#document#action_find(open_cmd) abort
     call s:open([number, database], {}, a:open_cmd)
 endfunction
 
+function! vimonga#buffer#document#action_query_reset_all() abort
+    let options = s:options()
+    if !has_key(options, 'query')
+        return
+    endif
+    unlet options['query']
+
+    call s:open_from_doc(options, 'edit')
+endfunction
+
+function! vimonga#buffer#document#action_query_add() abort
+    let options = s:options()
+    if !has_key(options, 'query')
+        let options['query'] = {}
+    endif
+
+    let [key, value] = vimonga#json#key_value(line('.'))
+    if empty(key)
+        return
+    endif
+
+    let options['query'][key] = value
+    call s:open_from_doc(options, 'edit')
+endfunction
+
 function! vimonga#buffer#document#action_projection_reset_all() abort
     let options = s:options()
     if !has_key(options, 'projection')
@@ -29,7 +54,7 @@ function! vimonga#buffer#document#action_projection_hide() abort
         let options['projection'] = {}
     endif
 
-    let field_name = s:field_name(line('.'))
+    let field_name = vimonga#json#field_name(line('.'))
     if empty(field_name)
         return
     endif
@@ -45,7 +70,7 @@ function! vimonga#buffer#document#action_sort_toggle() abort
         let options['sort'] = {}
     endif
 
-    let field_name = s:field_name(line('.'))
+    let field_name = vimonga#json#field_name(line('.'))
     if empty(field_name)
         return
     endif
@@ -66,7 +91,7 @@ function! vimonga#buffer#document#action_sort(sort_direction) abort
         let options['sort'] = {}
     endif
 
-    let field_name = s:field_name(line('.'))
+    let field_name = vimonga#json#field_name(line('.'))
     if empty(field_name)
         return
     endif
@@ -133,7 +158,8 @@ endfunction
 function! s:open(args, options, open_cmd) abort
     let option_args = []
     if has_key(a:options, 'query')
-        call add(option_args, vimonga#request#option('query', a:options['query']))
+        let query = json_encode(a:options['query'])
+        call add(option_args, vimonga#request#option('query', query))
     endif
     if has_key(a:options, 'projection')
         let projection = json_encode(a:options['projection'])
@@ -167,25 +193,6 @@ function! s:open(args, options, open_cmd) abort
     let b:vimonga_options['first_number'] = result['first_number']
     let b:vimonga_options['last_number'] = result['last_number']
     let b:vimonga_options['count'] = result['count']
-endfunction
-
-let s:INDENT_SIZE = 2
-function! s:field_name(line_num) abort
-    let line = getline(a:line_num)
-    let index = stridx(line, '": ')
-    if index == -1
-        return ''
-    endif
-
-    let field_name = trim(line[:index - 1])[1:]
-    let indent = index - strlen(field_name) - 1
-    if indent == s:INDENT_SIZE * 2
-        return field_name
-    endif
-
-    let parent_line_num = search('^' . repeat(' ', indent - s:INDENT_SIZE) . '\S', 'bn')
-    let parent_field = s:field_name(parent_line_num)
-    return parent_field . '.' . field_name
 endfunction
 
 function! s:options() abort

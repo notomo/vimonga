@@ -27,13 +27,14 @@ function! vimonga#json#key_value(line_num) abort
 
     let line = getline(a:line_num)
     let indent = repeat(' ', indent(a:line_num))
-    if line ==# printf('%s"%s": {', indent, key)
+    let last_key = get(split(key, '\.'), -1)
+    if line ==# printf('%s"%s": {', indent, last_key)
         let close_line_num = search('^' . indent . '}', 'n')
         let lines = getline(a:line_num + 1, close_line_num - 1)
         let value = json_decode('{' . join(lines, '') . '}')
         return [key, value]
     endif
-    if line ==# printf('%s"%s": [', indent, key)
+    if line ==# printf('%s"%s": [', indent, last_key)
         let close_line_num = search('^' . indent . '\]', 'n')
         let lines = getline(a:line_num, close_line_num - 1)
         let value = values(json_decode('{' . join(lines, '') . ']}'))[0]

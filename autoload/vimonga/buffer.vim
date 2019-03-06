@@ -29,19 +29,10 @@ function! s:buffer(contents, filetype) abort
 
     setlocal modifiable
     let cursor = getpos('.')
-    call s:clear_buffer()
+    %delete
     call setline(1, a:contents)
     call setpos('.', cursor)
 
     setlocal nomodifiable
     let &filetype = a:filetype
-endfunction
-
-function! s:clear_buffer() abort
-    if has('nvim')
-        call nvim_buf_set_lines(bufnr('%'), 0, line('$') - 1, v:false, [])
-        return
-    endif
-
-    call deletebufline('%', 1, '$')
 endfunction

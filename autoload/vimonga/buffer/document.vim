@@ -144,6 +144,23 @@ function! vimonga#buffer#document#action_move_page(open_cmd, direction) abort
     call s:open_from_doc(options, 'edit')
 endfunction
 
+function! vimonga#buffer#document#action_first(open_cmd) abort
+    let options = s:options()
+    let options['offset'] = 0
+    call s:open_from_doc(options, 'edit')
+endfunction
+
+function! vimonga#buffer#document#action_last(open_cmd) abort
+    let options = s:options()
+    if !has_key(options, 'count') || !has_key(options, 'limit')
+        return
+    endif
+    let limit = options['limit']
+    let offset = float2nr(options['count'] / limit) * limit
+    let options['offset'] = offset
+    call s:open_from_doc(options, 'edit')
+endfunction
+
 function! s:open_from_doc(options, open_cmd) abort
     call vimonga#buffer#assert_filetype(s:filetype)
 
@@ -188,6 +205,7 @@ function! s:open(args, options, open_cmd) abort
 
     call vimonga#buffer#open(documents, s:filetype, path, a:open_cmd)
     let b:vimonga_options = a:options
+    let b:vimonga_options['limit'] = result['limit']
     let b:vimonga_options['is_first'] = result['offset'] == 0
     let b:vimonga_options['is_last'] = result['is_last'] ==# 'true'
     let b:vimonga_options['first_number'] = result['first_number']

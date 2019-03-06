@@ -27,6 +27,8 @@ let s:actions = {
         \ 'open_parent': { -> vimonga#buffer#collection#action_open_from_child('edit') },
         \ 'open_next': { -> vimonga#buffer#document#action_move_page('edit', 1) },
         \ 'open_prev': { -> vimonga#buffer#document#action_move_page('edit', -1) },
+        \ 'open_first': { -> vimonga#buffer#document#action_first('edit') },
+        \ 'open_last': { -> vimonga#buffer#document#action_last('edit') },
         \ 'sort_ascending': { -> vimonga#buffer#document#action_sort(1) },
         \ 'sort_descending': { -> vimonga#buffer#document#action_sort(-1) },
         \ 'sort_toggle': { -> vimonga#buffer#document#action_sort_toggle() },

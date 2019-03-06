@@ -54,6 +54,7 @@ impl<'a> Command for DocumentListCommand<'a> {
         let last = first + documents.len() as i64 - 1;
         view.insert("last_number", last.to_string());
         view.insert("offset", self.offset.to_string());
+        view.insert("limit", self.limit.to_string());
         view.insert("count", count.to_string());
         view.insert(
             "path",

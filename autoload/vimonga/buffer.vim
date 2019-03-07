@@ -29,7 +29,7 @@ function! s:buffer(contents, filetype) abort
 
     setlocal modifiable
     let cursor = getpos('.')
-    %delete
+    %delete _
     call setline(1, a:contents)
     call setpos('.', cursor)
 

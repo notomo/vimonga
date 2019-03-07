@@ -1,3 +1,17 @@
+function! vimonga#buffer#open_databases(repo, open_cmd) abort
+    let filetype = vimonga#buffer#database#filetype()
+    call vimonga#buffer#open(a:repo['body'], filetype, a:repo['path'], a:open_cmd)
+endfunction
+
+function! vimonga#buffer#open_collections(repo, open_cmd) abort
+    let filetype = vimonga#buffer#collection#filetype()
+    call vimonga#buffer#open(a:repo['body'], filetype, a:repo['path'], a:open_cmd)
+endfunction
+
+function! vimonga#buffer#open_indexes(repo, open_cmd) abort
+    let filetype = vimonga#buffer#index#filetype()
+    call vimonga#buffer#open(a:repo['body'], filetype, a:repo['path'], a:open_cmd)
+endfunction
 
 function! vimonga#buffer#open(contents, filetype, path, open_cmd) abort
     let cursor = getpos('.')

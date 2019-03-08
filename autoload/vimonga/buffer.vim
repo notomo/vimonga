@@ -47,8 +47,7 @@ function! vimonga#buffer#open_documents(repo, open_cmd, options) abort
 endfunction
 
 function! vimonga#buffer#error(contents, open_cmd) abort
-    execute printf('%s vimonga://error', a:open_cmd)
-    call s:buffer(a:contents, '')
+    call s:buffer(a:contents, '', 'vimonga://error', a:open_cmd)
 endfunction
 
 function! s:assert_filetype(...) abort

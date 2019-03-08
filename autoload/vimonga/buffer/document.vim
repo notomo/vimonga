@@ -1,11 +1,6 @@
 
-let s:filetype = 'vimonga-doc'
-function! vimonga#buffer#document#filetype() abort
-    return s:filetype
-endfunction
-
 function! vimonga#buffer#document#find(open_cmd) abort
-    call vimonga#buffer#assert_filetype(vimonga#buffer#collection#filetype())
+    call vimonga#buffer#ensure_collections()
 
     let options = vimonga#repo#document#options({})
     let database_name = vimonga#param#database_name()
@@ -18,6 +13,8 @@ function! vimonga#buffer#document#find(open_cmd) abort
 endfunction
 
 function! vimonga#buffer#document#move_page(open_cmd, direction) abort
+    call vimonga#buffer#ensure_documents()
+
     let options = vimonga#repo#document#options({})
     if (options['is_last'] && a:direction > 0) || (options['offset'] == 0 && a:direction < 0)
         return
@@ -39,6 +36,8 @@ function! vimonga#buffer#document#move_page(open_cmd, direction) abort
 endfunction
 
 function! vimonga#buffer#document#first(open_cmd) abort
+    call vimonga#buffer#ensure_documents()
+
     let options = vimonga#repo#document#options({})
     let options['offset'] = 0
 
@@ -53,6 +52,8 @@ function! vimonga#buffer#document#first(open_cmd) abort
 endfunction
 
 function! vimonga#buffer#document#last(open_cmd) abort
+    call vimonga#buffer#ensure_documents()
+
     let options = vimonga#repo#document#options({})
     let options['offset'] = float2nr(options['count'] / options['limit']) * options['limit']
 

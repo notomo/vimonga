@@ -1,5 +1,7 @@
 
 function! vimonga#buffer#documents#query#reset_all(open_cmd) abort
+    call vimonga#buffer#ensure_documents()
+
     let options = vimonga#repo#document#options({'query': {}})
 
     let database_name = vimonga#param#database_name()
@@ -13,6 +15,8 @@ function! vimonga#buffer#documents#query#reset_all(open_cmd) abort
 endfunction
 
 function! vimonga#buffer#documents#query#add(open_cmd) abort
+    call vimonga#buffer#ensure_documents()
+
     let [key, value] = vimonga#json#key_value(line('.'))
     if empty(key)
         return

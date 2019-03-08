@@ -1,9 +1,4 @@
 
-let s:filetype = 'vimonga-db'
-function! vimonga#buffer#database#filetype() abort
-    return s:filetype
-endfunction
-
 function! vimonga#buffer#database#action_open(open_cmd) abort
     let [result, err] = vimonga#repo#database#list()
     if !empty(err)

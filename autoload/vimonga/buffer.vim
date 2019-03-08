@@ -1,21 +1,41 @@
+let s:filetype_databases = 'vimonga-db'
+function! vimonga#buffer#ensure_databases() abort
+    call s:assert_filetype(s:filetype_databases)
+endfunction
+
 function! vimonga#buffer#open_databases(repo, open_cmd) abort
-    let filetype = vimonga#buffer#database#filetype()
-    call s:buffer(a:repo['body'], filetype, a:repo['path'], a:open_cmd)
+    call s:buffer(a:repo['body'], s:filetype_databases, a:repo['path'], a:open_cmd)
+endfunction
+
+let s:filetype_collections = 'vimonga-coll'
+function! vimonga#buffer#ensure_collections() abort
+    call s:assert_filetype(s:filetype_collections)
 endfunction
 
 function! vimonga#buffer#open_collections(repo, open_cmd) abort
-    let filetype = vimonga#buffer#collection#filetype()
-    call s:buffer(a:repo['body'], filetype, a:repo['path'], a:open_cmd)
+    call s:buffer(a:repo['body'], s:filetype_collections, a:repo['path'], a:open_cmd)
+endfunction
+
+let s:filetype_indexes = 'vimonga-indexes'
+function! vimonga#buffer#ensure_indexes() abort
+    call s:assert_filetype(s:filetype_indexes)
 endfunction
 
 function! vimonga#buffer#open_indexes(repo, open_cmd) abort
-    let filetype = vimonga#buffer#index#filetype()
-    call s:buffer(a:repo['body'], filetype, a:repo['path'], a:open_cmd)
+    call s:buffer(a:repo['body'], s:filetype_indexes, a:repo['path'], a:open_cmd)
+endfunction
+
+let s:filetype_documents = 'vimonga-doc'
+function! vimonga#buffer#ensure_documents() abort
+    call s:assert_filetype(s:filetype_documents)
+endfunction
+
+function! vimonga#buffer#ensure_collection_children() abort
+    call s:assert_filetype(s:filetype_documents, s:filetype_indexes)
 endfunction
 
 function! vimonga#buffer#open_documents(repo, open_cmd, options) abort
-    let filetype = vimonga#buffer#document#filetype()
-    call s:buffer(a:repo['body'], filetype, a:repo['path'], a:open_cmd)
+    call s:buffer(a:repo['body'], s:filetype_documents, a:repo['path'], a:open_cmd)
 
     let b:vimonga_options = a:options
     let b:vimonga_options['limit'] = a:repo['limit']
@@ -31,7 +51,7 @@ function! vimonga#buffer#error(contents, open_cmd) abort
     call s:buffer(a:contents, '')
 endfunction
 
-function! vimonga#buffer#assert_filetype(...) abort
+function! s:assert_filetype(...) abort
     if index(a:000, &filetype) == -1
         throw printf('&filetype must be in [%s] but actual: %s', join(a:000, ', '), &filetype)
     endif

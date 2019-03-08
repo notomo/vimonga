@@ -1,5 +1,7 @@
 
 function! vimonga#buffer#documents#projection#reset_all(open_cmd) abort
+    call vimonga#buffer#ensure_documents()
+
     let options = vimonga#repo#document#options({'projection': {}})
 
     let database_name = vimonga#param#database_name()
@@ -13,12 +15,13 @@ function! vimonga#buffer#documents#projection#reset_all(open_cmd) abort
 endfunction
 
 function! vimonga#buffer#documents#projection#hide(open_cmd) abort
-    let options = vimonga#repo#document#options({})
+    call vimonga#buffer#ensure_documents()
 
     let field_name = vimonga#json#field_name(line('.'))
     if empty(field_name)
         return
     endif
+    let options = vimonga#repo#document#options({})
     let options['projection'][field_name] = 0
 
     let database_name = vimonga#param#database_name()

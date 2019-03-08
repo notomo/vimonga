@@ -1,11 +1,6 @@
 
-let s:filetype = 'vimonga-indexes'
-function! vimonga#buffer#index#filetype() abort
-    return s:filetype
-endfunction
-
 function! vimonga#buffer#index#action_list(open_cmd) abort
-    call vimonga#buffer#assert_filetype(vimonga#buffer#collection#filetype())
+    call vimonga#buffer#ensure_collections()
 
     let database_name = fnamemodify(bufname('%'), ':h:t')
     let [result, err] = vimonga#repo#index#list_by_number(database_name)

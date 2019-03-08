@@ -1,5 +1,7 @@
 
 function! vimonga#buffer#documents#sort#reset_all(open_cmd) abort
+    call vimonga#buffer#ensure_documents()
+
     let options = vimonga#repo#document#options({'sort': {}})
 
     let database_name = vimonga#param#database_name()
@@ -13,6 +15,8 @@ function! vimonga#buffer#documents#sort#reset_all(open_cmd) abort
 endfunction
 
 function! vimonga#buffer#documents#sort#toggle(open_cmd) abort
+    call vimonga#buffer#ensure_documents()
+
     let field_name = vimonga#json#field_name(line('.'))
     if empty(field_name)
         return
@@ -37,6 +41,8 @@ function! vimonga#buffer#documents#sort#toggle(open_cmd) abort
 endfunction
 
 function! vimonga#buffer#documents#sort#do(direction, open_cmd) abort
+    call vimonga#buffer#ensure_documents()
+
     let field_name = vimonga#json#field_name(line('.'))
     if empty(field_name)
         return

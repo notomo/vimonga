@@ -1,11 +1,6 @@
 
-let s:filetype = 'vimonga-coll'
-function! vimonga#buffer#collection#filetype() abort
-    return s:filetype
-endfunction
-
 function! vimonga#buffer#collection#action_drop(open_cmd) abort
-    call vimonga#buffer#assert_filetype(s:filetype)
+    call vimonga#buffer#ensure_collections()
 
     if input('Drop? YES/n: ') !=# 'YES'
         redraw
@@ -28,7 +23,7 @@ function! vimonga#buffer#collection#action_drop(open_cmd) abort
 endfunction
 
 function! vimonga#buffer#collection#action_open_list(open_cmd) abort
-    call vimonga#buffer#assert_filetype(vimonga#buffer#database#filetype())
+    call vimonga#buffer#ensure_databases()
 
     let [result, err] = vimonga#repo#collection#list_by_number()
     if !empty(err)
@@ -39,10 +34,7 @@ function! vimonga#buffer#collection#action_open_list(open_cmd) abort
 endfunction
 
 function! vimonga#buffer#collection#action_open_from_child(open_cmd) abort
-    call vimonga#buffer#assert_filetype(
-        \ vimonga#buffer#document#filetype(),
-        \ vimonga#buffer#index#filetype(),
-    \ )
+    call vimonga#buffer#ensure_collection_children()
 
     let database_name = fnamemodify(bufname('%'), ':h:h:h:t')
     let [result, err] = vimonga#repo#collection#list(database_name)

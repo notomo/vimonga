@@ -8,7 +8,7 @@ function! vimonga#buffer#collection#action_drop(open_cmd) abort
         return
     endif
 
-    let database_name = fnamemodify(bufname('%'), ':h:t')
+    let database_name = vimonga#param#database_name()
     let [result, err] = vimonga#repo#collection#drop_by_number(database_name)
     if !empty(err)
         return vimonga#buffer#error(err, a:open_cmd)
@@ -36,7 +36,7 @@ endfunction
 function! vimonga#buffer#collection#action_open_from_child(open_cmd) abort
     call vimonga#buffer#ensure_collection_children()
 
-    let database_name = fnamemodify(bufname('%'), ':h:h:h:t')
+    let database_name = vimonga#param#database_name()
     let [result, err] = vimonga#repo#collection#list(database_name)
     if !empty(err)
         return vimonga#buffer#error(err, a:open_cmd)

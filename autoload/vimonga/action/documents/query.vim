@@ -1,5 +1,5 @@
 
-function! vimonga#buffer#documents#query#reset_all(open_cmd) abort
+function! vimonga#action#documents#query#reset_all(open_cmd) abort
     call vimonga#buffer#ensure_documents()
 
     let options = vimonga#repo#document#options({'query': {}})
@@ -14,7 +14,7 @@ function! vimonga#buffer#documents#query#reset_all(open_cmd) abort
     call vimonga#buffer#open_documents(result, a:open_cmd, options)
 endfunction
 
-function! vimonga#buffer#documents#query#add(open_cmd) abort
+function! vimonga#action#documents#query#add(open_cmd) abort
     call vimonga#buffer#ensure_documents()
 
     let [key, value] = vimonga#json#key_value(line('.'))

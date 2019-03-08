@@ -1,5 +1,5 @@
 
-function! vimonga#buffer#document#find(open_cmd) abort
+function! vimonga#action#document#find(open_cmd) abort
     call vimonga#buffer#ensure_collections()
 
     let options = vimonga#repo#document#options({})
@@ -12,7 +12,7 @@ function! vimonga#buffer#document#find(open_cmd) abort
     call vimonga#buffer#open_documents(result, a:open_cmd, options)
 endfunction
 
-function! vimonga#buffer#document#move_page(open_cmd, direction) abort
+function! vimonga#action#document#move_page(open_cmd, direction) abort
     call vimonga#buffer#ensure_documents()
 
     let options = vimonga#repo#document#options({})
@@ -35,7 +35,7 @@ function! vimonga#buffer#document#move_page(open_cmd, direction) abort
     call vimonga#buffer#open_documents(result, a:open_cmd, options)
 endfunction
 
-function! vimonga#buffer#document#first(open_cmd) abort
+function! vimonga#action#document#first(open_cmd) abort
     call vimonga#buffer#ensure_documents()
 
     let options = vimonga#repo#document#options({})
@@ -51,7 +51,7 @@ function! vimonga#buffer#document#first(open_cmd) abort
     call vimonga#buffer#open_documents(result, a:open_cmd, options)
 endfunction
 
-function! vimonga#buffer#document#last(open_cmd) abort
+function! vimonga#action#document#last(open_cmd) abort
     call vimonga#buffer#ensure_documents()
 
     let options = vimonga#repo#document#options({})

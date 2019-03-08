@@ -1,7 +1,7 @@
 
 function! vimonga#execute(arg_string) abort
     if a:arg_string ==# 'database'
-        call vimonga#buffer#database#list('tabedit')
+        call vimonga#action#database#list('tabedit')
         return
     endif
 
@@ -10,34 +10,34 @@ endfunction
 
 let s:actions = {
     \ 'database': {
-        \ 'open': { -> vimonga#buffer#collection#list('edit') },
-        \ 'tab_open': { -> vimonga#buffer#collection#list('tabedit') },
+        \ 'open': { -> vimonga#action#collection#list('edit') },
+        \ 'tab_open': { -> vimonga#action#collection#list('tabedit') },
     \ },
     \ 'collection': {
-        \ 'open': { -> vimonga#buffer#document#find('edit') },
-        \ 'tab_open': { -> vimonga#buffer#document#find('tabedit') },
-        \ 'open_parent': { -> vimonga#buffer#database#list('edit') },
-        \ 'open_indexes': { -> vimonga#buffer#index#list('edit') },
-        \ 'drop': { -> vimonga#buffer#collection#drop('edit') },
+        \ 'open': { -> vimonga#action#document#find('edit') },
+        \ 'tab_open': { -> vimonga#action#document#find('tabedit') },
+        \ 'open_parent': { -> vimonga#action#database#list('edit') },
+        \ 'open_indexes': { -> vimonga#action#index#list('edit') },
+        \ 'drop': { -> vimonga#action#collection#drop('edit') },
     \ },
     \ 'indexes': {
-        \ 'open_parent': { -> vimonga#buffer#collection#open_from_child('edit') },
+        \ 'open_parent': { -> vimonga#action#collection#open_from_child('edit') },
     \ },
     \ 'document': {
-        \ 'open_parent': { -> vimonga#buffer#collection#open_from_child('edit') },
-        \ 'open_next': { -> vimonga#buffer#document#move_page('edit', 1) },
-        \ 'open_prev': { -> vimonga#buffer#document#move_page('edit', -1) },
-        \ 'open_first': { -> vimonga#buffer#document#first('edit') },
-        \ 'open_last': { -> vimonga#buffer#document#last('edit') },
-        \ 'sort_ascending': { -> vimonga#buffer#document#sort#do(1, 'edit') },
-        \ 'sort_descending': { -> vimonga#buffer#document#sort#do(-1, 'edit') },
-        \ 'sort_toggle': { -> vimonga#buffer#documents#sort#toggle('edit') },
-        \ 'sort_reset': { -> vimonga#buffer#documents#sort#do(0, 'edit') },
-        \ 'sort_reset_all': { -> vimonga#buffer#documents#sort#reset_all('edit') },
-        \ 'projection_hide': { -> vimonga#buffer#documents#projection#hide('edit') },
-        \ 'projection_reset_all': { -> vimonga#buffer#documents#projection#reset_all('edit') },
-        \ 'query_add': { -> vimonga#buffer#documents#query#add('edit') },
-        \ 'query_reset_all': { -> vimonga#buffer#documents#query#reset_all('edit') },
+        \ 'open_parent': { -> vimonga#action#collection#open_from_child('edit') },
+        \ 'open_next': { -> vimonga#action#document#move_page('edit', 1) },
+        \ 'open_prev': { -> vimonga#action#document#move_page('edit', -1) },
+        \ 'open_first': { -> vimonga#action#document#first('edit') },
+        \ 'open_last': { -> vimonga#action#document#last('edit') },
+        \ 'sort_ascending': { -> vimonga#action#document#sort#do(1, 'edit') },
+        \ 'sort_descending': { -> vimonga#action#document#sort#do(-1, 'edit') },
+        \ 'sort_toggle': { -> vimonga#action#documents#sort#toggle('edit') },
+        \ 'sort_reset': { -> vimonga#action#documents#sort#do(0, 'edit') },
+        \ 'sort_reset_all': { -> vimonga#action#documents#sort#reset_all('edit') },
+        \ 'projection_hide': { -> vimonga#action#documents#projection#hide('edit') },
+        \ 'projection_reset_all': { -> vimonga#action#documents#projection#reset_all('edit') },
+        \ 'query_add': { -> vimonga#action#documents#query#add('edit') },
+        \ 'query_reset_all': { -> vimonga#action#documents#query#reset_all('edit') },
     \ },
 \ }
 function! vimonga#action(namespace, action_name) abort

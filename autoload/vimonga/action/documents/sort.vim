@@ -1,5 +1,5 @@
 
-function! vimonga#buffer#documents#sort#reset_all(open_cmd) abort
+function! vimonga#action#documents#sort#reset_all(open_cmd) abort
     call vimonga#buffer#ensure_documents()
 
     let options = vimonga#repo#document#options({'sort': {}})
@@ -14,7 +14,7 @@ function! vimonga#buffer#documents#sort#reset_all(open_cmd) abort
     call vimonga#buffer#open_documents(result, a:open_cmd, options)
 endfunction
 
-function! vimonga#buffer#documents#sort#toggle(open_cmd) abort
+function! vimonga#action#documents#sort#toggle(open_cmd) abort
     call vimonga#buffer#ensure_documents()
 
     let field_name = vimonga#json#field_name(line('.'))
@@ -40,7 +40,7 @@ function! vimonga#buffer#documents#sort#toggle(open_cmd) abort
     call vimonga#buffer#open_documents(result, a:open_cmd, options)
 endfunction
 
-function! vimonga#buffer#documents#sort#do(direction, open_cmd) abort
+function! vimonga#action#documents#sort#do(direction, open_cmd) abort
     call vimonga#buffer#ensure_documents()
 
     let field_name = vimonga#json#field_name(line('.'))

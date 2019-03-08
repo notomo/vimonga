@@ -1,5 +1,5 @@
 
-function! vimonga#buffer#documents#projection#reset_all(open_cmd) abort
+function! vimonga#action#documents#projection#reset_all(open_cmd) abort
     call vimonga#buffer#ensure_documents()
 
     let options = vimonga#repo#document#options({'projection': {}})
@@ -14,7 +14,7 @@ function! vimonga#buffer#documents#projection#reset_all(open_cmd) abort
     call vimonga#buffer#open_documents(result, a:open_cmd, options)
 endfunction
 
-function! vimonga#buffer#documents#projection#hide(open_cmd) abort
+function! vimonga#action#documents#projection#hide(open_cmd) abort
     call vimonga#buffer#ensure_documents()
 
     let field_name = vimonga#json#field_name(line('.'))

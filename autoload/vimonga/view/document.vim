@@ -20,7 +20,7 @@ function! vimonga#view#document#is_last() abort
 endfunction
 
 function! s:get_option(name) abort
-    if &filetype !=# vimonga#buffer#document#filetype() || !exists('b:vimonga_options')
+    if !exists('b:vimonga_options')
         return ''
     endif
 

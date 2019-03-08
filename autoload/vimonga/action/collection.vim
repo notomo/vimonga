@@ -1,6 +1,6 @@
 
 function! vimonga#action#collection#drop(open_cmd) abort
-    call vimonga#buffer#ensure_collections()
+    let params = vimonga#buffer#ensure_collections()
 
     if input('Drop? YES/n: ') !=# 'YES'
         redraw
@@ -8,7 +8,7 @@ function! vimonga#action#collection#drop(open_cmd) abort
         return
     endif
 
-    let database_name = vimonga#param#database_name()
+    let database_name = params['database_name']
     let [result, err] = vimonga#repo#collection#drop_by_number(database_name)
     if !empty(err)
         return vimonga#buffer#error(err, a:open_cmd)
@@ -34,9 +34,9 @@ function! vimonga#action#collection#list(open_cmd) abort
 endfunction
 
 function! vimonga#action#collection#open_from_child(open_cmd) abort
-    call vimonga#buffer#ensure_collection_children()
+    let params = vimonga#buffer#ensure_collection_children()
 
-    let database_name = vimonga#param#database_name()
+    let database_name = params['database_name']
     let [result, err] = vimonga#repo#collection#list(database_name)
     if !empty(err)
         return vimonga#buffer#error(err, a:open_cmd)

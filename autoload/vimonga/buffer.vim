@@ -10,6 +10,9 @@ endfunction
 let s:filetype_collections = 'vimonga-coll'
 function! vimonga#buffer#ensure_collections() abort
     call s:assert_filetype(s:filetype_collections)
+    return {
+        \ 'database_name': s:database_name(),
+    \ }
 endfunction
 
 function! vimonga#buffer#open_collections(repo, open_cmd) abort
@@ -19,6 +22,10 @@ endfunction
 let s:filetype_indexes = 'vimonga-indexes'
 function! vimonga#buffer#ensure_indexes() abort
     call s:assert_filetype(s:filetype_indexes)
+    return {
+        \ 'database_name': s:database_name(),
+        \ 'collection_name': s:collection_name(),
+    \ }
 endfunction
 
 function! vimonga#buffer#open_indexes(repo, open_cmd) abort
@@ -28,10 +35,18 @@ endfunction
 let s:filetype_documents = 'vimonga-doc'
 function! vimonga#buffer#ensure_documents() abort
     call s:assert_filetype(s:filetype_documents)
+    return {
+        \ 'database_name': s:database_name(),
+        \ 'collection_name': s:collection_name(),
+    \ }
 endfunction
 
 function! vimonga#buffer#ensure_collection_children() abort
     call s:assert_filetype(s:filetype_documents, s:filetype_indexes)
+    return {
+        \ 'database_name': s:database_name(),
+        \ 'collection_name': s:collection_name(),
+    \ }
 endfunction
 
 function! vimonga#buffer#open_documents(repo, open_cmd, options) abort
@@ -78,4 +93,12 @@ function! s:buffer(contents, filetype, path, open_cmd) abort
     if buffer_id == bufnr('%')
         call setpos('.', before_cursor)
     endif
+endfunction
+
+function! s:database_name() abort
+    return matchstr(bufname('%'), '\vvimonga:\/\/.*\/dbs\/\zs[^/]*\ze')
+endfunction
+
+function! s:collection_name() abort
+    return matchstr(bufname('%'), '\vvimonga:\/\/.*\/dbs\/[^/]*\/colls\/\zs[^/]*\ze')
 endfunction

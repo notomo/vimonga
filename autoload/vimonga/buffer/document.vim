@@ -13,32 +13,6 @@ function! vimonga#buffer#document#action_find(open_cmd) abort
     call s:open([number, database], {}, a:open_cmd)
 endfunction
 
-function! vimonga#buffer#document#action_projection_reset_all() abort
-    let options = s:options()
-    if !has_key(options, 'projection')
-        return
-    endif
-    unlet options['projection']
-
-    call s:open_from_doc(options, 'edit')
-endfunction
-
-function! vimonga#buffer#document#action_projection_hide() abort
-    let options = s:options()
-    if !has_key(options, 'projection')
-        let options['projection'] = {}
-    endif
-
-    let field_name = vimonga#json#field_name(line('.'))
-    if empty(field_name)
-        return
-    endif
-
-    let options['projection'][field_name] = 0
-
-    call s:open_from_doc(options, 'edit')
-endfunction
-
 function! vimonga#buffer#document#action_sort_toggle() abort
     let options = s:options()
     if !has_key(options, 'sort')

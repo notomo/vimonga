@@ -4,167 +4,64 @@ function! vimonga#buffer#document#filetype() abort
     return s:filetype
 endfunction
 
-function! vimonga#buffer#document#action_find(open_cmd) abort
+function! vimonga#buffer#document#find(open_cmd) abort
     call vimonga#buffer#assert_filetype(vimonga#buffer#collection#filetype())
 
-    let database_name = fnamemodify(bufname('%'), ':h:t')
-    let database = vimonga#request#option('database', database_name)
-    let number = vimonga#request#number_option()
-    call s:open([number, database], {}, a:open_cmd)
+    let options = vimonga#repo#document#options({})
+    let database_name = vimonga#param#database_name()
+    let [result, err] = vimonga#repo#document#find_by_number(database_name, options)
+    if !empty(err)
+        return vimonga#buffer#error(err, a:open_cmd)
+    endif
+
+    call vimonga#buffer#open_documents(result, a:open_cmd, options)
 endfunction
 
-function! vimonga#buffer#document#action_sort_toggle() abort
-    let options = s:options()
-    if !has_key(options, 'sort')
-        let options['sort'] = {}
-    endif
-
-    let field_name = vimonga#json#field_name(line('.'))
-    if empty(field_name)
+function! vimonga#buffer#document#move_page(open_cmd, direction) abort
+    let options = vimonga#repo#document#options({})
+    if (options['is_last'] && a:direction > 0) || (options['offset'] == 0 && a:direction < 0)
         return
     endif
 
-    if !has_key(options['sort'], field_name)
-        let options['sort'][field_name] = -1
-    else
-        let options['sort'][field_name] = options['sort'][field_name] * -1
-    endif
-    let options['offset'] = 0
-
-    call s:open_from_doc(options, 'edit')
-endfunction
-
-function! vimonga#buffer#document#action_sort(sort_direction) abort
-    let options = s:options()
-    if !has_key(options, 'sort')
-        let options['sort'] = {}
-    endif
-
-    let field_name = vimonga#json#field_name(line('.'))
-    if empty(field_name)
-        return
-    endif
-
-    if a:sort_direction == 0 && !has_key(options['sort'], field_name)
-        return
-    elseif a:sort_direction == 0
-        unlet options['sort'][field_name]
-    else
-        let options['sort'][field_name] = a:sort_direction
-    endif
-    let options['offset'] = 0
-
-    call s:open_from_doc(options, 'edit')
-endfunction
-
-function! vimonga#buffer#document#action_sort_reset_all() abort
-    let options = s:options()
-    if !has_key(options, 'sort')
-        return
-    endif
-    unlet options['sort']
-    let options['offset'] = 0
-
-    call s:open_from_doc(options, 'edit')
-endfunction
-
-function! vimonga#buffer#document#action_move_page(open_cmd, direction) abort
-    let options = s:options()
-    if has_key(options, 'is_last') && options['is_last'] && a:direction > 0
-        return
-    endif
-
-    if !has_key(options, 'offset')
-        let options['offset'] = 0
-    endif
-
-    if options['offset'] == 0 && a:direction < 0
-        return
-    endif
-
-    if !has_key(options, 'limit')
-        let options['limit'] = 10
-    endif
     let options['offset'] += options['limit'] * a:direction
     if options['offset'] < 0
         let options['offset'] = 0
     endif
 
-    call s:open_from_doc(options, 'edit')
-endfunction
-
-function! vimonga#buffer#document#action_first(open_cmd) abort
-    let options = s:options()
-    let options['offset'] = 0
-    call s:open_from_doc(options, 'edit')
-endfunction
-
-function! vimonga#buffer#document#action_last(open_cmd) abort
-    let options = s:options()
-    if !has_key(options, 'count') || !has_key(options, 'limit')
-        return
-    endif
-    let limit = options['limit']
-    let offset = float2nr(options['count'] / limit) * limit
-    let options['offset'] = offset
-    call s:open_from_doc(options, 'edit')
-endfunction
-
-function! s:open_from_doc(options, open_cmd) abort
-    call vimonga#buffer#assert_filetype(s:filetype)
-
-    let database_name = fnamemodify(bufname('%'), ':h:h:h:t')
-    let database = vimonga#request#option('database', database_name)
-    let collection_name = fnamemodify(bufname('%'), ':h:t')
-    let collection = vimonga#request#option('collection', collection_name)
-
-    call s:open([database, collection], a:options, a:open_cmd)
-endfunction
-
-function! s:open(args, options, open_cmd) abort
-    let option_args = []
-    if has_key(a:options, 'query')
-        let query = json_encode(a:options['query'])
-        call add(option_args, vimonga#request#option('query', query))
-    endif
-    if has_key(a:options, 'projection')
-        let projection = json_encode(a:options['projection'])
-        call add(option_args, vimonga#request#option('projection', projection))
-    endif
-    if has_key(a:options, 'sort')
-        let sort = json_encode(a:options['sort'])
-        call add(option_args, vimonga#request#option('sort', sort))
-    endif
-    if has_key(a:options, 'limit')
-        call add(option_args, vimonga#request#option('limit', a:options['limit']))
-    endif
-    if has_key(a:options, 'offset')
-        call add(option_args, vimonga#request#option('offset', a:options['offset']))
-    endif
-
-    let pid = vimonga#request#pid_option()
-    let args = ['document', pid] + a:args + option_args + ['find']
-    let [result, err] = vimonga#request#json(args)
+    let database_name = vimonga#param#database_name()
+    let collection_name = vimonga#param#collection_name()
+    let [result, err] = vimonga#repo#document#find(database_name, collection_name, options)
     if !empty(err)
         return vimonga#buffer#error(err, a:open_cmd)
     endif
 
-    let documents = result['body']
-    let path = result['path']
-
-    call vimonga#buffer#open(documents, s:filetype, path, a:open_cmd)
-    let b:vimonga_options = a:options
-    let b:vimonga_options['limit'] = result['limit']
-    let b:vimonga_options['is_first'] = result['offset'] == 0
-    let b:vimonga_options['is_last'] = result['is_last'] ==# 'true'
-    let b:vimonga_options['first_number'] = result['first_number']
-    let b:vimonga_options['last_number'] = result['last_number']
-    let b:vimonga_options['count'] = result['count']
+    call vimonga#buffer#open_documents(result, a:open_cmd, options)
 endfunction
 
-function! s:options() abort
-    if exists('b:vimonga_options')
-        return b:vimonga_options
+function! vimonga#buffer#document#first(open_cmd) abort
+    let options = vimonga#repo#document#options({})
+    let options['offset'] = 0
+
+    let database_name = vimonga#param#database_name()
+    let collection_name = vimonga#param#collection_name()
+    let [result, err] = vimonga#repo#document#find(database_name, collection_name, options)
+    if !empty(err)
+        return vimonga#buffer#error(err, a:open_cmd)
     endif
-    return {}
+
+    call vimonga#buffer#open_documents(result, a:open_cmd, options)
+endfunction
+
+function! vimonga#buffer#document#last(open_cmd) abort
+    let options = vimonga#repo#document#options({})
+    let options['offset'] = float2nr(options['count'] / options['limit']) * options['limit']
+
+    let database_name = vimonga#param#database_name()
+    let collection_name = vimonga#param#collection_name()
+    let [result, err] = vimonga#repo#document#find(database_name, collection_name, options)
+    if !empty(err)
+        return vimonga#buffer#error(err, a:open_cmd)
+    endif
+
+    call vimonga#buffer#open_documents(result, a:open_cmd, options)
 endfunction

@@ -35,6 +35,8 @@ function! vimonga#repo#document#options(options) abort
         \ 'sort': {},
         \ 'limit': 10,
         \ 'offset': 0,
+        \ 'is_last': v:false,
+        \ 'count': 0,
     \ }
 
     let bufffer_options = {}

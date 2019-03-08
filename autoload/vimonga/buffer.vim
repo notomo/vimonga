@@ -1,21 +1,21 @@
 function! vimonga#buffer#open_databases(repo, open_cmd) abort
     let filetype = vimonga#buffer#database#filetype()
-    call vimonga#buffer#open(a:repo['body'], filetype, a:repo['path'], a:open_cmd)
+    call s:buffer(a:repo['body'], filetype, a:repo['path'], a:open_cmd)
 endfunction
 
 function! vimonga#buffer#open_collections(repo, open_cmd) abort
     let filetype = vimonga#buffer#collection#filetype()
-    call vimonga#buffer#open(a:repo['body'], filetype, a:repo['path'], a:open_cmd)
+    call s:buffer(a:repo['body'], filetype, a:repo['path'], a:open_cmd)
 endfunction
 
 function! vimonga#buffer#open_indexes(repo, open_cmd) abort
     let filetype = vimonga#buffer#index#filetype()
-    call vimonga#buffer#open(a:repo['body'], filetype, a:repo['path'], a:open_cmd)
+    call s:buffer(a:repo['body'], filetype, a:repo['path'], a:open_cmd)
 endfunction
 
 function! vimonga#buffer#open_documents(repo, open_cmd, options) abort
     let filetype = vimonga#buffer#document#filetype()
-    call vimonga#buffer#open(a:repo['body'], filetype, a:repo['path'], a:open_cmd)
+    call s:buffer(a:repo['body'], filetype, a:repo['path'], a:open_cmd)
 
     let b:vimonga_options = a:options
     let b:vimonga_options['limit'] = a:repo['limit']
@@ -24,18 +24,6 @@ function! vimonga#buffer#open_documents(repo, open_cmd, options) abort
     let b:vimonga_options['first_number'] = a:repo['first_number']
     let b:vimonga_options['last_number'] = a:repo['last_number']
     let b:vimonga_options['count'] = a:repo['count']
-endfunction
-
-function! vimonga#buffer#open(contents, filetype, path, open_cmd) abort
-    let cursor = getpos('.')
-    let buffer_id = bufnr('%')
-
-    execute printf('%s %s', a:open_cmd, a:path)
-    call s:buffer(a:contents, a:filetype)
-
-    if buffer_id == bufnr('%')
-        call setpos('.', cursor)
-    endif
 endfunction
 
 function! vimonga#buffer#error(contents, open_cmd) abort
@@ -49,7 +37,12 @@ function! vimonga#buffer#assert_filetype(...) abort
     endif
 endfunction
 
-function! s:buffer(contents, filetype) abort
+function! s:buffer(contents, filetype, path, open_cmd) abort
+    let before_cursor = getpos('.')
+    let buffer_id = bufnr('%')
+
+    execute printf('%s %s', a:open_cmd, a:path)
+
     setlocal buftype=nofile
     setlocal nobuflisted
     setlocal noswapfile
@@ -62,4 +55,8 @@ function! s:buffer(contents, filetype) abort
 
     setlocal nomodifiable
     let &filetype = a:filetype
+
+    if buffer_id == bufnr('%')
+        call setpos('.', before_cursor)
+    endif
 endfunction

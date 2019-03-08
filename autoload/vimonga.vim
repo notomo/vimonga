@@ -1,7 +1,7 @@
 
 function! vimonga#execute(arg_string) abort
     if a:arg_string ==# 'database'
-        call vimonga#buffer#database#action_open('tabedit')
+        call vimonga#buffer#database#list('tabedit')
         return
     endif
 
@@ -10,21 +10,21 @@ endfunction
 
 let s:actions = {
     \ 'database': {
-        \ 'open': { -> vimonga#buffer#collection#action_open_list('edit') },
-        \ 'tab_open': { -> vimonga#buffer#collection#action_open_list('tabedit') },
+        \ 'open': { -> vimonga#buffer#collection#list('edit') },
+        \ 'tab_open': { -> vimonga#buffer#collection#list('tabedit') },
     \ },
     \ 'collection': {
         \ 'open': { -> vimonga#buffer#document#find('edit') },
         \ 'tab_open': { -> vimonga#buffer#document#find('tabedit') },
-        \ 'open_parent': { -> vimonga#buffer#database#action_open('edit') },
-        \ 'open_indexes': { -> vimonga#buffer#index#action_list('edit') },
-        \ 'drop': { -> vimonga#buffer#collection#action_drop('edit') },
+        \ 'open_parent': { -> vimonga#buffer#database#list('edit') },
+        \ 'open_indexes': { -> vimonga#buffer#index#list('edit') },
+        \ 'drop': { -> vimonga#buffer#collection#drop('edit') },
     \ },
     \ 'indexes': {
-        \ 'open_parent': { -> vimonga#buffer#collection#action_open_from_child('edit') },
+        \ 'open_parent': { -> vimonga#buffer#collection#open_from_child('edit') },
     \ },
     \ 'document': {
-        \ 'open_parent': { -> vimonga#buffer#collection#action_open_from_child('edit') },
+        \ 'open_parent': { -> vimonga#buffer#collection#open_from_child('edit') },
         \ 'open_next': { -> vimonga#buffer#document#move_page('edit', 1) },
         \ 'open_prev': { -> vimonga#buffer#document#move_page('edit', -1) },
         \ 'open_first': { -> vimonga#buffer#document#first('edit') },

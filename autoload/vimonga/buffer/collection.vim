@@ -1,5 +1,5 @@
 
-function! vimonga#buffer#collection#action_drop(open_cmd) abort
+function! vimonga#buffer#collection#drop(open_cmd) abort
     call vimonga#buffer#ensure_collections()
 
     if input('Drop? YES/n: ') !=# 'YES'
@@ -22,7 +22,7 @@ function! vimonga#buffer#collection#action_drop(open_cmd) abort
     call vimonga#buffer#open_collections(result, a:open_cmd)
 endfunction
 
-function! vimonga#buffer#collection#action_open_list(open_cmd) abort
+function! vimonga#buffer#collection#list(open_cmd) abort
     call vimonga#buffer#ensure_databases()
 
     let [result, err] = vimonga#repo#collection#list_by_number()
@@ -33,7 +33,7 @@ function! vimonga#buffer#collection#action_open_list(open_cmd) abort
     call vimonga#buffer#open_collections(result, a:open_cmd)
 endfunction
 
-function! vimonga#buffer#collection#action_open_from_child(open_cmd) abort
+function! vimonga#buffer#collection#open_from_child(open_cmd) abort
     call vimonga#buffer#ensure_collection_children()
 
     let database_name = vimonga#param#database_name()

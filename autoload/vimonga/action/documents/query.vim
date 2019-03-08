@@ -22,7 +22,7 @@ function! vimonga#action#documents#query#add(open_cmd) abort
         return
     endif
 
-    let options = vimonga#repo#document#options({})
+    let options = vimonga#repo#document#options()
     let options['query'][key] = value
 
     let database_name = vimonga#param#database_name()

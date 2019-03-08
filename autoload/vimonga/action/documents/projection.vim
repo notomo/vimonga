@@ -21,7 +21,7 @@ function! vimonga#action#documents#projection#hide(open_cmd) abort
     if empty(field_name)
         return
     endif
-    let options = vimonga#repo#document#options({})
+    let options = vimonga#repo#document#options()
     let options['projection'][field_name] = 0
 
     let database_name = vimonga#param#database_name()

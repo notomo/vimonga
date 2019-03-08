@@ -28,7 +28,7 @@ function! s:find(args, options) abort
     return vimonga#request#json(args)
 endfunction
 
-function! vimonga#repo#document#options(options) abort
+function! vimonga#repo#document#options(...) abort
     let defaults = {
         \ 'query': {},
         \ 'projection': {},
@@ -44,5 +44,9 @@ function! vimonga#repo#document#options(options) abort
         let bufffer_options = b:vimonga_options
     endif
 
-    return extend(extend(defaults, bufffer_options), a:options)
+    let merged = extend(defaults, bufffer_options)
+    if len(a:000) == 0
+        return merged
+    endif
+    return extend(merged, a:000[0])
 endfunction

@@ -22,7 +22,7 @@ function! vimonga#action#documents#sort#toggle(open_cmd) abort
         return
     endif
 
-    let options = vimonga#repo#document#options({})
+    let options = vimonga#repo#document#options()
     if !has_key(options['sort'], field_name)
         let options['sort'][field_name] = -1
     else
@@ -48,7 +48,7 @@ function! vimonga#action#documents#sort#do(direction, open_cmd) abort
         return
     endif
 
-    let options = vimonga#repo#document#options({})
+    let options = vimonga#repo#document#options()
     if a:direction == 0 && !has_key(options['sort'], field_name)
         return
     elseif a:direction == 0

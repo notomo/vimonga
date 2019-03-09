@@ -1,6 +1,9 @@
 let s:filetype_databases = 'vimonga-db'
 function! vimonga#buffer#ensure_databases() abort
     call s:assert_filetype(s:filetype_databases)
+    return {
+        \ 'database_name': getline(line('.')),
+    \ }
 endfunction
 
 function! vimonga#buffer#open_databases(repo, open_cmd) abort
@@ -12,6 +15,7 @@ function! vimonga#buffer#ensure_collections() abort
     call s:assert_filetype(s:filetype_collections)
     return {
         \ 'database_name': s:database_name(),
+        \ 'collection_name': getline(line('.')),
     \ }
 endfunction
 

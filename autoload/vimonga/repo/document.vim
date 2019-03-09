@@ -2,16 +2,7 @@
 function! vimonga#repo#document#find(database_name, collection_name, options) abort
     let database = vimonga#request#option('database', a:database_name)
     let collection = vimonga#request#option('collection', a:collection_name)
-    return s:find([database, collection], a:options)
-endfunction
 
-function! vimonga#repo#document#find_by_number(database_name, options) abort
-    let database = vimonga#request#option('database', a:database_name)
-    let number = vimonga#request#number_option()
-    return s:find([database, number], a:options)
-endfunction
-
-function! s:find(args, options) abort
     let query = json_encode(a:options['query'])
     let projection = json_encode(a:options['projection'])
     let sort = json_encode(a:options['sort'])
@@ -23,8 +14,7 @@ function! s:find(args, options) abort
         \ vimonga#request#option('offset', a:options['offset']),
     \ ]
 
-    let pid = vimonga#request#pid_option()
-    let args = ['document', pid] + a:args + option_args + ['find']
+    let args = ['document', database, collection] + option_args + ['find']
     return vimonga#request#json(args)
 endfunction
 

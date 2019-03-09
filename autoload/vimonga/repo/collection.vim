@@ -1,19 +1,11 @@
 
 function! vimonga#repo#collection#list(database_name) abort
-    let pid = vimonga#request#pid_option()
     let database = vimonga#request#option('database', a:database_name)
-    return vimonga#request#json(['collection', pid, database, 'list'])
+    return vimonga#request#json(['collection', database, 'list'])
 endfunction
 
-function! vimonga#repo#collection#list_by_number() abort
-    let pid = vimonga#request#pid_option()
-    let number = vimonga#request#number_option()
-    return vimonga#request#json(['collection', pid, number, 'list'])
-endfunction
-
-function! vimonga#repo#collection#drop_by_number(database_name) abort
-    let pid = vimonga#request#pid_option()
+function! vimonga#repo#collection#drop(database_name, collection_name) abort
     let database = vimonga#request#option('database', a:database_name)
-    let number = vimonga#request#number_option()
-    return vimonga#request#json(['collection', pid, database, 'drop', number])
+    let collection = vimonga#request#option('collection', a:collection_name)
+    return vimonga#request#json(['collection', database, 'drop', collection])
 endfunction

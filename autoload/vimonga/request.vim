@@ -2,9 +2,15 @@
 function! vimonga#request#execute(args) abort
     let host = vimonga#config#get('default_host')
     let port = vimonga#config#get('default_port')
+
+    let executable = shellescape(vimonga#config#get('executable'))
+    let config_path = vimonga#config#get('config_path')
+    let config = vimonga#request#option('config', config_path)
+    let cmd = join([executable, config], ' ')
+
     let default_args = [
         \ 'RUST_BACKTRACE=1',
-        \ vimonga#request#execute_cmd(),
+        \ cmd,
         \ vimonga#request#option('host', host),
         \ vimonga#request#option('port', port)
     \ ]
@@ -29,20 +35,4 @@ function! vimonga#request#option(key, value) abort
         return ''
     endif
     return '--' . a:key . '=' . shellescape(a:value)
-endfunction
-
-function! vimonga#request#number_option() abort
-    return vimonga#request#option('number', line('.') - 1)
-endfunction
-
-let s:pid_option = vimonga#request#option('pid', getpid())
-function! vimonga#request#pid_option() abort
-    return s:pid_option
-endfunction
-
-function! vimonga#request#execute_cmd() abort
-    let executable = shellescape(vimonga#config#get('executable'))
-    let config_path = vimonga#config#get('config_path')
-    let config = vimonga#request#option('config', config_path)
-    return join([executable, config], ' ')
 endfunction

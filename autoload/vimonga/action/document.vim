@@ -4,7 +4,8 @@ function! vimonga#action#document#find(open_cmd) abort
 
     let options = vimonga#repo#document#options()
     let database_name = params['database_name']
-    let [result, err] = vimonga#repo#document#find_by_number(database_name, options)
+    let collection_name = params['collection_name']
+    let [result, err] = vimonga#repo#document#find(database_name, collection_name, options)
     if !empty(err)
         return vimonga#buffer#error(err, a:open_cmd)
     endif

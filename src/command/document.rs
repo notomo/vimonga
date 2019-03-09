@@ -11,7 +11,6 @@ pub struct DocumentListCommand<'a> {
     pub buffer_repository: &'a BufferRepository,
     pub database_name: &'a str,
     pub collection_name: &'a str,
-    pub number: usize,
     pub query_json: &'a str,
     pub projection_json: &'a str,
     pub sort_json: &'a str,
@@ -21,16 +20,9 @@ pub struct DocumentListCommand<'a> {
 
 impl<'a> Command for DocumentListCommand<'a> {
     fn run(&self) -> Result<String, error::CommandError> {
-        let collection_name = match self.collection_name {
-            "" => self
-                .collection_repository
-                .get_name_by_number(self.database_name, self.number),
-            _ => Ok(String::from(self.collection_name)),
-        }?;
-
         let documents = self.document_repository.find(
             self.database_name,
-            collection_name.as_str(),
+            self.collection_name,
             self.query_json,
             self.projection_json,
             self.sort_json,
@@ -40,7 +32,7 @@ impl<'a> Command for DocumentListCommand<'a> {
 
         let count = self.document_repository.get_count(
             self.database_name,
-            collection_name.as_str(),
+            self.collection_name,
             self.query_json,
         )?;
 
@@ -59,9 +51,9 @@ impl<'a> Command for DocumentListCommand<'a> {
         view.insert(
             "path",
             self.buffer_repository
-                .get_documents_path(self.database_name, &collection_name.as_str()),
+                .get_documents_path(self.database_name, self.collection_name),
         );
-        view.insert("collection_name", collection_name);
+        view.insert("collection_name", self.collection_name.to_string());
 
         Ok(serde_json::to_string(&view)?)
     }

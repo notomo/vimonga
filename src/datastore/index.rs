@@ -11,7 +11,6 @@ use mongodb::ThreadedClient;
 
 pub struct IndexRepositoryImpl<'a> {
     pub connection_factory: &'a ConnectionFactory<'a>,
-    pub pid: &'a str,
     pub host: &'a str,
     pub port: u16,
     pub setting: &'a Setting,

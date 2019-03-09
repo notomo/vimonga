@@ -4,7 +4,6 @@ use failure::{Backtrace, Context, Fail};
 pub use crate::domain::{RepositoryError, RepositoryErrorKind};
 
 use mongodb::Error as MongodbError;
-use reqwest::Error as ReqwestError;
 use serde_json::Error as SerdeJsonError;
 
 impl Fail for RepositoryError {
@@ -34,18 +33,6 @@ impl From<RepositoryErrorKind> for RepositoryError {
 impl From<Context<RepositoryErrorKind>> for RepositoryError {
     fn from(inner: Context<RepositoryErrorKind>) -> RepositoryError {
         RepositoryError { inner: inner }
-    }
-}
-
-impl From<ReqwestError> for RepositoryError {
-    fn from(e: ReqwestError) -> Self {
-        let message = match e.url() {
-            Some(url) => format!("{}: {}", e, url),
-            None => e.to_string(),
-        };
-        RepositoryError {
-            inner: e.context(RepositoryErrorKind::InternalError { message }),
-        }
     }
 }
 

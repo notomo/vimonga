@@ -13,9 +13,6 @@ pub use document::DocumentListCommand;
 mod help;
 pub use help::HelpCommand;
 
-mod server;
-pub use server::{ServerPingCommand, ServerStartCommand};
-
 mod error;
 
 pub trait Command {

@@ -9,7 +9,8 @@ function! vimonga#action#collection#drop(open_cmd) abort
     endif
 
     let database_name = params['database_name']
-    let [result, err] = vimonga#repo#collection#drop_by_number(database_name)
+    let collection_name = params['collection_name']
+    let [result, err] = vimonga#repo#collection#drop(database_name, collection_name)
     if !empty(err)
         return vimonga#buffer#error(err, a:open_cmd)
     endif
@@ -23,9 +24,10 @@ function! vimonga#action#collection#drop(open_cmd) abort
 endfunction
 
 function! vimonga#action#collection#list(open_cmd) abort
-    call vimonga#buffer#ensure_databases()
+    let params = vimonga#buffer#ensure_databases()
 
-    let [result, err] = vimonga#repo#collection#list_by_number()
+    let database_name = params['database_name']
+    let [result, err] = vimonga#repo#collection#list(database_name)
     if !empty(err)
         return vimonga#buffer#error(err, a:open_cmd)
     endif

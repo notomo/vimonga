@@ -25,4 +25,10 @@ impl<'a> DatabaseRepository for DatabaseRepositoryImpl<'a> {
 
         Ok(names)
     }
+
+    fn drop(&self, database_name: &str) -> Result<bool, RepositoryError> {
+        let client = self.connection_factory.get()?;
+        client.drop_database(database_name)?;
+        Ok(true)
+    }
 }

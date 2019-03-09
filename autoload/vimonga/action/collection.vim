@@ -1,10 +1,10 @@
 
 function! vimonga#action#collection#drop(open_cmd) abort
     let params = vimonga#buffer#ensure_collections()
+    let collection_name = params['collection_name']
 
-    if input('Drop? YES/n: ') !=# 'YES'
-        redraw
-        echomsg 'Canceled'
+    if input('Drop ' . collection_name . '? YES/n: ') !=# 'YES'
+        redraw | echomsg 'Canceled'
         return
     endif
 

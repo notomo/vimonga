@@ -2,8 +2,8 @@ use clap::{App, AppSettings, Arg, SubCommand};
 
 mod command;
 use command::{
-    CollectionDropCommand, CollectionListCommand, Command, DatabaseListCommand,
-    DocumentListCommand, HelpCommand, IndexListCommand,
+    CollectionDropCommand, CollectionListCommand, Command, DatabaseDropCommand,
+    DatabaseListCommand, DocumentListCommand, HelpCommand, IndexListCommand,
 };
 
 mod datastore;
@@ -48,7 +48,18 @@ fn main() {
                 .takes_value(true)
                 .required(false),
         )
-        .subcommand(SubCommand::with_name("database").subcommand(SubCommand::with_name("list")))
+        .subcommand(
+            SubCommand::with_name("database")
+                .subcommand(SubCommand::with_name("list"))
+                .subcommand(
+                    SubCommand::with_name("drop").arg(
+                        Arg::with_name("database_name")
+                            .long("database")
+                            .takes_value(true)
+                            .required(true),
+                    ),
+                ),
+        )
         .subcommand(
             SubCommand::with_name("collection")
                 .arg(
@@ -143,23 +154,30 @@ fn main() {
     let setting = config::Setting::new(matches.value_of("config").unwrap()).unwrap();
 
     let command_result = match matches.subcommand() {
-        ("database", Some(cmd)) => match cmd.subcommand() {
-            ("list", Some(_)) => {
-                let repo = DatabaseRepositoryImpl {
-                    connection_factory: &connection_factory,
-                    host,
-                    port,
-                    setting: &setting,
-                };
-
-                DatabaseListCommand {
+        ("database", Some(cmd)) => {
+            let repo = DatabaseRepositoryImpl {
+                connection_factory: &connection_factory,
+                host,
+                port,
+                setting: &setting,
+            };
+            match cmd.subcommand() {
+                ("list", Some(_)) => DatabaseListCommand {
                     database_repository: &repo,
                     buffer_repository: &buffer_repo,
                 }
-                .run()
+                .run(),
+                ("drop", Some(cmd)) => {
+                    let database_name = cmd.value_of("database_name").unwrap();
+                    DatabaseDropCommand {
+                        database_repository: &repo,
+                        database_name: database_name,
+                    }
+                    .run()
+                }
+                _ => HelpCommand {}.run(),
             }
-            _ => HelpCommand {}.run(),
-        },
+        }
         ("collection", Some(cmd)) => {
             let database_name = cmd.value_of("database_name").unwrap();
 

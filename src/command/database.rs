@@ -21,3 +21,20 @@ impl<'a> Command for DatabaseListCommand<'a> {
         Ok(serde_json::to_string(&view)?)
     }
 }
+
+pub struct DatabaseDropCommand<'a> {
+    pub database_repository: &'a DatabaseRepository,
+    pub database_name: &'a str,
+}
+
+impl<'a> Command for DatabaseDropCommand<'a> {
+    fn run(&self) -> Result<String, error::CommandError> {
+        self.database_repository.drop(self.database_name)?;
+
+        let mut view = HashMap::new();
+        view.insert("body", "");
+        view.insert("database_name", self.database_name);
+
+        Ok(serde_json::to_string(&view)?)
+    }
+}

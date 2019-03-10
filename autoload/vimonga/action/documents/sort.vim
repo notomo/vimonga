@@ -6,12 +6,8 @@ function! vimonga#action#documents#sort#reset_all(open_cmd) abort
 
     let database_name = params['database_name']
     let collection_name = params['collection_name']
-    let [result, err] = vimonga#repo#document#find(database_name, collection_name, options)
-    if !empty(err)
-        return vimonga#buffer#error(err, a:open_cmd)
-    endif
-
-    call vimonga#buffer#open_documents(result, a:open_cmd, options)
+    let funcs = [{ -> vimonga#repo#document#find(database_name, collection_name, options)}]
+    call vimonga#buffer#open_documents(funcs, a:open_cmd, options)
 endfunction
 
 function! vimonga#action#documents#sort#toggle(open_cmd) abort
@@ -32,12 +28,8 @@ function! vimonga#action#documents#sort#toggle(open_cmd) abort
 
     let database_name = params['database_name']
     let collection_name = params['collection_name']
-    let [result, err] = vimonga#repo#document#find(database_name, collection_name, options)
-    if !empty(err)
-        return vimonga#buffer#error(err, a:open_cmd)
-    endif
-
-    call vimonga#buffer#open_documents(result, a:open_cmd, options)
+    let funcs = [{ -> vimonga#repo#document#find(database_name, collection_name, options)}]
+    call vimonga#buffer#open_documents(funcs, a:open_cmd, options)
 endfunction
 
 function! vimonga#action#documents#sort#do(direction, open_cmd) abort
@@ -60,10 +52,6 @@ function! vimonga#action#documents#sort#do(direction, open_cmd) abort
 
     let database_name = params['database_name']
     let collection_name = params['collection_name']
-    let [result, err] = vimonga#repo#document#find(database_name, collection_name, options)
-    if !empty(err)
-        return vimonga#buffer#error(err, a:open_cmd)
-    endif
-
-    call vimonga#buffer#open_documents(result, a:open_cmd, options)
+    let funcs = [{ -> vimonga#repo#document#find(database_name, collection_name, options)}]
+    call vimonga#buffer#open_documents(funcs, a:open_cmd, options)
 endfunction

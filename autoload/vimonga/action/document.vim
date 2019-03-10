@@ -2,15 +2,12 @@
 function! vimonga#action#document#find(open_cmd) abort
     let params = vimonga#buffer#ensure_collections()
 
-    let options = vimonga#repo#document#options()
     let database_name = params['database_name']
     let collection_name = params['collection_name']
-    let [result, err] = vimonga#repo#document#find(database_name, collection_name, options)
-    if !empty(err)
-        return vimonga#buffer#error(err, a:open_cmd)
-    endif
+    let options = vimonga#repo#document#options()
 
-    call vimonga#buffer#open_documents(result, a:open_cmd, options)
+    let funcs = [{ -> vimonga#repo#document#find(database_name, collection_name, options)}]
+    call vimonga#buffer#open_documents(funcs, a:open_cmd, options)
 endfunction
 
 function! vimonga#action#document#move_page(open_cmd, direction) abort
@@ -21,49 +18,37 @@ function! vimonga#action#document#move_page(open_cmd, direction) abort
         return
     endif
 
+    let database_name = params['database_name']
+    let collection_name = params['collection_name']
     let options['offset'] += options['limit'] * a:direction
     if options['offset'] < 0
         let options['offset'] = 0
     endif
 
-    let database_name = params['database_name']
-    let collection_name = params['collection_name']
-    let [result, err] = vimonga#repo#document#find(database_name, collection_name, options)
-    if !empty(err)
-        return vimonga#buffer#error(err, a:open_cmd)
-    endif
-
-    call vimonga#buffer#open_documents(result, a:open_cmd, options)
+    let funcs = [{ -> vimonga#repo#document#find(database_name, collection_name, options)}]
+    call vimonga#buffer#open_documents(funcs, a:open_cmd, options)
 endfunction
 
 function! vimonga#action#document#first(open_cmd) abort
     let params = vimonga#buffer#ensure_documents()
 
+    let database_name = params['database_name']
+    let collection_name = params['collection_name']
     let options = vimonga#repo#document#options()
     let options['offset'] = 0
 
-    let database_name = params['database_name']
-    let collection_name = params['collection_name']
-    let [result, err] = vimonga#repo#document#find(database_name, collection_name, options)
-    if !empty(err)
-        return vimonga#buffer#error(err, a:open_cmd)
-    endif
-
-    call vimonga#buffer#open_documents(result, a:open_cmd, options)
+    let funcs = [{ -> vimonga#repo#document#find(database_name, collection_name, options)}]
+    call vimonga#buffer#open_documents(funcs, a:open_cmd, options)
 endfunction
 
 function! vimonga#action#document#last(open_cmd) abort
     let params = vimonga#buffer#ensure_documents()
 
+    let database_name = params['database_name']
+    let collection_name = params['collection_name']
     let options = vimonga#repo#document#options()
     let options['offset'] = float2nr(options['count'] / options['limit']) * options['limit']
 
-    let database_name = params['database_name']
-    let collection_name = params['collection_name']
-    let [result, err] = vimonga#repo#document#find(database_name, collection_name, options)
-    if !empty(err)
-        return vimonga#buffer#error(err, a:open_cmd)
-    endif
-
-    call vimonga#buffer#open_documents(result, a:open_cmd, options)
+    let funcs = [{ -> vimonga#repo#document#find(database_name, collection_name, options)}]
+    call vimonga#buffer#open_documents(funcs, a:open_cmd, options)
 endfunction

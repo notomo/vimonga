@@ -14,8 +14,12 @@ function! vimonga#buffer#ensure_database_name() abort
     return {'database_name': s:database_name()}
 endfunction
 
-function! vimonga#buffer#open_databases(repo, open_cmd) abort
-    call s:buffer(a:repo['body'], s:filetype_databases, a:repo['path'], a:open_cmd)
+function! vimonga#buffer#open_databases(funcs, open_cmd) abort
+    let [result, err] = s:execute(a:funcs)
+    if !empty(err)
+        return s:error(err, a:open_cmd)
+    endif
+    call s:buffer(result['body'], s:filetype_databases, result['path'], a:open_cmd)
 endfunction
 
 let s:filetype_collections = 'vimonga-coll'
@@ -27,8 +31,12 @@ function! vimonga#buffer#ensure_collections() abort
     \ }
 endfunction
 
-function! vimonga#buffer#open_collections(repo, open_cmd) abort
-    call s:buffer(a:repo['body'], s:filetype_collections, a:repo['path'], a:open_cmd)
+function! vimonga#buffer#open_collections(funcs, open_cmd) abort
+    let [result, err] = s:execute(a:funcs)
+    if !empty(err)
+        return s:error(err, a:open_cmd)
+    endif
+    call s:buffer(result['body'], s:filetype_collections, result['path'], a:open_cmd)
 endfunction
 
 let s:filetype_indexes = 'vimonga-indexes'
@@ -40,8 +48,12 @@ function! vimonga#buffer#ensure_indexes() abort
     \ }
 endfunction
 
-function! vimonga#buffer#open_indexes(repo, open_cmd) abort
-    call s:buffer(a:repo['body'], s:filetype_indexes, a:repo['path'], a:open_cmd)
+function! vimonga#buffer#open_indexes(funcs, open_cmd) abort
+    let [result, err] = s:execute(a:funcs)
+    if !empty(err)
+        return s:error(err, a:open_cmd)
+    endif
+    call s:buffer(result['body'], s:filetype_indexes, result['path'], a:open_cmd)
 endfunction
 
 let s:filetype_documents = 'vimonga-doc'
@@ -53,19 +65,23 @@ function! vimonga#buffer#ensure_documents() abort
     \ }
 endfunction
 
-function! vimonga#buffer#open_documents(repo, open_cmd, options) abort
-    call s:buffer(a:repo['body'], s:filetype_documents, a:repo['path'], a:open_cmd)
+function! vimonga#buffer#open_documents(funcs, open_cmd, options) abort
+    let [result, err] = s:execute(a:funcs)
+    if !empty(err)
+        return s:error(err, a:open_cmd)
+    endif
+    call s:buffer(result['body'], s:filetype_documents, result['path'], a:open_cmd)
 
     let b:vimonga_options = a:options
-    let b:vimonga_options['limit'] = a:repo['limit']
-    let b:vimonga_options['is_first'] = a:repo['offset'] == 0
-    let b:vimonga_options['is_last'] = a:repo['is_last'] ==# 'true'
-    let b:vimonga_options['first_number'] = a:repo['first_number']
-    let b:vimonga_options['last_number'] = a:repo['last_number']
-    let b:vimonga_options['count'] = a:repo['count']
+    let b:vimonga_options['limit'] = result['limit']
+    let b:vimonga_options['is_first'] = result['offset'] == 0
+    let b:vimonga_options['is_last'] = result['is_last'] ==# 'true'
+    let b:vimonga_options['first_number'] = result['first_number']
+    let b:vimonga_options['last_number'] = result['last_number']
+    let b:vimonga_options['count'] = result['count']
 endfunction
 
-function! vimonga#buffer#error(contents, open_cmd) abort
+function! s:error(contents, open_cmd) abort
     call s:buffer(a:contents, '', 'vimonga://error', a:open_cmd)
 endfunction
 
@@ -105,4 +121,15 @@ endfunction
 
 function! s:collection_name() abort
     return matchstr(bufname('%'), '\vvimonga:\/\/.*\/dbs\/[^/]*\/colls\/\zs[^/]*\ze')
+endfunction
+
+function! s:execute(funcs) abort
+    let result = []
+    for F in a:funcs
+        let [result, err] = F()
+        if !empty(err)
+            return [[], err]
+        endif
+    endfor
+    return [result, []]
 endfunction

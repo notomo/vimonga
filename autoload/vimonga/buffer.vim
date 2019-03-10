@@ -6,6 +6,14 @@ function! vimonga#buffer#ensure_databases() abort
     \ }
 endfunction
 
+function! vimonga#buffer#ensure_database_name() abort
+    call s:assert_filetype(s:filetype_databases, s:filetype_collections, s:filetype_indexes, s:filetype_documents)
+    if &filetype == s:filetype_databases
+        return {'database_name': getline(line('.'))}
+    endif
+    return {'database_name': s:database_name()}
+endfunction
+
 function! vimonga#buffer#open_databases(repo, open_cmd) abort
     call s:buffer(a:repo['body'], s:filetype_databases, a:repo['path'], a:open_cmd)
 endfunction
@@ -39,14 +47,6 @@ endfunction
 let s:filetype_documents = 'vimonga-doc'
 function! vimonga#buffer#ensure_documents() abort
     call s:assert_filetype(s:filetype_documents)
-    return {
-        \ 'database_name': s:database_name(),
-        \ 'collection_name': s:collection_name(),
-    \ }
-endfunction
-
-function! vimonga#buffer#ensure_collection_children() abort
-    call s:assert_filetype(s:filetype_documents, s:filetype_indexes)
     return {
         \ 'database_name': s:database_name(),
         \ 'collection_name': s:collection_name(),

@@ -22,10 +22,10 @@ let s:actions = {
         \ 'drop': { -> vimonga#action#collection#drop('edit') },
     \ },
     \ 'indexes': {
-        \ 'open_parent': { -> vimonga#action#collection#open_from_child('edit') },
+        \ 'open_parent': { -> vimonga#action#collection#list('edit') },
     \ },
     \ 'document': {
-        \ 'open_parent': { -> vimonga#action#collection#open_from_child('edit') },
+        \ 'open_parent': { -> vimonga#action#collection#list('edit') },
         \ 'open_next': { -> vimonga#action#document#move_page('edit', 1) },
         \ 'open_prev': { -> vimonga#action#document#move_page('edit', -1) },
         \ 'open_first': { -> vimonga#action#document#first('edit') },

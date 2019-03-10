@@ -1,7 +1,36 @@
 
+let s:filetype = 'vimonga-doc'
+function! vimonga#buffer#documents#filetype() abort
+    return s:filetype
+endfunction
+
+function! vimonga#buffer#documents#ensure() abort
+    call vimonga#buffer#impl#assert_filetype(s:filetype)
+    return {
+        \ 'database_name': vimonga#buffer#impl#database_name(),
+        \ 'collection_name': vimonga#buffer#impl#collection_name(),
+    \ }
+endfunction
+
+function! vimonga#buffer#documents#open(funcs, open_cmd, options) abort
+    let [result, err] = vimonga#buffer#impl#execute(a:funcs)
+    if !empty(err)
+        return vimonga#buffer#impl#error(err, a:open_cmd)
+    endif
+    call vimonga#buffer#impl#buffer(result['body'], s:filetype, result['path'], a:open_cmd)
+
+    let b:vimonga_options = a:options
+    let b:vimonga_options['limit'] = result['limit']
+    let b:vimonga_options['is_first'] = result['offset'] == 0
+    let b:vimonga_options['is_last'] = result['is_last'] ==# 'true'
+    let b:vimonga_options['first_number'] = result['first_number']
+    let b:vimonga_options['last_number'] = result['last_number']
+    let b:vimonga_options['count'] = result['count']
+endfunction
+
 let s:SEPARATER = '": '
 let s:INDENT_SIZE = 2
-function! vimonga#json#field_name(line_num) abort
+function! vimonga#buffer#documents#field_name(line_num) abort
     let line = getline(a:line_num)
     let index = stridx(line, s:SEPARATER)
     if index == -1
@@ -15,12 +44,12 @@ function! vimonga#json#field_name(line_num) abort
     endif
 
     let parent_line_num = search('^' . repeat(' ', indent - s:INDENT_SIZE) . '\S', 'bn')
-    let parent_field = vimonga#json#field_name(parent_line_num)
+    let parent_field = vimonga#buffer#documents#field_name(parent_line_num)
     return parent_field . '.' . field_name
 endfunction
 
-function! vimonga#json#key_value(line_num) abort
-    let key = vimonga#json#field_name(a:line_num)
+function! vimonga#buffer#documents#key_value(line_num) abort
+    let key = vimonga#buffer#documents#field_name(a:line_num)
     if empty(key)
         return ['', '']
     endif

@@ -1,6 +1,6 @@
 
 function! vimonga#action#collection#drop(open_cmd) abort
-    let params = vimonga#buffer#ensure_collections()
+    let params = vimonga#buffer#collections#ensure()
     let collection_name = params['collection_name']
 
     if input('Drop ' . collection_name . '? YES/n: ') !=# 'YES'
@@ -12,13 +12,13 @@ function! vimonga#action#collection#drop(open_cmd) abort
         \ { -> vimonga#repo#collection#drop(database_name, collection_name)},
         \ { -> vimonga#repo#collection#list(database_name)},
     \ ]
-    call vimonga#buffer#open_collections(funcs, a:open_cmd)
+    call vimonga#buffer#collections#open(funcs, a:open_cmd)
 endfunction
 
 function! vimonga#action#collection#list(open_cmd) abort
-    let params = vimonga#buffer#ensure_database_name()
+    let params = vimonga#buffer#databases#ensure_name()
     let database_name = params['database_name']
 
     let funcs = [{ -> vimonga#repo#collection#list(database_name)}]
-    call vimonga#buffer#open_collections(funcs, a:open_cmd)
+    call vimonga#buffer#collections#open(funcs, a:open_cmd)
 endfunction

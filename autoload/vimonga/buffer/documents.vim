@@ -1,5 +1,5 @@
 
-let s:filetype = 'vimonga-doc'
+let s:filetype = 'vimonga-docs'
 function! vimonga#buffer#documents#filetype() abort
     return s:filetype
 endfunction
@@ -75,4 +75,23 @@ function! vimonga#buffer#documents#key_value(line_num) abort
     endif
     let value = values(json_decode('{' . line . '}'))[0]
     return [key, value]
+endfunction
+
+function! vimonga#buffer#documents#get_id() abort
+    let indent = repeat(' ', s:INDENT_SIZE * 2)
+    let line_num = search('^' . indent . '"_id": {', 'bn')
+    if line_num != 0
+        let oid_line = getline(line_num + 1)
+        let id = values(json_decode('{' . oid_line . '}'))[0]
+        return id
+    endif
+
+    let line_num = search('^' . indent . '"_id": {', 'n')
+    if line_num != 0
+        let oid_line = getline(line_num + 1)
+        let id = values(json_decode('{' . oid_line . '}'))[0]
+        return id
+    endif
+
+    return ''
 endfunction

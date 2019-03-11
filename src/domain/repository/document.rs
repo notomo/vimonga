@@ -14,6 +14,13 @@ pub trait DocumentRepository {
         skip: i64,
     ) -> Result<Vec<Document>, RepositoryError>;
 
+    fn find_by_id(
+        &self,
+        database_name: &str,
+        collection_name: &str,
+        id: &str,
+    ) -> Result<Document, RepositoryError>;
+
     fn get_count(
         &self,
         database_name: &str,

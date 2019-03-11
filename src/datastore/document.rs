@@ -26,6 +26,13 @@ impl<'a> DocumentRepositoryImpl<'a> {
         }
         document
     }
+
+    fn to_document_from_id(&self, id: &str) -> Result<Document, RepositoryError> {
+        let oid = bson::oid::ObjectId::with_string(id)?;
+        let mut document = Document::new();
+        document.insert_bson("_id".to_string(), oid.into());
+        Ok(document)
+    }
 }
 
 impl<'a> DocumentRepository for DocumentRepositoryImpl<'a> {
@@ -58,6 +65,27 @@ impl<'a> DocumentRepository for DocumentRepositoryImpl<'a> {
         // TODO: remove doc.unwrap()
         let documents: Vec<Document> = cursor.map(|doc| doc.unwrap()).collect();
         Ok(documents)
+    }
+
+    fn find_by_id(
+        &self,
+        database_name: &str,
+        collection_name: &str,
+        id: &str,
+    ) -> Result<Document, RepositoryError> {
+        let query = Some(self.to_document_from_id(id)?);
+
+        let mut find_option = FindOptions::new();
+        find_option.limit = Some(1);
+
+        let client = self.connection_factory.get()?;
+        let document = client
+            .db(database_name)
+            .collection(collection_name)
+            .find_one(query, Some(find_option))?
+            .unwrap();
+
+        Ok(document)
     }
 
     fn get_count(

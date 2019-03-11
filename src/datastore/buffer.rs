@@ -46,4 +46,17 @@ impl<'a> BufferRepository for BufferRepositoryImpl<'a> {
             collection_name
         )
     }
+
+    fn get_document_path(
+        &self,
+        database_name: &str,
+        collection_name: &str,
+        object_id: &str,
+    ) -> String {
+        format!(
+            "{}/{}",
+            self.get_documents_path(database_name, collection_name),
+            object_id
+        )
+    }
 }

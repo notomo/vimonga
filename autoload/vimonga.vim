@@ -39,6 +39,8 @@ let s:actions = {
         \ 'projection_reset_all': { -> vimonga#action#documents#projection#reset_all('edit') },
         \ 'query_add': { -> vimonga#action#documents#query#add('edit') },
         \ 'query_reset_all': { -> vimonga#action#documents#query#reset_all('edit') },
+        \ 'open_one': { -> vimonga#action#document#open('edit') },
+        \ 'tab_open_one': { -> vimonga#action#document#open('tabedit') },
     \ },
 \ }
 function! vimonga#action(namespace, action_name) abort

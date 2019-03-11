@@ -14,7 +14,15 @@ function! vimonga#repo#document#find(database_name, collection_name, options) ab
         \ vimonga#repo#impl#option('offset', a:options['offset']),
     \ ]
 
-    let args = ['document', database, collection] + option_args + ['find']
+    let args = ['document', database, collection] + ['find'] + option_args 
+    return vimonga#repo#impl#execute(args)
+endfunction
+
+function! vimonga#repo#document#find_by_id(database_name, collection_name, document_id) abort
+    let database = vimonga#repo#impl#option('database', a:database_name)
+    let collection = vimonga#repo#impl#option('collection', a:collection_name)
+    let id = vimonga#repo#impl#option('id', a:document_id)
+    let args = ['document', database, collection, 'get', id]
     return vimonga#repo#impl#execute(args)
 endfunction
 

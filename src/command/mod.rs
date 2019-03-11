@@ -8,7 +8,7 @@ mod index;
 pub use index::IndexListCommand;
 
 mod document;
-pub use document::DocumentListCommand;
+pub use document::{DocumentGetCommand, DocumentListCommand};
 
 mod help;
 pub use help::HelpCommand;

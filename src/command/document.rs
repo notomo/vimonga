@@ -58,3 +58,37 @@ impl<'a> Command for DocumentListCommand<'a> {
         Ok(serde_json::to_string(&view)?)
     }
 }
+
+pub struct DocumentGetCommand<'a> {
+    pub document_repository: &'a DocumentRepository,
+    pub collection_repository: &'a CollectionRepository,
+    pub buffer_repository: &'a BufferRepository,
+    pub database_name: &'a str,
+    pub collection_name: &'a str,
+    pub id: &'a str,
+}
+
+impl<'a> Command for DocumentGetCommand<'a> {
+    fn run(&self) -> Result<String, error::CommandError> {
+        let document = self.document_repository.find_by_id(
+            self.database_name,
+            self.collection_name,
+            self.id,
+        )?;
+
+        let mut view = HashMap::new();
+        view.insert("body", serde_json::to_string_pretty(&document)?);
+        view.insert("database_name", self.database_name.to_string());
+        view.insert(
+            "path",
+            self.buffer_repository.get_document_path(
+                self.database_name,
+                self.collection_name,
+                self.id,
+            ),
+        );
+        view.insert("collection_name", self.collection_name.to_string());
+
+        Ok(serde_json::to_string(&view)?)
+    }
+}

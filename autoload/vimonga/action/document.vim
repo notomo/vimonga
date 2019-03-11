@@ -52,3 +52,17 @@ function! vimonga#action#document#last(open_cmd) abort
     let funcs = [{ -> vimonga#repo#document#find(database_name, collection_name, options)}]
     call vimonga#buffer#documents#open(funcs, a:open_cmd, options)
 endfunction
+
+function! vimonga#action#document#open(open_cmd) abort
+    let params = vimonga#buffer#documents#ensure()
+
+    let document_id = vimonga#buffer#documents#get_id()
+    if empty(document_id)
+        return
+    endif
+
+    let database_name = params['database_name']
+    let collection_name = params['collection_name']
+    let funcs = [{ -> vimonga#repo#document#find_by_id(database_name, collection_name, document_id)}]
+    call vimonga#buffer#document#open(funcs, a:open_cmd)
+endfunction

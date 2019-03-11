@@ -3,6 +3,7 @@ use failure::{Backtrace, Context, Fail};
 
 pub use crate::domain::{RepositoryError, RepositoryErrorKind};
 
+use bson::oid::Error as OidError;
 use mongodb::Error as MongodbError;
 use serde_json::Error as SerdeJsonError;
 
@@ -47,6 +48,15 @@ impl From<SerdeJsonError> for RepositoryError {
 
 impl From<MongodbError> for RepositoryError {
     fn from(e: MongodbError) -> Self {
+        let message = e.to_string();
+        RepositoryError {
+            inner: e.context(RepositoryErrorKind::InternalError { message }),
+        }
+    }
+}
+
+impl From<OidError> for RepositoryError {
+    fn from(e: OidError) -> Self {
         let message = e.to_string();
         RepositoryError {
             inner: e.context(RepositoryErrorKind::InternalError { message }),

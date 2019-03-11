@@ -3,7 +3,7 @@ use clap::{App, AppSettings, Arg, SubCommand};
 mod command;
 use command::{
     CollectionDropCommand, CollectionListCommand, Command, DatabaseDropCommand,
-    DatabaseListCommand, DocumentListCommand, HelpCommand, IndexListCommand,
+    DatabaseListCommand, DocumentGetCommand, DocumentListCommand, HelpCommand, IndexListCommand,
 };
 
 mod datastore;
@@ -108,42 +108,52 @@ fn main() {
                         .takes_value(true)
                         .required(true),
                 )
-                .arg(
-                    Arg::with_name("limit")
-                        .long("limit")
-                        .takes_value(true)
-                        .default_value("10")
-                        .required(false),
+                .subcommand(
+                    SubCommand::with_name("get").arg(
+                        Arg::with_name("id")
+                            .long("id")
+                            .takes_value(true)
+                            .required(true),
+                    ),
                 )
-                .arg(
-                    Arg::with_name("offset")
-                        .long("offset")
-                        .takes_value(true)
-                        .default_value("0")
-                        .required(false),
-                )
-                .arg(
-                    Arg::with_name("query")
-                        .long("query")
-                        .takes_value(true)
-                        .default_value("{}")
-                        .required(false),
-                )
-                .arg(
-                    Arg::with_name("projection")
-                        .long("projection")
-                        .takes_value(true)
-                        .default_value("{}")
-                        .required(false),
-                )
-                .arg(
-                    Arg::with_name("sort")
-                        .long("sort")
-                        .takes_value(true)
-                        .default_value("{}")
-                        .required(false),
-                )
-                .subcommand(SubCommand::with_name("find")),
+                .subcommand(
+                    SubCommand::with_name("find")
+                        .arg(
+                            Arg::with_name("limit")
+                                .long("limit")
+                                .takes_value(true)
+                                .default_value("10")
+                                .required(false),
+                        )
+                        .arg(
+                            Arg::with_name("offset")
+                                .long("offset")
+                                .takes_value(true)
+                                .default_value("0")
+                                .required(false),
+                        )
+                        .arg(
+                            Arg::with_name("query")
+                                .long("query")
+                                .takes_value(true)
+                                .default_value("{}")
+                                .required(false),
+                        )
+                        .arg(
+                            Arg::with_name("projection")
+                                .long("projection")
+                                .takes_value(true)
+                                .default_value("{}")
+                                .required(false),
+                        )
+                        .arg(
+                            Arg::with_name("sort")
+                                .long("sort")
+                                .takes_value(true)
+                                .default_value("{}")
+                                .required(false),
+                        ),
+                ),
         );
     let matches = app.get_matches();
 
@@ -246,43 +256,57 @@ fn main() {
             }
             _ => HelpCommand {}.run(),
         },
-        ("document", Some(cmd)) => match cmd.subcommand() {
-            ("find", Some(_)) => {
-                let database_name = cmd.value_of("database_name").unwrap();
-                let collection_name = cmd.value_of("collection_name").unwrap();
-                let query_json = cmd.value_of("query").unwrap();
-                let projection_json = cmd.value_of("projection").unwrap();
-                let sort_json = cmd.value_of("sort").unwrap();
-                let limit = cmd.value_of("limit").unwrap().parse().unwrap();
-                let offset = cmd.value_of("offset").unwrap().parse().unwrap();
+        ("document", Some(cmd)) => {
+            let database_name = cmd.value_of("database_name").unwrap();
+            let collection_name = cmd.value_of("collection_name").unwrap();
+            let collection_repo = CollectionRepositoryImpl {
+                connection_factory: &connection_factory,
+                host,
+                port,
+                setting: &setting,
+            };
 
-                let collection_repo = CollectionRepositoryImpl {
-                    connection_factory: &connection_factory,
-                    host,
-                    port,
-                    setting: &setting,
-                };
+            let repo = DocumentRepositoryImpl {
+                connection_factory: &connection_factory,
+            };
+            match cmd.subcommand() {
+                ("get", Some(cmd)) => {
+                    let id = cmd.value_of("id").unwrap();
 
-                let repo = DocumentRepositoryImpl {
-                    connection_factory: &connection_factory,
-                };
-
-                DocumentListCommand {
-                    document_repository: &repo,
-                    collection_repository: &collection_repo,
-                    buffer_repository: &buffer_repo,
-                    database_name,
-                    collection_name,
-                    query_json,
-                    projection_json,
-                    sort_json,
-                    limit,
-                    offset,
+                    DocumentGetCommand {
+                        document_repository: &repo,
+                        collection_repository: &collection_repo,
+                        buffer_repository: &buffer_repo,
+                        database_name,
+                        collection_name,
+                        id,
+                    }
+                    .run()
                 }
-                .run()
+                ("find", Some(cmd)) => {
+                    let query_json = cmd.value_of("query").unwrap();
+                    let projection_json = cmd.value_of("projection").unwrap();
+                    let sort_json = cmd.value_of("sort").unwrap();
+                    let limit = cmd.value_of("limit").unwrap().parse().unwrap();
+                    let offset = cmd.value_of("offset").unwrap().parse().unwrap();
+
+                    DocumentListCommand {
+                        document_repository: &repo,
+                        collection_repository: &collection_repo,
+                        buffer_repository: &buffer_repo,
+                        database_name,
+                        collection_name,
+                        query_json,
+                        projection_json,
+                        sort_json,
+                        limit,
+                        offset,
+                    }
+                    .run()
+                }
+                _ => HelpCommand {}.run(),
             }
-            _ => HelpCommand {}.run(),
-        },
+        }
         _ => HelpCommand {}.run(),
     };
 

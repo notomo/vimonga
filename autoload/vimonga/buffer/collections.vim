@@ -1,5 +1,5 @@
 
-let s:filetype = 'vimonga-coll'
+let s:filetype = 'vimonga-colls'
 function! vimonga#buffer#collections#filetype() abort
     return s:filetype
 endfunction

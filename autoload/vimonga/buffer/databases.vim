@@ -1,4 +1,4 @@
-let s:filetype = 'vimonga-db'
+let s:filetype = 'vimonga-dbs'
 function! vimonga#buffer#databases#filetype() abort
     return s:filetype
 endfunction

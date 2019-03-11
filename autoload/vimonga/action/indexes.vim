@@ -1,5 +1,5 @@
 
-function! vimonga#action#index#list(open_cmd) abort
+function! vimonga#action#indexes#list(open_cmd) abort
     let params = vimonga#buffer#collections#ensure()
     let database_name = params['database_name']
     let collection_name = params['collection_name']

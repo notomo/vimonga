@@ -1,5 +1,5 @@
 
-function! vimonga#action#collection#drop(open_cmd) abort
+function! vimonga#action#collections#drop(open_cmd) abort
     let params = vimonga#buffer#collections#ensure()
     let collection_name = params['collection_name']
 
@@ -15,7 +15,7 @@ function! vimonga#action#collection#drop(open_cmd) abort
     call vimonga#buffer#collections#open(funcs, a:open_cmd)
 endfunction
 
-function! vimonga#action#collection#list(open_cmd) abort
+function! vimonga#action#collections#list(open_cmd) abort
     let params = vimonga#buffer#databases#ensure_name()
     let database_name = params['database_name']
 

@@ -1,5 +1,5 @@
 
-function! vimonga#action#document#find(open_cmd) abort
+function! vimonga#action#documents#find(open_cmd) abort
     let params = vimonga#buffer#collections#ensure()
 
     let database_name = params['database_name']
@@ -10,7 +10,7 @@ function! vimonga#action#document#find(open_cmd) abort
     call vimonga#buffer#documents#open(funcs, a:open_cmd, options)
 endfunction
 
-function! vimonga#action#document#move_page(open_cmd, direction) abort
+function! vimonga#action#documents#move_page(open_cmd, direction) abort
     let params = vimonga#buffer#documents#ensure()
 
     let options = vimonga#repo#document#options()
@@ -29,7 +29,7 @@ function! vimonga#action#document#move_page(open_cmd, direction) abort
     call vimonga#buffer#documents#open(funcs, a:open_cmd, options)
 endfunction
 
-function! vimonga#action#document#first(open_cmd) abort
+function! vimonga#action#documents#first(open_cmd) abort
     let params = vimonga#buffer#documents#ensure()
 
     let database_name = params['database_name']
@@ -41,7 +41,7 @@ function! vimonga#action#document#first(open_cmd) abort
     call vimonga#buffer#documents#open(funcs, a:open_cmd, options)
 endfunction
 
-function! vimonga#action#document#last(open_cmd) abort
+function! vimonga#action#documents#last(open_cmd) abort
     let params = vimonga#buffer#documents#ensure()
 
     let database_name = params['database_name']
@@ -53,7 +53,7 @@ function! vimonga#action#document#last(open_cmd) abort
     call vimonga#buffer#documents#open(funcs, a:open_cmd, options)
 endfunction
 
-function! vimonga#action#document#open(open_cmd) abort
+function! vimonga#action#documents#open(open_cmd) abort
     let params = vimonga#buffer#documents#ensure()
 
     let document_id = vimonga#buffer#documents#get_id()

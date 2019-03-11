@@ -1,10 +1,10 @@
 
-function! vimonga#action#database#list(open_cmd) abort
+function! vimonga#action#databases#list(open_cmd) abort
     let funcs = [{ -> vimonga#repo#database#list()}]
     call vimonga#buffer#databases#open(funcs, a:open_cmd)
 endfunction
 
-function! vimonga#action#database#drop(open_cmd) abort
+function! vimonga#action#databases#drop(open_cmd) abort
     let params = vimonga#buffer#databases#ensure()
     let database_name = params['database_name']
 

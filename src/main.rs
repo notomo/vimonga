@@ -3,7 +3,8 @@ use clap::{App, AppSettings, Arg, SubCommand};
 mod command;
 use command::{
     CollectionDropCommand, CollectionListCommand, Command, DatabaseDropCommand,
-    DatabaseListCommand, DocumentGetCommand, DocumentListCommand, HelpCommand, IndexListCommand,
+    DatabaseListCommand, DocumentGetCommand, DocumentListCommand, DocumentUpdateCommand,
+    HelpCommand, IndexListCommand,
 };
 
 mod datastore;
@@ -115,6 +116,21 @@ fn main() {
                             .takes_value(true)
                             .required(true),
                     ),
+                )
+                .subcommand(
+                    SubCommand::with_name("update")
+                        .arg(
+                            Arg::with_name("id")
+                                .long("id")
+                                .takes_value(true)
+                                .required(true),
+                        )
+                        .arg(
+                            Arg::with_name("content")
+                                .long("content")
+                                .takes_value(true)
+                                .required(true),
+                        ),
                 )
                 .subcommand(
                     SubCommand::with_name("find")
@@ -280,6 +296,21 @@ fn main() {
                         database_name,
                         collection_name,
                         id,
+                    }
+                    .run()
+                }
+                ("update", Some(cmd)) => {
+                    let id = cmd.value_of("id").unwrap();
+                    let content = cmd.value_of("content").unwrap();
+
+                    DocumentUpdateCommand {
+                        document_repository: &repo,
+                        collection_repository: &collection_repo,
+                        buffer_repository: &buffer_repo,
+                        database_name,
+                        collection_name,
+                        id,
+                        content,
                     }
                     .run()
                 }

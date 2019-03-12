@@ -92,3 +92,37 @@ impl<'a> Command for DocumentGetCommand<'a> {
         Ok(serde_json::to_string(&view)?)
     }
 }
+
+pub struct DocumentUpdateCommand<'a> {
+    pub document_repository: &'a DocumentRepository,
+    pub collection_repository: &'a CollectionRepository,
+    pub buffer_repository: &'a BufferRepository,
+    pub database_name: &'a str,
+    pub collection_name: &'a str,
+    pub id: &'a str,
+    pub content: &'a str,
+}
+
+impl<'a> Command for DocumentUpdateCommand<'a> {
+    fn run(&self) -> Result<String, error::CommandError> {
+        self.document_repository.update_one(
+            self.database_name,
+            self.collection_name,
+            self.id,
+            self.content,
+        )?;
+
+        let mut view = HashMap::new();
+        view.insert("body", "");
+        view.insert("database_name", self.database_name);
+        let path = self.buffer_repository.get_document_path(
+            self.database_name,
+            self.collection_name,
+            self.id,
+        );
+        view.insert("path", &path);
+        view.insert("collection_name", self.collection_name);
+
+        Ok(serde_json::to_string(&view)?)
+    }
+}

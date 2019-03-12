@@ -27,4 +27,12 @@ pub trait DocumentRepository {
         collection_name: &str,
         query_json: &str,
     ) -> Result<i64, RepositoryError>;
+
+    fn update_one(
+        &self,
+        database_name: &str,
+        collection_name: &str,
+        id: &str,
+        update_document: &str,
+    ) -> Result<bool, RepositoryError>;
 }

@@ -26,6 +26,15 @@ function! vimonga#repo#document#find_by_id(database_name, collection_name, docum
     return vimonga#repo#impl#execute(args)
 endfunction
 
+function! vimonga#repo#document#update(database_name, collection_name, document_id, content) abort
+    let database = vimonga#repo#impl#option('database', a:database_name)
+    let collection = vimonga#repo#impl#option('collection', a:collection_name)
+    let id = vimonga#repo#impl#option('id', a:document_id)
+    let content = vimonga#repo#impl#option('content', a:content)
+    let args = ['document', database, collection, 'update', id, content]
+    return vimonga#repo#impl#execute(args)
+endfunction
+
 function! vimonga#repo#document#options(...) abort
     let defaults = {
         \ 'query': {},

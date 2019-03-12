@@ -104,4 +104,26 @@ impl<'a> DocumentRepository for DocumentRepositoryImpl<'a> {
 
         Ok(count)
     }
+
+    fn update_one(
+        &self,
+        database_name: &str,
+        collection_name: &str,
+        id: &str,
+        update_document: &str,
+    ) -> Result<bool, RepositoryError> {
+        let filter = self.to_document_from_id(id)?;
+        let doc = self.to_document_from_str(update_document);
+
+        let mut update = Document::new();
+        update.insert_bson("$set".to_string(), doc.into());
+
+        let client = self.connection_factory.get()?;
+        client
+            .db(database_name)
+            .collection(collection_name)
+            .update_one(filter, update, None)?;
+
+        Ok(true)
+    }
 }

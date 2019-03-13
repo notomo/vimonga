@@ -13,6 +13,26 @@ function! vimonga#buffer#document#ensure() abort
     \ }
 endfunction
 
+function! vimonga#buffer#document#ensure_id() abort
+    call vimonga#buffer#impl#assert_filetype(
+        \ s:filetype,
+        \ vimonga#buffer#documents#filetype(),
+    \ )
+    if &filetype == s:filetype
+        let document_id = s:document_id()
+    else
+        let document_id = vimonga#buffer#documents#get_id()
+        if empty(document_id)
+            throw 'object id is not found in this buffer'
+        endif
+    endif
+    return {
+        \ 'database_name': vimonga#buffer#impl#database_name(),
+        \ 'collection_name': vimonga#buffer#impl#collection_name(),
+        \ 'document_id': document_id
+    \ }
+endfunction
+
 function! vimonga#buffer#document#open(funcs, open_cmd) abort
     let [result, err] = vimonga#buffer#impl#execute(a:funcs)
     if !empty(err)
@@ -23,6 +43,7 @@ function! vimonga#buffer#document#open(funcs, open_cmd) abort
     augroup vimonga_doc
         autocmd!
         autocmd BufWriteCmd <buffer> call vimonga#action#document#update()
+        autocmd BufReadCmd <buffer> call vimonga#action#document#open('edit')
     augroup END
 
     set modifiable

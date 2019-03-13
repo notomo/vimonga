@@ -26,6 +26,11 @@ function! vimonga#buffer#documents#open(funcs, open_cmd, options) abort
     let b:vimonga_options['first_number'] = result['first_number']
     let b:vimonga_options['last_number'] = result['last_number']
     let b:vimonga_options['count'] = result['count']
+
+    augroup vimonga_docs
+        autocmd!
+        autocmd BufReadCmd <buffer> call vimonga#action#documents#find('edit', b:vimonga_options)
+    augroup END
 endfunction
 
 let s:SEPARATER = '": '

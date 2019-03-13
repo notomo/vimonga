@@ -20,7 +20,7 @@ function! vimonga#buffer#document#open(funcs, open_cmd) abort
     endif
     call vimonga#buffer#impl#buffer(result['body'], s:filetype, result['path'], a:open_cmd)
 
-    augroup vimonga_document
+    augroup vimonga_doc
         autocmd!
         autocmd BufWriteCmd <buffer> call vimonga#action#document#update()
     augroup END

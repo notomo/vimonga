@@ -15,8 +15,8 @@ let s:actions = {
         \ 'drop': { -> vimonga#action#databases#drop('edit') },
     \ },
     \ 'collection': {
-        \ 'open': { -> vimonga#action#documents#find('edit') },
-        \ 'tab_open': { -> vimonga#action#documents#find('tabedit') },
+        \ 'open': { -> vimonga#action#documents#find('edit', {}) },
+        \ 'tab_open': { -> vimonga#action#documents#find('tabedit', {}) },
         \ 'open_parent': { -> vimonga#action#databases#list('edit') },
         \ 'open_indexes': { -> vimonga#action#indexes#list('edit') },
         \ 'drop': { -> vimonga#action#collections#drop('edit') },

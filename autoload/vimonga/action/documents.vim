@@ -1,10 +1,10 @@
 
-function! vimonga#action#documents#find(open_cmd) abort
-    let params = vimonga#buffer#collections#ensure()
+function! vimonga#action#documents#find(open_cmd, options) abort
+    let params = vimonga#buffer#collections#ensure_name()
 
     let database_name = params['database_name']
     let collection_name = params['collection_name']
-    let options = vimonga#repo#document#options()
+    let options = vimonga#repo#document#options(a:options)
 
     let funcs = [{ -> vimonga#repo#document#find(database_name, collection_name, options)}]
     call vimonga#buffer#documents#open(funcs, a:open_cmd, options)

@@ -1,7 +1,7 @@
 use core::fmt::{self, Display};
 use failure::{Backtrace, Context, Fail};
 
-use crate::domain::RepositoryError;
+use crate::domain::repository::RepositoryError;
 use serde_json::Error as SerdeJsonError;
 
 #[derive(Debug)]

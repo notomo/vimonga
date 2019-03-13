@@ -1,4 +1,4 @@
-use crate::domain::{IndexRepository, RepositoryError};
+use crate::domain::repository::{IndexRepository, RepositoryError};
 
 use super::connection::ConnectionFactory;
 

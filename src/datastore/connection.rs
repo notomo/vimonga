@@ -1,4 +1,4 @@
-use crate::domain::RepositoryError;
+use crate::domain::repository::RepositoryError;
 
 use mongodb::{Client, ClientOptions, ThreadedClient};
 

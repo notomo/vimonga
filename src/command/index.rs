@@ -3,7 +3,7 @@ use crate::command::Command;
 
 use std::collections::HashMap;
 
-use crate::domain::{BufferRepository, CollectionRepository, IndexRepository};
+use crate::domain::repository::{BufferRepository, CollectionRepository, IndexRepository};
 
 pub struct IndexListCommand<'a> {
     pub index_repository: &'a IndexRepository,

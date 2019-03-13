@@ -1,4 +1,4 @@
-use crate::domain::BufferRepository;
+use crate::domain::repository::BufferRepository;
 
 pub struct BufferRepositoryImpl<'a> {
     pub host: &'a str,

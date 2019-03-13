@@ -3,7 +3,7 @@ use crate::command::Command;
 
 use std::collections::HashMap;
 
-use crate::domain::{BufferRepository, CollectionRepository, DocumentRepository};
+use crate::domain::repository::{BufferRepository, CollectionRepository, DocumentRepository};
 
 pub struct DocumentListCommand<'a> {
     pub document_repository: &'a DocumentRepository,

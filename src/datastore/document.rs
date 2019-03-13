@@ -1,4 +1,4 @@
-use crate::domain::{DocumentRepository, RepositoryError};
+use crate::domain::repository::{DocumentRepository, RepositoryError};
 
 use super::connection::ConnectionFactory;
 

@@ -1,4 +1,4 @@
-use crate::domain::{DatabaseRepository, RepositoryError};
+use crate::domain::repository::{DatabaseRepository, RepositoryError};
 
 use std::collections::HashMap;
 

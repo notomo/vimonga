@@ -3,7 +3,7 @@ use crate::command::Command;
 
 use std::collections::HashMap;
 
-use crate::domain::{BufferRepository, DatabaseRepository};
+use crate::domain::repository::{BufferRepository, DatabaseRepository};
 
 pub struct DatabaseListCommand<'a> {
     pub database_repository: &'a DatabaseRepository,

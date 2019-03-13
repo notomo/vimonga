@@ -1,18 +1,8 @@
 use clap::{App, AppSettings, Arg, SubCommand};
 
 mod command;
-use command::{
-    CollectionDropCommand, CollectionListCommand, Command, DatabaseDropCommand,
-    DatabaseListCommand, DocumentGetCommand, DocumentListCommand, DocumentUpdateCommand,
-    HelpCommand, IndexListCommand,
-};
-
+use command::Command;
 mod datastore;
-use datastore::{
-    BufferRepositoryImpl, CollectionRepositoryImpl, ConnectionFactory, DatabaseRepositoryImpl,
-    DocumentRepositoryImpl, IndexRepositoryImpl,
-};
-
 mod domain;
 
 #[macro_use]
@@ -175,53 +165,53 @@ fn main() {
 
     let host = matches.value_of("host").unwrap();
     let port = matches.value_of("port").unwrap().parse().unwrap();
-    let connection_factory = ConnectionFactory::new(host, port);
-    let buffer_repo = BufferRepositoryImpl::new(host, port);
+    let connection_factory = datastore::ConnectionFactory::new(host, port);
+    let buffer_repo = datastore::BufferRepositoryImpl::new(host, port);
     let setting = config::Setting::new(matches.value_of("config").unwrap()).unwrap();
 
     let command_result = match matches.subcommand() {
         ("database", Some(cmd)) => {
-            let repo = DatabaseRepositoryImpl {
+            let repo = datastore::DatabaseRepositoryImpl {
                 connection_factory: &connection_factory,
                 host,
                 port,
                 setting: &setting,
             };
             match cmd.subcommand() {
-                ("list", Some(_)) => DatabaseListCommand {
+                ("list", Some(_)) => command::DatabaseListCommand {
                     database_repository: &repo,
                     buffer_repository: &buffer_repo,
                 }
                 .run(),
                 ("drop", Some(cmd)) => {
                     let database_name = cmd.value_of("database_name").unwrap();
-                    DatabaseDropCommand {
+                    command::DatabaseDropCommand {
                         database_repository: &repo,
                         database_name: database_name,
                     }
                     .run()
                 }
-                _ => HelpCommand {}.run(),
+                _ => command::HelpCommand {}.run(),
             }
         }
         ("collection", Some(cmd)) => {
             let database_name = cmd.value_of("database_name").unwrap();
 
-            let db_repo = DatabaseRepositoryImpl {
+            let db_repo = datastore::DatabaseRepositoryImpl {
                 connection_factory: &connection_factory,
                 host,
                 port,
                 setting: &setting,
             };
 
-            let repo = CollectionRepositoryImpl {
+            let repo = datastore::CollectionRepositoryImpl {
                 connection_factory: &connection_factory,
                 host,
                 port,
                 setting: &setting,
             };
             match cmd.subcommand() {
-                ("list", Some(_)) => CollectionListCommand {
+                ("list", Some(_)) => command::CollectionListCommand {
                     collection_repository: &repo,
                     database_repository: &db_repo,
                     buffer_repository: &buffer_repo,
@@ -230,7 +220,7 @@ fn main() {
                 .run(),
                 ("drop", Some(cmd)) => {
                     let collection_name = cmd.value_of("collection_name").unwrap();
-                    CollectionDropCommand {
+                    command::CollectionDropCommand {
                         collection_repository: &repo,
                         database_repository: &db_repo,
                         buffer_repository: &buffer_repo,
@@ -239,7 +229,7 @@ fn main() {
                     }
                     .run()
                 }
-                _ => HelpCommand {}.run(),
+                _ => command::HelpCommand {}.run(),
             }
         }
         ("index", Some(cmd)) => match cmd.subcommand() {
@@ -247,21 +237,21 @@ fn main() {
                 let database_name = cmd.value_of("database_name").unwrap();
                 let collection_name = cmd.value_of("collection_name").unwrap();
 
-                let collection_repo = CollectionRepositoryImpl {
+                let collection_repo = datastore::CollectionRepositoryImpl {
                     connection_factory: &connection_factory,
                     host,
                     port,
                     setting: &setting,
                 };
 
-                let repo = IndexRepositoryImpl {
+                let repo = datastore::IndexRepositoryImpl {
                     connection_factory: &connection_factory,
                     host,
                     port,
                     setting: &setting,
                 };
 
-                IndexListCommand {
+                command::IndexListCommand {
                     index_repository: &repo,
                     collection_repository: &collection_repo,
                     buffer_repository: &buffer_repo,
@@ -270,26 +260,26 @@ fn main() {
                 }
                 .run()
             }
-            _ => HelpCommand {}.run(),
+            _ => command::HelpCommand {}.run(),
         },
         ("document", Some(cmd)) => {
             let database_name = cmd.value_of("database_name").unwrap();
             let collection_name = cmd.value_of("collection_name").unwrap();
-            let collection_repo = CollectionRepositoryImpl {
+            let collection_repo = datastore::CollectionRepositoryImpl {
                 connection_factory: &connection_factory,
                 host,
                 port,
                 setting: &setting,
             };
 
-            let repo = DocumentRepositoryImpl {
+            let repo = datastore::DocumentRepositoryImpl {
                 connection_factory: &connection_factory,
             };
             match cmd.subcommand() {
                 ("get", Some(cmd)) => {
                     let id = cmd.value_of("id").unwrap();
 
-                    DocumentGetCommand {
+                    command::DocumentGetCommand {
                         document_repository: &repo,
                         collection_repository: &collection_repo,
                         buffer_repository: &buffer_repo,
@@ -303,7 +293,7 @@ fn main() {
                     let id = cmd.value_of("id").unwrap();
                     let content = cmd.value_of("content").unwrap();
 
-                    DocumentUpdateCommand {
+                    command::DocumentUpdateCommand {
                         document_repository: &repo,
                         collection_repository: &collection_repo,
                         buffer_repository: &buffer_repo,
@@ -321,7 +311,7 @@ fn main() {
                     let limit = cmd.value_of("limit").unwrap().parse().unwrap();
                     let offset = cmd.value_of("offset").unwrap().parse().unwrap();
 
-                    DocumentListCommand {
+                    command::DocumentListCommand {
                         document_repository: &repo,
                         collection_repository: &collection_repo,
                         buffer_repository: &buffer_repo,
@@ -335,10 +325,10 @@ fn main() {
                     }
                     .run()
                 }
-                _ => HelpCommand {}.run(),
+                _ => command::HelpCommand {}.run(),
             }
         }
-        _ => HelpCommand {}.run(),
+        _ => command::HelpCommand {}.run(),
     };
 
     match command_result {

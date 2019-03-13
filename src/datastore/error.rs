@@ -1,7 +1,7 @@
 use core::fmt::{self, Display};
 use failure::{Backtrace, Context, Fail};
 
-pub use crate::domain::{RepositoryError, RepositoryErrorKind};
+pub use crate::domain::repository::{RepositoryError, RepositoryErrorKind};
 
 use bson::oid::Error as OidError;
 use mongodb::Error as MongodbError;

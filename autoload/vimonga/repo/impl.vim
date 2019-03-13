@@ -3,14 +3,9 @@ function! vimonga#repo#impl#execute(args) abort
     let host = vimonga#config#get('default_host')
     let port = vimonga#config#get('default_port')
 
-    let executable = shellescape(vimonga#config#get('executable'))
-    let config_path = vimonga#config#get('config_path')
-    let config = vimonga#repo#impl#option('config', config_path)
-    let cmd = join([executable, config], ' ')
-
     let default_args = [
         \ 'RUST_BACKTRACE=1',
-        \ cmd,
+        \ shellescape(vimonga#config#get('executable')),
         \ vimonga#repo#impl#option('host', host),
         \ vimonga#repo#impl#option('port', port)
     \ ]

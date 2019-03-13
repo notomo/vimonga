@@ -1,6 +1,5 @@
 
 let s:default_config = {
-    \ 'config_path': '',
     \ 'default_port': '',
     \ 'default_host': '',
     \ 'executable': 'vimonga',
@@ -8,10 +7,6 @@ let s:default_config = {
 let s:config = deepcopy(s:default_config)
 
 let s:validations = {
-    \ 'config_path': {
-        \ 'description': 'a config file path',
-        \ 'func': {x -> type(x) ==? v:t_string},
-    \ },
     \ 'default_port': {
         \ 'description': 'a positive number',
         \ 'func': {x -> type(x) ==? v:t_number && x > 0},

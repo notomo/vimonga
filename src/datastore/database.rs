@@ -2,17 +2,12 @@ use crate::domain::repository::{DatabaseRepository, RepositoryError};
 
 use std::collections::HashMap;
 
-use crate::config::Setting;
-
 use super::connection::ConnectionFactory;
 
 use mongodb::ThreadedClient;
 
 pub struct DatabaseRepositoryImpl<'a> {
     pub connection_factory: &'a ConnectionFactory<'a>,
-    pub host: &'a str,
-    pub port: u16,
-    pub setting: &'a Setting,
 }
 
 impl<'a> DatabaseRepository for DatabaseRepositoryImpl<'a> {

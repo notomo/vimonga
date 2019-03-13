@@ -4,16 +4,11 @@ use super::connection::ConnectionFactory;
 
 use std::collections::HashMap;
 
-use crate::config::Setting;
-
 use mongodb::db::ThreadedDatabase;
 use mongodb::ThreadedClient;
 
 pub struct CollectionRepositoryImpl<'a> {
     pub connection_factory: &'a ConnectionFactory<'a>,
-    pub host: &'a str,
-    pub port: u16,
-    pub setting: &'a Setting,
 }
 
 impl<'a> CollectionRepository for CollectionRepositoryImpl<'a> {

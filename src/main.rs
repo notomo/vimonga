@@ -5,12 +5,7 @@ use command::Command;
 mod datastore;
 mod domain;
 
-#[macro_use]
-extern crate serde_derive;
-
 use failure::Fail;
-
-mod config;
 
 fn main() {
     let app = App::new("monga")
@@ -29,13 +24,6 @@ fn main() {
                 .short("p")
                 .long("port")
                 .default_value("27017")
-                .takes_value(true)
-                .required(false),
-        )
-        .arg(
-            Arg::with_name("config")
-                .long("config")
-                .default_value("./vimonga.toml")
                 .takes_value(true)
                 .required(false),
         )
@@ -167,15 +155,11 @@ fn main() {
     let port = matches.value_of("port").unwrap().parse().unwrap();
     let connection_factory = datastore::ConnectionFactory::new(host, port);
     let buffer_repo = datastore::BufferRepositoryImpl::new(host, port);
-    let setting = config::Setting::new(matches.value_of("config").unwrap()).unwrap();
 
     let command_result = match matches.subcommand() {
         ("database", Some(cmd)) => {
             let repo = datastore::DatabaseRepositoryImpl {
                 connection_factory: &connection_factory,
-                host,
-                port,
-                setting: &setting,
             };
             match cmd.subcommand() {
                 ("list", Some(_)) => command::DatabaseListCommand {
@@ -199,16 +183,10 @@ fn main() {
 
             let db_repo = datastore::DatabaseRepositoryImpl {
                 connection_factory: &connection_factory,
-                host,
-                port,
-                setting: &setting,
             };
 
             let repo = datastore::CollectionRepositoryImpl {
                 connection_factory: &connection_factory,
-                host,
-                port,
-                setting: &setting,
             };
             match cmd.subcommand() {
                 ("list", Some(_)) => command::CollectionListCommand {
@@ -239,16 +217,10 @@ fn main() {
 
                 let collection_repo = datastore::CollectionRepositoryImpl {
                     connection_factory: &connection_factory,
-                    host,
-                    port,
-                    setting: &setting,
                 };
 
                 let repo = datastore::IndexRepositoryImpl {
                     connection_factory: &connection_factory,
-                    host,
-                    port,
-                    setting: &setting,
                 };
 
                 command::IndexListCommand {
@@ -267,9 +239,6 @@ fn main() {
             let collection_name = cmd.value_of("collection_name").unwrap();
             let collection_repo = datastore::CollectionRepositoryImpl {
                 connection_factory: &connection_factory,
-                host,
-                port,
-                setting: &setting,
             };
 
             let repo = datastore::DocumentRepositoryImpl {

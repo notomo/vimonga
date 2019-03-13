@@ -2,8 +2,6 @@ use crate::domain::repository::{IndexRepository, RepositoryError};
 
 use super::connection::ConnectionFactory;
 
-use crate::config::Setting;
-
 use bson::Document;
 
 use mongodb::db::ThreadedDatabase;
@@ -11,9 +9,6 @@ use mongodb::ThreadedClient;
 
 pub struct IndexRepositoryImpl<'a> {
     pub connection_factory: &'a ConnectionFactory<'a>,
-    pub host: &'a str,
-    pub port: u16,
-    pub setting: &'a Setting,
 }
 
 impl<'a> IndexRepository for IndexRepositoryImpl<'a> {

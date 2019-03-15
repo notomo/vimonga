@@ -22,3 +22,32 @@ function! vimonga#action#document#open(open_cmd) abort
     let funcs = [{ -> vimonga#repo#document#find_by_id(database_name, collection_name, document_id)}]
     call vimonga#buffer#document#open(funcs, a:open_cmd)
 endfunction
+
+function! vimonga#action#document#new(open_cmd) abort
+    let params = vimonga#buffer#documents#ensure()
+    call vimonga#buffer#document#new(bufname('%') . '/new', a:open_cmd)
+endfunction
+
+function! vimonga#action#document#insert() abort
+    let params = vimonga#buffer#document#ensure_new()
+
+    let database_name = params['database_name']
+    let collection_name = params['collection_name']
+    let document = join(getbufline('%', 1, '$'), '')
+
+    let [result, err] = vimonga#repo#document#insert(database_name, collection_name, document)
+    if !empty(err)
+        echohl ErrorMsg | echo join(err, "\n") | echohl None | return
+    endif
+
+    let body = result['body']
+    if empty(body)
+        return
+    endif
+
+    let database_name = result['database_name']
+    let collection_name = result['collection_name']
+    let document_id = body[0]
+    let funcs = [{ -> vimonga#repo#document#find_by_id(database_name, collection_name, document_id)}]
+    call vimonga#buffer#document#open(funcs, 'edit')
+endfunction

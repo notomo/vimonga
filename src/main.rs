@@ -96,6 +96,14 @@ fn main() {
                     ),
                 )
                 .subcommand(
+                    SubCommand::with_name("insert").arg(
+                        Arg::with_name("content")
+                            .long("content")
+                            .takes_value(true)
+                            .required(true),
+                    ),
+                )
+                .subcommand(
                     SubCommand::with_name("update")
                         .arg(
                             Arg::with_name("id")
@@ -255,6 +263,19 @@ fn main() {
                         database_name,
                         collection_name,
                         id,
+                    }
+                    .run()
+                }
+                ("insert", Some(cmd)) => {
+                    let content = cmd.value_of("content").unwrap();
+
+                    command::DocumentInsertCommand {
+                        document_repository: &repo,
+                        collection_repository: &collection_repo,
+                        buffer_repository: &buffer_repo,
+                        database_name,
+                        collection_name,
+                        content,
                     }
                     .run()
                 }

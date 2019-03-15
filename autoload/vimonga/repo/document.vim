@@ -35,6 +35,14 @@ function! vimonga#repo#document#update(database_name, collection_name, document_
     return vimonga#repo#impl#execute(args)
 endfunction
 
+function! vimonga#repo#document#insert(database_name, collection_name, content) abort
+    let database = vimonga#repo#impl#option('database', a:database_name)
+    let collection = vimonga#repo#impl#option('collection', a:collection_name)
+    let content = vimonga#repo#impl#option('content', a:content)
+    let args = ['document', database, collection, 'insert', content]
+    return vimonga#repo#impl#execute(args)
+endfunction
+
 function! vimonga#repo#document#options(...) abort
     let defaults = {
         \ 'query': {},

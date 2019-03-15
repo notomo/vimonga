@@ -41,6 +41,8 @@ let s:actions = {
         \ 'query_reset_all': { -> vimonga#action#documents#query#reset_all('edit') },
         \ 'open_one': { -> vimonga#action#document#open('edit') },
         \ 'tab_open_one': { -> vimonga#action#document#open('tabedit') },
+        \ 'tab_new': { -> vimonga#action#document#new('tabedit') },
+        \ 'insert': { -> vimonga#action#document#insert() },
     \ },
 \ }
 function! vimonga#action(namespace, action_name) abort

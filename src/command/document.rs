@@ -3,6 +3,8 @@ use crate::command::Command;
 
 use std::collections::HashMap;
 
+use bson::Bson;
+
 use crate::domain::repository::{BufferRepository, CollectionRepository, DocumentRepository};
 
 pub struct DocumentListCommand<'a> {
@@ -121,6 +123,41 @@ impl<'a> Command for DocumentUpdateCommand<'a> {
             self.id,
         );
         view.insert("path", &path);
+        view.insert("collection_name", self.collection_name);
+
+        Ok(serde_json::to_string(&view)?)
+    }
+}
+
+pub struct DocumentInsertCommand<'a> {
+    pub document_repository: &'a DocumentRepository,
+    pub collection_repository: &'a CollectionRepository,
+    pub buffer_repository: &'a BufferRepository,
+    pub database_name: &'a str,
+    pub collection_name: &'a str,
+    pub content: &'a str,
+}
+
+impl<'a> Command for DocumentInsertCommand<'a> {
+    fn run(&self) -> Result<String, error::CommandError> {
+        let id = self.document_repository.insert_one(
+            self.database_name,
+            self.collection_name,
+            self.content,
+        )?;
+
+        let body = match id {
+            Some(id) => match id {
+                Bson::ObjectId(id) => id.to_string(),
+                Bson::String(id) => id,
+                _ => "".to_string(),
+            },
+            None => "".to_string(),
+        };
+
+        let mut view = HashMap::new();
+        view.insert("body", body.as_str());
+        view.insert("database_name", self.database_name);
         view.insert("collection_name", self.collection_name);
 
         Ok(serde_json::to_string(&view)?)

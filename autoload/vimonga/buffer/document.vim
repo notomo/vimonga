@@ -51,6 +51,21 @@ function! vimonga#buffer#document#open(funcs, open_cmd) abort
     set nomodified
 endfunction
 
+let s:filetype_new = 'vimonga-doc-new'
+function! vimonga#buffer#document#new(path, open_cmd) abort
+    let content = ['{', '  ', '}']
+    call vimonga#buffer#impl#buffer(content, s:filetype_new, a:path, a:open_cmd)
+    set modifiable
+endfunction
+
+function! vimonga#buffer#document#ensure_new() abort
+    call vimonga#buffer#impl#assert_filetype(s:filetype_new)
+    return {
+        \ 'database_name': vimonga#buffer#impl#database_name(),
+        \ 'collection_name': vimonga#buffer#impl#collection_name(),
+    \ }
+endfunction
+
 function! s:document_id() abort
     return matchstr(bufname('%'), '\vvimonga:\/\/.*\/dbs\/[^/]*\/colls\/[^/]*\/docs\/\zs[^/]*\ze')
 endfunction

@@ -4,7 +4,7 @@ use super::connection::ConnectionFactory;
 
 use std::collections::HashMap;
 
-use bson::Document;
+use bson::{Bson, Document};
 
 use serde_json::Value;
 
@@ -125,5 +125,23 @@ impl<'a> DocumentRepository for DocumentRepositoryImpl<'a> {
             .update_one(filter, update, None)?;
 
         Ok(true)
+    }
+
+    fn insert_one(
+        &self,
+        database_name: &str,
+        collection_name: &str,
+        insert_document: &str,
+    ) -> Result<Option<Bson>, RepositoryError> {
+        let doc = self.to_document_from_str(insert_document);
+
+        let client = self.connection_factory.get()?;
+        let id = client
+            .db(database_name)
+            .collection(collection_name)
+            .insert_one(doc, None)?
+            .inserted_id;
+
+        Ok(id)
     }
 }

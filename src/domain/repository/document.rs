@@ -1,6 +1,6 @@
 use super::error::RepositoryError;
 
-use bson::Document;
+use bson::{Bson, Document};
 
 pub trait DocumentRepository {
     fn find(
@@ -35,4 +35,11 @@ pub trait DocumentRepository {
         id: &str,
         update_document: &str,
     ) -> Result<bool, RepositoryError>;
+
+    fn insert_one(
+        &self,
+        database_name: &str,
+        collection_name: &str,
+        insert_document: &str,
+    ) -> Result<Option<Bson>, RepositoryError>;
 }

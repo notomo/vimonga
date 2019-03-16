@@ -27,8 +27,16 @@ impl<'a> BufferRepository for BufferRepositoryImpl<'a> {
         format!("{}/dbs", self.get_base_path())
     }
 
+    fn get_db_path(&self, database_name: &str) -> String {
+        format!("{}/{}", self.get_dbs_path(), database_name)
+    }
+
+    fn get_users_path(&self, database_name: &str) -> String {
+        format!("{}/users", self.get_db_path(database_name))
+    }
+
     fn get_collections_path(&self, database_name: &str) -> String {
-        format!("{}/{}/colls", self.get_dbs_path(), database_name)
+        format!("{}/colls", self.get_db_path(database_name))
     }
 
     fn get_indexes_path(&self, database_name: &str, collection_name: &str) -> String {

@@ -31,6 +31,14 @@ fn main() {
             SubCommand::with_name("database")
                 .subcommand(SubCommand::with_name("list"))
                 .subcommand(
+                    SubCommand::with_name("users").arg(
+                        Arg::with_name("database_name")
+                            .long("database")
+                            .takes_value(true)
+                            .required(true),
+                    ),
+                )
+                .subcommand(
                     SubCommand::with_name("drop").arg(
                         Arg::with_name("database_name")
                             .long("database")
@@ -175,6 +183,15 @@ fn main() {
                     buffer_repository: &buffer_repo,
                 }
                 .run(),
+                ("users", Some(cmd)) => {
+                    let database_name = cmd.value_of("database_name").unwrap();
+                    command::DatabaseUserListCommand {
+                        database_repository: &repo,
+                        buffer_repository: &buffer_repo,
+                        database_name: database_name,
+                    }
+                    .run()
+                }
                 ("drop", Some(cmd)) => {
                     let database_name = cmd.value_of("database_name").unwrap();
                     command::DatabaseDropCommand {

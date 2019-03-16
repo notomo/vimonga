@@ -13,6 +13,7 @@ endfunction
 function! vimonga#buffer#databases#ensure_name() abort
     call vimonga#buffer#impl#assert_filetype(
         \ s:filetype,
+        \ vimonga#buffer#database#users#filetype(),
         \ vimonga#buffer#collections#filetype(),
         \ vimonga#buffer#indexes#filetype(),
         \ vimonga#buffer#documents#filetype(),

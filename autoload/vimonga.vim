@@ -14,6 +14,9 @@ let s:actions = {
         \ 'tab_open': { -> vimonga#action#collections#list('tabedit') },
         \ 'drop': { -> vimonga#action#databases#drop('edit') },
     \ },
+    \ 'users': {
+        \ 'open': { -> vimonga#action#database#users#list('edit') },
+    \ },
     \ 'collection': {
         \ 'open': { -> vimonga#action#documents#find('edit', {}) },
         \ 'tab_open': { -> vimonga#action#documents#find('tabedit', {}) },

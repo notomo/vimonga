@@ -2,7 +2,7 @@ mod collection;
 pub use collection::{CollectionDropCommand, CollectionListCommand};
 
 mod database;
-pub use database::{DatabaseDropCommand, DatabaseListCommand};
+pub use database::{DatabaseDropCommand, DatabaseListCommand, DatabaseUserListCommand};
 
 mod index;
 pub use index::IndexListCommand;

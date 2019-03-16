@@ -30,3 +30,15 @@ exampleDb.teams.insert({
   skills: [1, 2, 3],
   createdAt: new Date()
 });
+
+exampleDb.createUser({
+  user: "test-user1",
+  pwd: "test",
+  roles: [{ role: "readWrite", db: "example" }]
+});
+
+exampleDb.createUser({
+  user: "read-user",
+  pwd: "test",
+  roles: [{ role: "read", db: "example" }]
+});

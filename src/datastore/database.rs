@@ -1,9 +1,10 @@
 use crate::domain::repository::{DatabaseRepository, RepositoryError};
 
-use std::collections::HashMap;
-
 use super::connection::ConnectionFactory;
 
+use bson::Document;
+
+use mongodb::db::ThreadedDatabase;
 use mongodb::ThreadedClient;
 
 pub struct DatabaseRepositoryImpl<'a> {
@@ -15,10 +16,14 @@ impl<'a> DatabaseRepository for DatabaseRepositoryImpl<'a> {
         let client = self.connection_factory.get()?;
         let names = client.database_names()?;
 
-        let mut value = HashMap::new();
-        value.insert("body", &names);
-
         Ok(names)
+    }
+
+    fn get_users(&self, database_name: &str) -> Result<Vec<Document>, RepositoryError> {
+        let client = self.connection_factory.get()?;
+        let documents = client.db(database_name).get_all_users(false)?;
+
+        Ok(documents)
     }
 
     fn drop(&self, database_name: &str) -> Result<bool, RepositoryError> {

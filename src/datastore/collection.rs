@@ -22,6 +22,14 @@ impl<'a> CollectionRepository for CollectionRepositoryImpl<'a> {
         Ok(names)
     }
 
+    fn create(&self, database_name: &str, collection_name: &str) -> Result<bool, RepositoryError> {
+        let client = self.connection_factory.get()?;
+        client
+            .db(database_name)
+            .create_collection(collection_name, None)?;
+        Ok(true)
+    }
+
     fn drop(&self, database_name: &str, collection_name: &str) -> Result<bool, RepositoryError> {
         let client = self.connection_factory.get()?;
         client

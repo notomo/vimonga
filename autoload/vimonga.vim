@@ -23,6 +23,7 @@ let s:actions = {
         \ 'open_parent': { -> vimonga#action#databases#list('edit') },
         \ 'open_indexes': { -> vimonga#action#indexes#list('edit') },
         \ 'drop': { -> vimonga#action#collections#drop('edit') },
+        \ 'create': { -> vimonga#action#collections#new('edit') },
     \ },
     \ 'indexes': {
         \ 'open_parent': { -> vimonga#action#collections#list('edit') },

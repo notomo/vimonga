@@ -1,5 +1,5 @@
 mod collection;
-pub use collection::{CollectionDropCommand, CollectionListCommand};
+pub use collection::{CollectionCreateCommand, CollectionDropCommand, CollectionListCommand};
 
 mod database;
 pub use database::{DatabaseDropCommand, DatabaseListCommand, DatabaseUserListCommand};

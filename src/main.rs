@@ -57,6 +57,14 @@ fn main() {
                 )
                 .subcommand(SubCommand::with_name("list"))
                 .subcommand(
+                    SubCommand::with_name("create").arg(
+                        Arg::with_name("collection_name")
+                            .long("collection")
+                            .takes_value(true)
+                            .required(true),
+                    ),
+                )
+                .subcommand(
                     SubCommand::with_name("drop").arg(
                         Arg::with_name("collection_name")
                             .long("collection")
@@ -206,26 +214,30 @@ fn main() {
         ("collection", Some(cmd)) => {
             let database_name = cmd.value_of("database_name").unwrap();
 
-            let db_repo = datastore::DatabaseRepositoryImpl {
-                connection_factory: &connection_factory,
-            };
-
             let repo = datastore::CollectionRepositoryImpl {
                 connection_factory: &connection_factory,
             };
             match cmd.subcommand() {
                 ("list", Some(_)) => command::CollectionListCommand {
                     collection_repository: &repo,
-                    database_repository: &db_repo,
                     buffer_repository: &buffer_repo,
                     database_name,
                 }
                 .run(),
+                ("create", Some(cmd)) => {
+                    let collection_name = cmd.value_of("collection_name").unwrap();
+                    command::CollectionCreateCommand {
+                        collection_repository: &repo,
+                        buffer_repository: &buffer_repo,
+                        database_name,
+                        collection_name,
+                    }
+                    .run()
+                }
                 ("drop", Some(cmd)) => {
                     let collection_name = cmd.value_of("collection_name").unwrap();
                     command::CollectionDropCommand {
                         collection_repository: &repo,
-                        database_repository: &db_repo,
                         buffer_repository: &buffer_repo,
                         database_name,
                         collection_name,

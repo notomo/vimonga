@@ -42,4 +42,11 @@ pub trait DocumentRepository {
         collection_name: &str,
         insert_document: &str,
     ) -> Result<Option<Bson>, RepositoryError>;
+
+    fn delete_one(
+        &self,
+        database_name: &str,
+        collection_name: &str,
+        id: &str,
+    ) -> Result<bool, RepositoryError>;
 }

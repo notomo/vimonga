@@ -47,6 +47,7 @@ let s:actions = {
         \ 'tab_open_one': { -> vimonga#action#document#open('tabedit') },
         \ 'tab_new': { -> vimonga#action#document#new('tabedit') },
         \ 'insert': { -> vimonga#action#document#insert() },
+        \ 'delete_one': { -> vimonga#action#document#delete() },
     \ },
 \ }
 function! vimonga#action(namespace, action_name) abort

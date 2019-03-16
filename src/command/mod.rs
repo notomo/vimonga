@@ -9,7 +9,8 @@ pub use index::IndexListCommand;
 
 mod document;
 pub use document::{
-    DocumentGetCommand, DocumentInsertCommand, DocumentListCommand, DocumentUpdateCommand,
+    DocumentDeleteCommand, DocumentGetCommand, DocumentInsertCommand, DocumentListCommand,
+    DocumentUpdateCommand,
 };
 
 mod help;

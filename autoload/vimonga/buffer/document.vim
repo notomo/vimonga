@@ -46,16 +46,20 @@ function! vimonga#buffer#document#open(funcs, open_cmd) abort
         autocmd BufReadCmd <buffer> call vimonga#action#document#open('edit')
     augroup END
 
-    set modifiable
-    set buftype=acwrite
-    set nomodified
+    setlocal modifiable
+    setlocal buftype=acwrite
+    setlocal nomodified
 endfunction
 
 let s:filetype_new = 'vimonga-doc-new'
+function! vimonga#buffer#document#filetype_new() abort
+    return s:filetype_new
+endfunction
+
 function! vimonga#buffer#document#new(path, open_cmd) abort
     let content = ['{', '  ', '}']
     call vimonga#buffer#impl#buffer(content, s:filetype_new, a:path, a:open_cmd)
-    set modifiable
+    setlocal modifiable
 endfunction
 
 function! vimonga#buffer#document#ensure_new() abort
@@ -64,6 +68,11 @@ function! vimonga#buffer#document#ensure_new() abort
         \ 'database_name': vimonga#buffer#impl#database_name(),
         \ 'collection_name': vimonga#buffer#impl#collection_name(),
     \ }
+endfunction
+
+let s:filetype_delete = 'vimonga-doc-delete'
+function! vimonga#buffer#document#filetype_delete() abort
+    return s:filetype_delete
 endfunction
 
 function! s:document_id() abort

@@ -19,6 +19,8 @@ function! vimonga#buffer#collections#ensure_name() abort
         \ vimonga#buffer#indexes#filetype(),
         \ vimonga#buffer#documents#filetype(),
         \ vimonga#buffer#document#filetype(),
+        \ vimonga#buffer#document#filetype_new(),
+        \ vimonga#buffer#document#filetype_delete(),
     \ )
     if &filetype == s:filetype
         let collection_name = getline(line('.'))

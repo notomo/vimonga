@@ -112,6 +112,14 @@ fn main() {
                     ),
                 )
                 .subcommand(
+                    SubCommand::with_name("delete").arg(
+                        Arg::with_name("id")
+                            .long("id")
+                            .takes_value(true)
+                            .required(true),
+                    ),
+                )
+                .subcommand(
                     SubCommand::with_name("insert").arg(
                         Arg::with_name("content")
                             .long("content")
@@ -274,9 +282,6 @@ fn main() {
         ("document", Some(cmd)) => {
             let database_name = cmd.value_of("database_name").unwrap();
             let collection_name = cmd.value_of("collection_name").unwrap();
-            let collection_repo = datastore::CollectionRepositoryImpl {
-                connection_factory: &connection_factory,
-            };
 
             let repo = datastore::DocumentRepositoryImpl {
                 connection_factory: &connection_factory,
@@ -287,7 +292,18 @@ fn main() {
 
                     command::DocumentGetCommand {
                         document_repository: &repo,
-                        collection_repository: &collection_repo,
+                        buffer_repository: &buffer_repo,
+                        database_name,
+                        collection_name,
+                        id,
+                    }
+                    .run()
+                }
+                ("delete", Some(cmd)) => {
+                    let id = cmd.value_of("id").unwrap();
+
+                    command::DocumentDeleteCommand {
+                        document_repository: &repo,
                         buffer_repository: &buffer_repo,
                         database_name,
                         collection_name,
@@ -300,7 +316,6 @@ fn main() {
 
                     command::DocumentInsertCommand {
                         document_repository: &repo,
-                        collection_repository: &collection_repo,
                         buffer_repository: &buffer_repo,
                         database_name,
                         collection_name,
@@ -314,7 +329,6 @@ fn main() {
 
                     command::DocumentUpdateCommand {
                         document_repository: &repo,
-                        collection_repository: &collection_repo,
                         buffer_repository: &buffer_repo,
                         database_name,
                         collection_name,
@@ -332,7 +346,6 @@ fn main() {
 
                     command::DocumentListCommand {
                         document_repository: &repo,
-                        collection_repository: &collection_repo,
                         buffer_repository: &buffer_repo,
                         database_name,
                         collection_name,

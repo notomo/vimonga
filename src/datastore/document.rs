@@ -144,4 +144,21 @@ impl<'a> DocumentRepository for DocumentRepositoryImpl<'a> {
 
         Ok(id)
     }
+
+    fn delete_one(
+        &self,
+        database_name: &str,
+        collection_name: &str,
+        id: &str,
+    ) -> Result<bool, RepositoryError> {
+        let filter = self.to_document_from_id(id)?;
+
+        let client = self.connection_factory.get()?;
+        client
+            .db(database_name)
+            .collection(collection_name)
+            .delete_one(filter, None)?;
+
+        Ok(true)
+    }
 }

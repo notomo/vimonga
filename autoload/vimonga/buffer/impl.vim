@@ -21,7 +21,7 @@ function! vimonga#buffer#impl#buffer(contents, filetype, path, open_cmd) abort
 
     setlocal modifiable
     let cursor = getpos('.')
-    %delete _
+    silent %delete _
     call setline(1, a:contents)
     call setpos('.', cursor)
 

@@ -1,3 +1,5 @@
+#![feature(slice_patterns)]
+
 use clap::{App, AppSettings, Arg, SubCommand};
 
 mod command;
@@ -26,6 +28,24 @@ fn main() {
                 .default_value("27017")
                 .takes_value(true)
                 .required(false),
+        )
+        .subcommand(
+            SubCommand::with_name("complete")
+                .arg(
+                    Arg::with_name("current_arg")
+                        .long("current")
+                        .takes_value(true)
+                        .default_value("")
+                        .required(false),
+                )
+                .arg(
+                    Arg::with_name("args")
+                        .long("args")
+                        .multiple(true)
+                        .takes_value(true)
+                        .required(false),
+                )
+                .subcommand(SubCommand::with_name("vimonga")),
         )
         .subcommand(
             SubCommand::with_name("database")
@@ -189,6 +209,26 @@ fn main() {
     let buffer_repo = datastore::BufferRepositoryImpl::new(host, port);
 
     let command_result = match matches.subcommand() {
+        ("complete", Some(cmd)) => {
+            let current_arg = cmd.value_of("current_arg").unwrap();
+            let args: Vec<_> = cmd.values_of("args").unwrap_or_default().collect();
+            let db_repo = datastore::DatabaseRepositoryImpl {
+                connection_factory: &connection_factory,
+            };
+            let coll_repo = datastore::CollectionRepositoryImpl {
+                connection_factory: &connection_factory,
+            };
+            match cmd.subcommand() {
+                ("vimonga", Some(_)) => command::CompleteVimongaCommand {
+                    current_arg: current_arg,
+                    args: args,
+                    database_repository: &db_repo,
+                    collection_repository: &coll_repo,
+                }
+                .run(),
+                _ => command::HelpCommand {}.run(),
+            }
+        }
         ("database", Some(cmd)) => {
             let repo = datastore::DatabaseRepositoryImpl {
                 connection_factory: &connection_factory,

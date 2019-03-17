@@ -1,3 +1,6 @@
+mod complete;
+pub use complete::CompleteVimongaCommand;
+
 mod collection;
 pub use collection::{CollectionCreateCommand, CollectionDropCommand, CollectionListCommand};
 

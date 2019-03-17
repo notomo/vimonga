@@ -2,8 +2,6 @@ use crate::domain::repository::{CollectionRepository, RepositoryError};
 
 use super::connection::ConnectionFactory;
 
-use std::collections::HashMap;
-
 use mongodb::db::ThreadedDatabase;
 use mongodb::ThreadedClient;
 
@@ -15,9 +13,6 @@ impl<'a> CollectionRepository for CollectionRepositoryImpl<'a> {
     fn get_names(&self, database_name: &str) -> Result<Vec<String>, RepositoryError> {
         let client = self.connection_factory.get()?;
         let names = client.db(database_name).collection_names(None)?;
-
-        let mut value = HashMap::new();
-        value.insert("body", &names);
 
         Ok(names)
     }

@@ -6,10 +6,10 @@ endfunction
 
 function! vimonga#buffer#documents#ensure() abort
     call vimonga#buffer#impl#assert_filetype(s:filetype)
-    return {
-        \ 'database_name': vimonga#buffer#impl#database_name(),
-        \ 'collection_name': vimonga#buffer#impl#collection_name(),
-    \ }
+    return vimonga#model#collection#new(
+        \ vimonga#buffer#impl#database_name(),
+        \ vimonga#buffer#impl#collection_name(),
+    \ )
 endfunction
 
 function! vimonga#buffer#documents#open(funcs, open_cmd, options) abort

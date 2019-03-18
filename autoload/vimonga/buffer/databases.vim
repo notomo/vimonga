@@ -5,9 +5,7 @@ endfunction
 
 function! vimonga#buffer#databases#ensure() abort
     call vimonga#buffer#impl#assert_filetype(s:filetype)
-    return {
-        \ 'database_name': getline(line('.')),
-    \ }
+    return vimonga#model#database#new(getline(line('.')))
 endfunction
 
 function! vimonga#buffer#databases#ensure_name() abort
@@ -19,9 +17,11 @@ function! vimonga#buffer#databases#ensure_name() abort
         \ vimonga#buffer#documents#filetype(),
     \ )
     if &filetype == s:filetype
-        return {'database_name': getline(line('.'))}
+        let name = getline(line('.'))
+    else
+        let name = vimonga#buffer#impl#database_name()
     endif
-    return {'database_name': vimonga#buffer#impl#database_name()}
+    return vimonga#model#database#new(name)
 endfunction
 
 function! vimonga#buffer#databases#open(funcs, open_cmd) abort

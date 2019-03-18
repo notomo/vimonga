@@ -6,11 +6,11 @@ endfunction
 
 function! vimonga#buffer#document#ensure() abort
     call vimonga#buffer#impl#assert_filetype(s:filetype)
-    return {
-        \ 'database_name': vimonga#buffer#impl#database_name(),
-        \ 'collection_name': vimonga#buffer#impl#collection_name(),
-        \ 'document_id': s:document_id(),
-    \ }
+    return vimonga#model#document#new(
+        \ s:document_id(),
+        \ vimonga#buffer#impl#database_name(),
+        \ vimonga#buffer#impl#collection_name(),
+    \ )
 endfunction
 
 function! vimonga#buffer#document#ensure_id() abort
@@ -26,11 +26,11 @@ function! vimonga#buffer#document#ensure_id() abort
             throw 'object id is not found in this buffer'
         endif
     endif
-    return {
-        \ 'database_name': vimonga#buffer#impl#database_name(),
-        \ 'collection_name': vimonga#buffer#impl#collection_name(),
-        \ 'document_id': document_id
-    \ }
+    return vimonga#model#document#new(
+        \ document_id,
+        \ vimonga#buffer#impl#database_name(),
+        \ vimonga#buffer#impl#collection_name(),
+    \ )
 endfunction
 
 function! vimonga#buffer#document#open(funcs, open_cmd) abort
@@ -64,10 +64,10 @@ endfunction
 
 function! vimonga#buffer#document#ensure_new() abort
     call vimonga#buffer#impl#assert_filetype(s:filetype_new)
-    return {
-        \ 'database_name': vimonga#buffer#impl#database_name(),
-        \ 'collection_name': vimonga#buffer#impl#collection_name(),
-    \ }
+    return vimonga#model#document#new_draft(
+        \ vimonga#buffer#impl#database_name(),
+        \ vimonga#buffer#impl#collection_name(),
+    \ )
 endfunction
 
 let s:filetype_delete = 'vimonga-doc-delete'

@@ -1,17 +1,17 @@
 
-function! vimonga#repo#collection#list(database_name) abort
-    let database = vimonga#repo#impl#option('database', a:database_name)
-    return vimonga#repo#impl#execute(['collection', database, 'list'])
+function! vimonga#repo#collection#list(database) abort
+    let db = vimonga#repo#impl#option('database', a:database.name)
+    return vimonga#repo#impl#execute(['collection', db, 'list'])
 endfunction
 
-function! vimonga#repo#collection#drop(database_name, collection_name) abort
-    let database = vimonga#repo#impl#option('database', a:database_name)
-    let collection = vimonga#repo#impl#option('collection', a:collection_name)
-    return vimonga#repo#impl#execute(['collection', database, 'drop', collection])
+function! vimonga#repo#collection#drop(collection) abort
+    let db = vimonga#repo#impl#option('database', a:collection.database_name)
+    let coll = vimonga#repo#impl#option('collection', a:collection.name)
+    return vimonga#repo#impl#execute(['collection', db, 'drop', coll])
 endfunction
 
-function! vimonga#repo#collection#create(database_name, collection_name) abort
-    let database = vimonga#repo#impl#option('database', a:database_name)
-    let collection = vimonga#repo#impl#option('collection', a:collection_name)
-    return vimonga#repo#impl#execute(['collection', database, 'create', collection])
+function! vimonga#repo#collection#create(collection) abort
+    let db = vimonga#repo#impl#option('database', a:collection.database_name)
+    let coll = vimonga#repo#impl#option('collection', a:collection.name)
+    return vimonga#repo#impl#execute(['collection', db, 'create', coll])
 endfunction

@@ -4,14 +4,6 @@ function! vimonga#buffer#indexes#filetype() abort
     return s:filetype
 endfunction
 
-function! vimonga#buffer#indexes#ensure() abort
-    call vimonga#buffer#impl#assert_filetype(s:filetype)
-    return {
-        \ 'database_name': vimonga#buffer#impl#database_name(),
-        \ 'collection_name': vimonga#buffer#impl#collection_name(),
-    \ }
-endfunction
-
 function! vimonga#buffer#indexes#open(funcs, open_cmd) abort
     let [result, err] = vimonga#buffer#impl#execute(a:funcs)
     if !empty(err)

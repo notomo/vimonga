@@ -1,7 +1,7 @@
 
-function! vimonga#repo#document#find(database_name, collection_name, options) abort
-    let database = vimonga#repo#impl#option('database', a:database_name)
-    let collection = vimonga#repo#impl#option('collection', a:collection_name)
+function! vimonga#repo#document#find(collection, options) abort
+    let database = vimonga#repo#impl#option('database', a:collection.database_name)
+    let collection = vimonga#repo#impl#option('collection', a:collection.name)
 
     let query = json_encode(a:options['query'])
     let projection = json_encode(a:options['projection'])
@@ -18,35 +18,35 @@ function! vimonga#repo#document#find(database_name, collection_name, options) ab
     return vimonga#repo#impl#execute(args)
 endfunction
 
-function! vimonga#repo#document#find_by_id(database_name, collection_name, document_id) abort
-    let database = vimonga#repo#impl#option('database', a:database_name)
-    let collection = vimonga#repo#impl#option('collection', a:collection_name)
-    let id = vimonga#repo#impl#option('id', a:document_id)
+function! vimonga#repo#document#find_by_id(document) abort
+    let database = vimonga#repo#impl#option('database', a:document.database_name)
+    let collection = vimonga#repo#impl#option('collection', a:document.collection_name)
+    let id = vimonga#repo#impl#option('id', a:document.id)
     let args = ['document', database, collection, 'get', id]
     return vimonga#repo#impl#execute(args)
 endfunction
 
-function! vimonga#repo#document#update(database_name, collection_name, document_id, content) abort
-    let database = vimonga#repo#impl#option('database', a:database_name)
-    let collection = vimonga#repo#impl#option('collection', a:collection_name)
-    let id = vimonga#repo#impl#option('id', a:document_id)
+function! vimonga#repo#document#update(document, content) abort
+    let database = vimonga#repo#impl#option('database', a:document.database_name)
+    let collection = vimonga#repo#impl#option('collection', a:document.collection_name)
+    let id = vimonga#repo#impl#option('id', a:document.id)
     let content = vimonga#repo#impl#option('content', a:content)
     let args = ['document', database, collection, 'update', id, content]
     return vimonga#repo#impl#execute(args)
 endfunction
 
-function! vimonga#repo#document#insert(database_name, collection_name, content) abort
-    let database = vimonga#repo#impl#option('database', a:database_name)
-    let collection = vimonga#repo#impl#option('collection', a:collection_name)
+function! vimonga#repo#document#insert(draft_document, content) abort
+    let database = vimonga#repo#impl#option('database', a:draft_document.database_name)
+    let collection = vimonga#repo#impl#option('collection', a:draft_document.collection_name)
     let content = vimonga#repo#impl#option('content', a:content)
     let args = ['document', database, collection, 'insert', content]
     return vimonga#repo#impl#execute(args)
 endfunction
 
-function! vimonga#repo#document#delete(database_name, collection_name, document_id) abort
-    let database = vimonga#repo#impl#option('database', a:database_name)
-    let collection = vimonga#repo#impl#option('collection', a:collection_name)
-    let id = vimonga#repo#impl#option('id', a:document_id)
+function! vimonga#repo#document#delete(document) abort
+    let database = vimonga#repo#impl#option('database', a:document.database_name)
+    let collection = vimonga#repo#impl#option('collection', a:document.collection_name)
+    let id = vimonga#repo#impl#option('id', a:document.id)
     let args = ['document', database, collection, 'delete', id]
     return vimonga#repo#impl#execute(args)
 endfunction

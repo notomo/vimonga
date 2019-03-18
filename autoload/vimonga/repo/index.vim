@@ -1,6 +1,6 @@
 
-function! vimonga#repo#index#list(database_name, collection_name) abort
-    let database = vimonga#repo#impl#option('database', a:database_name)
-    let collection = vimonga#repo#impl#option('collection', a:collection_name)
-    return vimonga#repo#impl#execute(['index', database, collection, 'list'])
+function! vimonga#repo#index#list(collection) abort
+    let db = vimonga#repo#impl#option('database', a:collection.database_name)
+    let coll = vimonga#repo#impl#option('collection', a:collection.name)
+    return vimonga#repo#impl#execute(['index', db, coll, 'list'])
 endfunction

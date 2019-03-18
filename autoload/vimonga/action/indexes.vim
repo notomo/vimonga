@@ -1,9 +1,6 @@
 
 function! vimonga#action#indexes#list(open_cmd) abort
-    let params = vimonga#buffer#collections#ensure_name()
-    let database_name = params['database_name']
-    let collection_name = params['collection_name']
-
-    let funcs = [{ -> vimonga#repo#index#list(database_name, collection_name)}]
+    let collection = vimonga#buffer#collections#ensure_name()
+    let funcs = [{ -> vimonga#repo#index#list(collection)}]
     call vimonga#buffer#indexes#open(funcs, a:open_cmd)
 endfunction

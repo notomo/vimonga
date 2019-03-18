@@ -6,10 +6,10 @@ endfunction
 
 function! vimonga#buffer#collections#ensure() abort
     call vimonga#buffer#impl#assert_filetype(s:filetype)
-    return {
-        \ 'database_name': vimonga#buffer#impl#database_name(),
-        \ 'collection_name': getline(line('.')),
-    \ }
+    return vimonga#model#collection#new(
+        \ vimonga#buffer#impl#database_name(),
+        \ getline(line('.')),
+    \ )
 endfunction
 
 function! vimonga#buffer#collections#ensure_name() abort
@@ -27,10 +27,10 @@ function! vimonga#buffer#collections#ensure_name() abort
     else
         let collection_name = vimonga#buffer#impl#collection_name()
     endif
-    return {
-        \ 'database_name': vimonga#buffer#impl#database_name(),
-        \ 'collection_name': collection_name,
-    \ }
+    return vimonga#model#collection#new(
+        \ vimonga#buffer#impl#database_name(),
+        \ collection_name,
+    \ )
 endfunction
 
 function! vimonga#buffer#collections#open(funcs, open_cmd) abort

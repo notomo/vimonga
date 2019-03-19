@@ -31,14 +31,20 @@ exampleDb.teams.insert({
   createdAt: new Date()
 });
 
-exampleDb.createUser({
-  user: "test-user1",
-  pwd: "test",
-  roles: [{ role: "readWrite", db: "example" }]
-});
+const testUser1 = exampleDb.getUser("test-user1");
+if (testUser1 == undefined) {
+  exampleDb.createUser({
+    user: "test-user1",
+    pwd: "test",
+    roles: [{ role: "readWrite", db: "example" }]
+  });
+}
 
-exampleDb.createUser({
-  user: "read-user",
-  pwd: "test",
-  roles: [{ role: "read", db: "example" }]
-});
+const readUser = exampleDb.getUser("read-user");
+if (readUser == undefined) {
+  exampleDb.createUser({
+    user: "read-user",
+    pwd: "test",
+    roles: [{ role: "read", db: "example" }]
+  });
+}

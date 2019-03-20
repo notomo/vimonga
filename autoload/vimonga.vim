@@ -1,12 +1,4 @@
 
-function! vimonga#execute(arg_string) abort
-    if a:arg_string ==# 'database.list'
-        call vimonga#action#databases#list('tabedit') | return
-    endif
-
-    throw 'invalid argument: ' . a:arg_string
-endfunction
-
 let s:actions = {
     \ 'database': {
         \ 'open': { -> vimonga#action#collections#list('edit') },

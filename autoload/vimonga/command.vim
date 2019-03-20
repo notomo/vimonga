@@ -22,18 +22,19 @@ function! s:parse(arg_string) abort
     let args = []
     let params = {}
     for factor in split(a:arg_string, '\v\s+')
-        if stridx(factor, '=') != -1 && factor[0] ==# '-'
-            let [key, value] = split(factor[1:], '=')
-            if has_key(s:param_mapper, key)
-                let mapped_key = s:param_mapper[key]
-                let params[mapped_key] = value
-            else
-                echohl WarningMsg | echo 'invalid param: ' . factor | echohl None
-            endif
+        if stridx(factor, '=') == -1 || factor[0] !=# '-'
+            call add(args, factor)
             continue
         endif
 
-        call add(args, factor)
+        let [key, value] = split(factor[1:], '=')
+        if has_key(s:param_mapper, key)
+            let mapped_key = s:param_mapper[key]
+            let params[mapped_key] = value
+            continue
+        endif
+
+        echohl WarningMsg | echo 'invalid param: ' . factor | echohl None
     endfor
 
     return [args, params]

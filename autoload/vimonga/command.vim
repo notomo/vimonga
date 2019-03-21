@@ -6,7 +6,7 @@ let s:actions = {
     \ 'collection.list': { params -> vimonga#action#collections#list(params) },
     \ 'collection.create': { params -> vimonga#action#collections#create(params) },
     \ 'collection.drop': { params -> vimonga#action#collections#drop(params) },
-    \ 'index.list': { params -> vimonga#action#indexes#list(params) },
+    \ 'index.list': { params -> vimonga#action#collection#indexes#list(params) },
     \ 'document.find': { params -> vimonga#action#documents#find(params, {}) },
     \ 'document.page.next': { params -> vimonga#action#documents#move_page(params, 1) },
     \ 'document.page.first': { params -> vimonga#action#documents#first(params) },

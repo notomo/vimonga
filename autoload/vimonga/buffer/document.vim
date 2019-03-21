@@ -1,8 +1,5 @@
 
 let s:filetype = 'vimonga-doc'
-function! vimonga#buffer#document#filetype() abort
-    return s:filetype
-endfunction
 
 function! vimonga#buffer#document#model(params) abort
     if a:params.has_db && a:params.has_coll && a:params.has_id
@@ -47,9 +44,6 @@ function! vimonga#buffer#document#open(funcs, open_cmd) abort
 endfunction
 
 let s:filetype_new = 'vimonga-doc-new'
-function! vimonga#buffer#document#filetype_new() abort
-    return s:filetype_new
-endfunction
 
 function! vimonga#buffer#document#new(path, open_cmd) abort
     let content = ['{', '  ', '}']

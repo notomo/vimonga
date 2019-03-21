@@ -1,8 +1,5 @@
 
 let s:filetype = 'vimonga-dbs'
-function! vimonga#buffer#databases#filetype() abort
-    return s:filetype
-endfunction
 
 function! vimonga#buffer#databases#model(params) abort
     if a:params.has_db

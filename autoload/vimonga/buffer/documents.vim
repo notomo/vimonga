@@ -1,8 +1,5 @@
 
 let s:filetype = 'vimonga-docs'
-function! vimonga#buffer#documents#filetype() abort
-    return s:filetype
-endfunction
 
 function! vimonga#buffer#documents#ensure() abort
     call vimonga#buffer#impl#assert_filetype(s:filetype)

@@ -1,8 +1,5 @@
 
 let s:filetype = 'vimonga-colls'
-function! vimonga#buffer#collections#filetype() abort
-    return s:filetype
-endfunction
 
 function! vimonga#buffer#collections#model(params) abort
     if a:params.has_db && a:params.has_coll

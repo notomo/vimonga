@@ -1,8 +1,5 @@
 
 let s:filetype = 'vimonga-users'
-function! vimonga#buffer#database#users#filetype() abort
-    return s:filetype
-endfunction
 
 function! vimonga#buffer#database#users#open(funcs, open_cmd) abort
     let [result, err] = vimonga#buffer#impl#execute(a:funcs)

@@ -9,7 +9,7 @@ function! vimonga#buffer#document#model(params) abort
     elseif &filetype == s:filetype
         let database_name = vimonga#buffer#impl#database_name()
         let collection_name = vimonga#buffer#impl#collection_name()
-        let document_id = s:document_id()
+        let document_id = vimonga#buffer#impl#document_id()
     else
         let database_name = vimonga#buffer#impl#database_name()
         let collection_name = vimonga#buffer#impl#collection_name()
@@ -44,7 +44,6 @@ function! vimonga#buffer#document#open(funcs, open_cmd) abort
 endfunction
 
 let s:filetype_new = 'vimonga-doc-new'
-
 function! vimonga#buffer#document#new(path, open_cmd) abort
     let content = ['{', '  ', '}']
     call vimonga#buffer#impl#buffer(content, s:filetype_new, a:path, a:open_cmd)
@@ -58,8 +57,4 @@ endfunction
 let s:filetype_delete = 'vimonga-doc-delete'
 function! vimonga#buffer#document#filetype_delete() abort
     return s:filetype_delete
-endfunction
-
-function! s:document_id() abort
-    return matchstr(bufname('%'), '\vvimonga:\/\/.*\/dbs\/[^/]*\/colls\/[^/]*\/docs\/\zs[^/]*\ze')
 endfunction

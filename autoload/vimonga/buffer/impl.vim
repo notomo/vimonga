@@ -41,6 +41,10 @@ function! vimonga#buffer#impl#collection_name() abort
     return matchstr(bufname('%'), '\vvimonga:\/\/.*\/dbs\/[^/]*\/colls\/\zs[^/]*\ze')
 endfunction
 
+function! vimonga#buffer#impl#document_id() abort
+    return matchstr(bufname('%'), '\vvimonga:\/\/.*\/dbs\/[^/]*\/colls\/[^/]*\/docs\/\zs[^/]*\ze')
+endfunction
+
 function! vimonga#buffer#impl#execute(funcs) abort
     let result = []
     for F in a:funcs

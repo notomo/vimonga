@@ -1,6 +1,6 @@
 
-function! vimonga#action#document#update() abort
-    let document = vimonga#buffer#document#ensure()
+function! vimonga#action#document#update(params) abort
+    let document = vimonga#buffer#document#model(a:params)
     let content = join(getbufline('%', 1, '$'), '')
 
     let [_, err] = vimonga#repo#document#update(document, content)
@@ -10,22 +10,26 @@ function! vimonga#action#document#update() abort
     setlocal nomodified
 endfunction
 
-function! vimonga#action#document#open(open_cmd) abort
-    let document = vimonga#buffer#document#ensure_id()
+function! vimonga#action#document#open(params) abort
+    let document = vimonga#buffer#document#model(a:params)
     let funcs = [{ -> vimonga#repo#document#find_by_id(document)}]
-    call vimonga#buffer#document#open(funcs, a:open_cmd)
+    call vimonga#buffer#document#open(funcs, a:params.open_cmd)
 endfunction
 
-function! vimonga#action#document#new(open_cmd) abort
+function! vimonga#action#document#new(params) abort
     call vimonga#buffer#documents#ensure()
-    call vimonga#buffer#document#new(bufname('%') . '/new', a:open_cmd)
+
+    let document = vimonga#buffer#document#model(a:params)
+    call vimonga#buffer#document#new(bufname('%') . '/new', a:params.open_cmd)
 endfunction
 
-function! vimonga#action#document#insert() abort
-    let draft_document = vimonga#buffer#document#ensure_new()
+function! vimonga#action#document#insert(params) abort
+    call vimonga#buffer#document#ensure_new()
+
+    let collection = vimonga#buffer#collections#model(a:params)
     let content = join(getbufline('%', 1, '$'), '')
 
-    let [result, err] = vimonga#repo#document#insert(draft_document, content)
+    let [result, err] = vimonga#repo#document#insert(collection, content)
     if !empty(err)
         echohl ErrorMsg | echo join(err, "\n") | echohl None | return
     endif
@@ -36,12 +40,12 @@ function! vimonga#action#document#insert() abort
     endif
 
     let id = body[0]
-    let funcs = [{ -> vimonga#repo#document#find_by_id(draft_document.document(id))}]
+    let funcs = [{ -> vimonga#repo#document#find_by_id(collection.document(id))}]
     call vimonga#buffer#document#open(funcs, 'edit')
 endfunction
 
-function! vimonga#action#document#delete() abort
-    let document = vimonga#buffer#document#ensure()
+function! vimonga#action#document#delete(params) abort
+    let document = vimonga#buffer#document#model(a:params)
     if input('Delete ' . document.id . '? y/n: ') !=# 'y'
         redraw | echomsg 'Canceled' | return
     endif

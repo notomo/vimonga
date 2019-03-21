@@ -13,6 +13,6 @@ function! vimonga#buffer#database#users#open(funcs, open_cmd) abort
 
     augroup vimonga_colls
         autocmd!
-        autocmd BufReadCmd <buffer> call vimonga#action#database#users#list('edit')
+        autocmd BufReadCmd <buffer> Vimonga user.list
     augroup END
 endfunction

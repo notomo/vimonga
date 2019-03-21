@@ -4,23 +4,18 @@ function! vimonga#buffer#document#filetype() abort
     return s:filetype
 endfunction
 
-function! vimonga#buffer#document#ensure() abort
-    call vimonga#buffer#impl#assert_filetype(s:filetype)
-    return vimonga#model#document#new(
-        \ s:document_id(),
-        \ vimonga#buffer#impl#database_name(),
-        \ vimonga#buffer#impl#collection_name(),
-    \ )
-endfunction
-
-function! vimonga#buffer#document#ensure_id() abort
-    call vimonga#buffer#impl#assert_filetype(
-        \ s:filetype,
-        \ vimonga#buffer#documents#filetype(),
-    \ )
-    if &filetype == s:filetype
+function! vimonga#buffer#document#model(params) abort
+    if a:params.has_db && a:params.has_coll && a:params.has_id
+        let database_name = a:params.database_name
+        let collection_name = a:params.collection_name
+        let document_id = a:params.document_id
+    elseif &filetype == s:filetype
+        let database_name = vimonga#buffer#impl#database_name()
+        let collection_name = vimonga#buffer#impl#collection_name()
         let document_id = s:document_id()
     else
+        let database_name = vimonga#buffer#impl#database_name()
+        let collection_name = vimonga#buffer#impl#collection_name()
         let document_id = vimonga#buffer#documents#get_id()
         if empty(document_id)
             throw 'object id is not found in this buffer'
@@ -28,8 +23,8 @@ function! vimonga#buffer#document#ensure_id() abort
     endif
     return vimonga#model#document#new(
         \ document_id,
-        \ vimonga#buffer#impl#database_name(),
-        \ vimonga#buffer#impl#collection_name(),
+        \ database_name,
+        \ collection_name,
     \ )
 endfunction
 
@@ -42,8 +37,8 @@ function! vimonga#buffer#document#open(funcs, open_cmd) abort
 
     augroup vimonga_doc
         autocmd!
-        autocmd BufWriteCmd <buffer> call vimonga#action#document#update()
-        autocmd BufReadCmd <buffer> call vimonga#action#document#open('edit')
+        autocmd BufWriteCmd <buffer> Vimonga document.one.update
+        autocmd BufReadCmd <buffer> Vimonga document.one
     augroup END
 
     setlocal modifiable
@@ -64,10 +59,6 @@ endfunction
 
 function! vimonga#buffer#document#ensure_new() abort
     call vimonga#buffer#impl#assert_filetype(s:filetype_new)
-    return vimonga#model#document#new_draft(
-        \ vimonga#buffer#impl#database_name(),
-        \ vimonga#buffer#impl#collection_name(),
-    \ )
 endfunction
 
 let s:filetype_delete = 'vimonga-doc-delete'

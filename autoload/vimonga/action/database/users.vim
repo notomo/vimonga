@@ -1,6 +1,6 @@
 
-function! vimonga#action#database#users#list(open_cmd) abort
-    let database = vimonga#buffer#databases#ensure_name()
+function! vimonga#action#database#users#list(params) abort
+    let database = vimonga#buffer#databases#model(a:params)
     let funcs = [{ -> vimonga#repo#database#users(database)}]
-    call vimonga#buffer#database#users#open(funcs, a:open_cmd)
+    call vimonga#buffer#database#users#open(funcs, a:params.open_cmd)
 endfunction

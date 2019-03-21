@@ -35,9 +35,9 @@ function! vimonga#repo#document#update(document, content) abort
     return vimonga#repo#impl#execute(args)
 endfunction
 
-function! vimonga#repo#document#insert(draft_document, content) abort
-    let database = vimonga#repo#impl#option('database', a:draft_document.database_name)
-    let collection = vimonga#repo#impl#option('collection', a:draft_document.collection_name)
+function! vimonga#repo#document#insert(collection, content) abort
+    let database = vimonga#repo#impl#option('database', a:collection.database_name)
+    let collection = vimonga#repo#impl#option('collection', a:collection.name)
     let content = vimonga#repo#impl#option('content', a:content)
     let args = ['document', database, collection, 'insert', content]
     return vimonga#repo#impl#execute(args)

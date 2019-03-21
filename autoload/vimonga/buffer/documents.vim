@@ -6,10 +6,6 @@ endfunction
 
 function! vimonga#buffer#documents#ensure() abort
     call vimonga#buffer#impl#assert_filetype(s:filetype)
-    return vimonga#model#collection#new(
-        \ vimonga#buffer#impl#database_name(),
-        \ vimonga#buffer#impl#collection_name(),
-    \ )
 endfunction
 
 function! vimonga#buffer#documents#open(funcs, open_cmd, options) abort
@@ -29,7 +25,7 @@ function! vimonga#buffer#documents#open(funcs, open_cmd, options) abort
 
     augroup vimonga_docs
         autocmd!
-        autocmd BufReadCmd <buffer> call vimonga#action#documents#find('edit', b:vimonga_options)
+        autocmd BufReadCmd <buffer> Vimonga document.find
     augroup END
 endfunction
 

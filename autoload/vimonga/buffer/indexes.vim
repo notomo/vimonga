@@ -13,6 +13,6 @@ function! vimonga#buffer#indexes#open(funcs, open_cmd) abort
 
     augroup vimonga_indexes
         autocmd!
-        autocmd BufReadCmd <buffer> call vimonga#action#indexes#list('edit')
+        autocmd BufReadCmd <buffer> Vimonga index.list
     augroup END
 endfunction

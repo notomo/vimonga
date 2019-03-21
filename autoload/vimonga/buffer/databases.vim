@@ -1,22 +1,13 @@
+
 let s:filetype = 'vimonga-dbs'
 function! vimonga#buffer#databases#filetype() abort
     return s:filetype
 endfunction
 
-function! vimonga#buffer#databases#ensure() abort
-    call vimonga#buffer#impl#assert_filetype(s:filetype)
-    return vimonga#model#database#new(getline(line('.')))
-endfunction
-
-function! vimonga#buffer#databases#ensure_name() abort
-    call vimonga#buffer#impl#assert_filetype(
-        \ s:filetype,
-        \ vimonga#buffer#database#users#filetype(),
-        \ vimonga#buffer#collections#filetype(),
-        \ vimonga#buffer#indexes#filetype(),
-        \ vimonga#buffer#documents#filetype(),
-    \ )
-    if &filetype == s:filetype
+function! vimonga#buffer#databases#model(params) abort
+    if a:params.has_db
+        let name = a:params.database_name
+    elseif &filetype == s:filetype
         let name = getline(line('.'))
     else
         let name = vimonga#buffer#impl#database_name()
@@ -33,6 +24,6 @@ function! vimonga#buffer#databases#open(funcs, open_cmd) abort
 
     augroup vimonga_dbs
         autocmd!
-        autocmd BufReadCmd <buffer> call vimonga#action#databases#list('edit')
+        autocmd BufReadCmd <buffer> Vimonga database.list
     augroup END
 endfunction

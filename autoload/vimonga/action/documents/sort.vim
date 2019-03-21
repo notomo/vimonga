@@ -1,13 +1,13 @@
 
-function! vimonga#action#documents#sort#reset_all(open_cmd) abort
-    let collection = vimonga#buffer#documents#ensure()
+function! vimonga#action#documents#sort#reset_all(params) abort
+    let collection = vimonga#buffer#collections#model(a:params)
     let options = vimonga#repo#document#options({'sort': {}})
     let funcs = [{ -> vimonga#repo#document#find(collection, options)}]
-    call vimonga#buffer#documents#open(funcs, a:open_cmd, options)
+    call vimonga#buffer#documents#open(funcs, a:params.open_cmd, options)
 endfunction
 
-function! vimonga#action#documents#sort#toggle(open_cmd) abort
-    let collection = vimonga#buffer#documents#ensure()
+function! vimonga#action#documents#sort#toggle(params) abort
+    let collection = vimonga#buffer#collections#model(a:params)
 
     let field_name = vimonga#buffer#documents#field_name(line('.'))
     if empty(field_name)
@@ -23,11 +23,11 @@ function! vimonga#action#documents#sort#toggle(open_cmd) abort
     let options['offset'] = 0
 
     let funcs = [{ -> vimonga#repo#document#find(collection, options)}]
-    call vimonga#buffer#documents#open(funcs, a:open_cmd, options)
+    call vimonga#buffer#documents#open(funcs, a:params.open_cmd, options)
 endfunction
 
-function! vimonga#action#documents#sort#do(direction, open_cmd) abort
-    let collection = vimonga#buffer#documents#ensure()
+function! vimonga#action#documents#sort#do(params, direction) abort
+    let collection = vimonga#buffer#collections#model(a:params)
 
     let field_name = vimonga#buffer#documents#field_name(line('.'))
     if empty(field_name)
@@ -45,5 +45,5 @@ function! vimonga#action#documents#sort#do(direction, open_cmd) abort
     let options['offset'] = 0
 
     let funcs = [{ -> vimonga#repo#document#find(collection, options)}]
-    call vimonga#buffer#documents#open(funcs, a:open_cmd, options)
+    call vimonga#buffer#documents#open(funcs, a:params.open_cmd, options)
 endfunction

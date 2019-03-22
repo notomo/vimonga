@@ -29,7 +29,7 @@ impl<'a> Command for CompleteVimongaCommand<'a> {
             && (self.current_arg == "" || self.current_arg.starts_with("-"))
             && !self.current_arg.contains("=")
         {
-            self.param_keys(actions[0])
+            self.param_keys(actions[0], keys)
         } else if keys.len() != 0
             && self.current_arg.starts_with("-")
             && self.current_arg.contains("=")
@@ -78,14 +78,15 @@ impl<'a> CompleteVimongaCommand<'a> {
         .collect()
     }
 
-    fn param_keys(&self, action: &str) -> Vec<String> {
+    fn param_keys(&self, action: &str, keys: Vec<&str>) -> Vec<String> {
         match action {
-            "database.drop" | "collection.list" | "collection.create" | "user.list" => vec!["-db="],
-            "collection.drop" | "index.list" => vec!["-db=", "-coll="],
+            "database.drop" | "collection.list" | "collection.create" | "user.list" => vec!["-db"],
+            "collection.drop" | "index.list" => vec!["-db", "-coll"],
             _ => vec![],
         }
         .iter()
-        .map(|action| action.to_string())
+        .filter(|action| !keys.contains(action))
+        .map(|action| format!("{}=", action))
         .collect()
     }
 

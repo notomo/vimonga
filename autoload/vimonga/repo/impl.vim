@@ -11,15 +11,7 @@ function! vimonga#repo#impl#execute(args) abort
     \ ]
 
     let cmd = join(default_args + a:args, ' ')
-    let result = systemlist(cmd)
-
-    try
-        let json = json_decode(result)
-        let json['body'] = split(json['body'], '\%x00')
-        return [json, []]
-    catch /^Vim\%((\a\+)\)\=:E474/
-        return [v:null, result]
-    endtry
+    return vimonga#job#pending(cmd, {'handle_ok': function('s:decode_ok')})
 endfunction
 
 function! vimonga#repo#impl#option(key, value) abort
@@ -27,4 +19,10 @@ function! vimonga#repo#impl#option(key, value) abort
         return ''
     endif
     return '--' . a:key . '=' . shellescape(a:value)
+endfunction
+
+function! s:decode_ok(result) abort
+    let json = json_decode(a:result)
+    let json['body'] = split(json['body'], '\%x00')
+    return json
 endfunction

@@ -1,9 +1,9 @@
 
-function! vimonga#model#collection#new(database_name, name) abort
-    let coll = {'name': a:name, 'database_name': a:database_name}
+function! vimonga#model#collection#new(host, port, database_name, name) abort
+    let coll = {'name': a:name, 'database_name': a:database_name, 'host': a:host, 'port': a:port}
 
     function! coll.database() abort
-        return vimonga#model#database#new(self.database_name)
+        return vimonga#model#database#new(self.host, self.port, self.database_name)
     endfunction
 
     function! coll.document(id) abort

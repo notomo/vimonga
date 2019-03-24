@@ -9,28 +9,35 @@ function! vimonga#buffer#impl#assert_filetype(...) abort
     endif
 endfunction
 
-function! vimonga#buffer#impl#buffer(contents, filetype, path, open_cmd) abort
-    let before_cursor = getpos('.')
-    let buffer_id = bufnr('%')
-
+function! vimonga#buffer#impl#buffer(filetype, path, open_cmd) abort
     execute printf('%s %s', a:open_cmd, a:path)
+
+    let buf = bufnr('%')
+    setlocal modifiable
+    call nvim_buf_set_lines(buf, 0, line('$'), v:false, [])
 
     setlocal buftype=nofile
     setlocal nobuflisted
     setlocal noswapfile
-
-    setlocal modifiable
-    let cursor = getpos('.')
-    silent %delete _
-    call setline(1, a:contents)
-    call setpos('.', cursor)
-
     setlocal nomodifiable
     let &filetype = a:filetype
 
-    if buffer_id == bufnr('%')
-        call setpos('.', before_cursor)
-    endif
+    return buf
+endfunction
+
+function! vimonga#buffer#impl#content(buffer, content) abort
+    call nvim_buf_set_option(a:buffer, 'modifiable', v:true)
+    call nvim_buf_set_lines(a:buffer, 0, len(a:content), v:false, a:content)
+    call nvim_buf_set_option(a:buffer, 'modifiable', v:false)
+    return vimonga#job#ok([])
+endfunction
+
+function! vimonga#buffer#impl#host() abort
+    return matchstr(bufname('%'), '\vvimonga:\/\/\zs[^/]*\ze')
+endfunction
+
+function! vimonga#buffer#impl#port() abort
+    return matchstr(bufname('%'), '\vvimonga:\/\/[^/]*\/\zs[^/]*\ze')
 endfunction
 
 function! vimonga#buffer#impl#database_name() abort

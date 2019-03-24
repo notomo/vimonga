@@ -1,7 +1,7 @@
 
 let s:default_config = {
     \ 'default_port': '',
-    \ 'default_host': '',
+    \ 'default_host': 'localhost',
     \ 'executable': 'vimonga',
 \ }
 let s:config = deepcopy(s:default_config)

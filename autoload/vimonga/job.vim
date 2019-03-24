@@ -39,10 +39,7 @@ function! s:map_ok(func) abort
 
     function! dict.execute(result) abort
         if a:result.is_ok
-            if a:result.is_ok_extended
-                return call(self.func, a:result.ok)
-            endif
-            return self.func(a:result.ok)
+            return call(self.func, a:result.ok)
         endif
 
         return a:result
@@ -56,10 +53,7 @@ function! s:map_through_ok(func) abort
 
     function! dict.execute(result) abort
         if a:result.is_ok
-            if a:result.is_ok_extended
-                return call(self.func, a:result.ok)
-            endif
-            return self.func(a:result.ok)
+            return call(self.func, a:result.ok)
         endif
 
         return a:result
@@ -73,10 +67,7 @@ function! s:map_extend_ok(func) abort
 
     function! dict.execute(result) abort
         if a:result.is_ok
-            if a:result.is_ok_extended
-                return call(self.func, a:result.ok)
-            endif
-            return self.func(a:result.ok)
+            return call(self.func, a:result.ok)
         endif
 
         return a:result
@@ -104,8 +95,7 @@ function! vimonga#job#ok(ok) abort
     let dict.is_ok = v:true
     let dict.is_pending = v:false
     let dict.is_err = v:false
-    let dict.is_ok_extended = v:false
-    let dict.ok = a:ok
+    let dict.ok = [a:ok]
     let dict.options = {}
     let dict.err = []
 
@@ -117,8 +107,7 @@ function! vimonga#job#err(err) abort
     let dict.is_ok = v:false
     let dict.is_pending = v:false
     let dict.is_err = v:true
-    let dict.is_ok_extended = v:false
-    let dict.ok = []
+    let dict.ok = [[]]
     let dict.options = {}
     let dict.err = a:err
 
@@ -130,8 +119,7 @@ function! vimonga#job#pending(cmd, options) abort
     let dict.is_ok = v:false
     let dict.is_pending = v:true
     let dict.is_err = v:false
-    let dict.is_ok_extended = v:false
-    let dict.ok = []
+    let dict.ok = [[]]
     let dict.cmd = a:cmd
     let dict.options = a:options
     let dict.err = []
@@ -147,15 +135,12 @@ function! vimonga#job#execute(jobs, result) abort
         let old_ok = result.ok
         if job.param_type ==? s:PARAM_TYPE_EXTEND_OK && tmp_result.is_ok
             let result = tmp_result
-            let result.ok = [old_ok, result.ok]
-            let result.is_ok_extended = v:true
-        elseif job.param_type ==? s:PARAM_TYPE_THROUGH_OK && !tmp_result.is_pending
+            let result.ok = extend(old_ok, result.ok)
+        elseif job.param_type ==? s:PARAM_TYPE_THROUGH_OK && tmp_result.is_ok
             let result = tmp_result
             let result.ok = old_ok
-            let result.is_ok_extended = tmp_result.is_ok_extended
-        elseif job.param_type ==? s:PARAM_TYPE_PASS && !tmp_result.is_pending
+        elseif !tmp_result.is_pending
             let result = tmp_result
-            let result.is_ok_extended = v:false
         endif
 
         if !tmp_result.is_pending
@@ -177,7 +162,7 @@ function! vimonga#job#execute(jobs, result) abort
             \ 'handle_ok': { _, v -> v },
             \ 'err': [],
             \ 'is_err': v:false,
-            \ 'is_ok_extended': result.is_ok_extended,
+            \ 'is_extend': job.param_type ==? s:PARAM_TYPE_EXTEND_OK,
             \ 'is_ok_through': job.param_type ==? s:PARAM_TYPE_THROUGH_OK,
             \ 'old_ok': old_ok,
         \ }
@@ -209,9 +194,8 @@ function! s:handle_exit(job_id, data, event) abort dict
     else
         let ok = self.handle_ok(self.ok)
         let result = vimonga#job#ok(ok)
-        if self.is_ok_extended
-            let result.ok = [self.old_ok, result.ok]
-            let result.is_ok_extended = self.is_ok_extended
+        if self.is_extend
+            let result.ok = extend(self.old_ok, result.ok)
         elseif self.is_ok_through
             let result.ok = self.old_ok
         endif

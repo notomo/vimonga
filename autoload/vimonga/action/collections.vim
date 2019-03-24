@@ -22,15 +22,13 @@ function! vimonga#action#collections#list(params) abort
 endfunction
 
 function! vimonga#action#collections#create(params) abort
-    let database = vimonga#buffer#databases#model(a:params)
-    let collection_name = input('Create: ')
-    if empty(collection_name)
-        redraw | echomsg 'Canceled' | return
-    endif
-
-    let funcs = [
-        \ { -> vimonga#repo#collection#create(database.collection(collection_name))},
-        \ { -> vimonga#repo#collection#list(database)},
-    \ ]
-    call vimonga#buffer#collections#open(funcs, a:params.open_cmd)
+    call vimonga#job#new()
+        \.map_ok({ _ -> vimonga#buffer#databases#model(a:params) })
+        \.map_extend_ok({ _ -> vimonga#message#input('Create: ') })
+        \.map_through_ok({ database, name -> vimonga#repo#collection#create(database.collection(name)) })
+        \.map_ok({ database, _ -> vimonga#buffer#collections#open(database, a:params.open_cmd) })
+        \.map_extend_ok({ buf -> vimonga#repo#collection#list(buf.database) })
+        \.map_ok({ buf, result -> vimonga#buffer#impl#content(buf.id, result['body']) })
+        \.map_err({ err -> vimonga#message#error(err) })
+        \.execute()
 endfunction

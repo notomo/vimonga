@@ -49,7 +49,13 @@ if (readUser == undefined) {
   });
 }
 
-for (let i = 0; i < 500; ++i) {
+const names = new Mongo().getDBNames().filter(name => name.startsWith("test"));
+names.forEach(name => {
+  const testDb = new Mongo().getDB(name);
+  testDb.dropDatabase();
+});
+
+for (let i = 0; i < 50; ++i) {
   let testDb = new Mongo().getDB("test" + i);
   testDb.tests.insert({});
 }

@@ -7,7 +7,7 @@ function! vimonga#model#database#new(host, port, name) abort
     endfunction
 
     function! db.collection(collectio_name) abort
-        return vimonga#model#collection#new(self.name, a:collectio_name)
+        return vimonga#model#collection#new(self.host, self.port, self.name, a:collectio_name)
     endfunction
 
     return db

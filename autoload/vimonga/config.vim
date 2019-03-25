@@ -1,6 +1,6 @@
 
 let s:default_config = {
-    \ 'default_port': '',
+    \ 'default_port': '27017',
     \ 'default_host': 'localhost',
     \ 'executable': 'vimonga',
 \ }

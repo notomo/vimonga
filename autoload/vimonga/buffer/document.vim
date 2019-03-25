@@ -7,30 +7,34 @@ function! vimonga#buffer#document#model(params) abort
         let collection_name = a:params.collection_name
         let document_id = a:params.document_id
     elseif &filetype == s:filetype
+        let host = vimonga#buffer#impl#host()
+        let port = vimonga#buffer#impl#port()
         let database_name = vimonga#buffer#impl#database_name()
         let collection_name = vimonga#buffer#impl#collection_name()
         let document_id = vimonga#buffer#impl#document_id()
     else
+        let host = vimonga#buffer#impl#host()
+        let port = vimonga#buffer#impl#port()
         let database_name = vimonga#buffer#impl#database_name()
         let collection_name = vimonga#buffer#impl#collection_name()
         let document_id = vimonga#buffer#documents#get_id()
         if empty(document_id)
-            throw 'object id is not found in this buffer'
+            return vimonga#job#err(['object id is not found in this buffer'])
         endif
     endif
-    return vimonga#model#document#new(
+    let doc = vimonga#model#document#new(
+        \ host,
+        \ port,
         \ document_id,
         \ database_name,
         \ collection_name,
     \ )
+    return vimonga#job#ok(doc)
 endfunction
 
-function! vimonga#buffer#document#open(funcs, open_cmd) abort
-    let [result, err] = vimonga#buffer#impl#execute(a:funcs)
-    if !empty(err)
-        return vimonga#buffer#impl#error(err, a:open_cmd)
-    endif
-    call vimonga#buffer#impl#buffer(result['body'], s:filetype, result['path'], a:open_cmd)
+function! vimonga#buffer#document#open(document, open_cmd) abort
+    let path = vimonga#buffer#document#path(a:document)
+    let buf = vimonga#buffer#impl#buffer(s:filetype, path, a:open_cmd)
 
     augroup vimonga_doc
         autocmd!
@@ -38,16 +42,30 @@ function! vimonga#buffer#document#open(funcs, open_cmd) abort
         autocmd BufReadCmd <buffer> Vimonga document.one
     augroup END
 
-    setlocal modifiable
-    setlocal buftype=acwrite
-    setlocal nomodified
+    return vimonga#job#ok({'id': buf, 'document': a:document})
+endfunction
+
+function! vimonga#buffer#document#path(document) abort
+    let docs = vimonga#buffer#documents#path(a:document.collection())
+    return printf('%s/%s', docs, a:document.id)
+endfunction
+
+function! vimonga#buffer#document#content(buffer, result) abort
+    let result = vimonga#buffer#impl#content(a:buffer, a:result['body'])
+    call nvim_buf_set_option(a:buffer, 'modifiable', v:true)
+    call nvim_buf_set_option(a:buffer, 'buftype', 'acwrite')
+    call nvim_buf_set_option(a:buffer, 'modified', v:false)
+    return result
 endfunction
 
 let s:filetype_new = 'vimonga-doc-new'
-function! vimonga#buffer#document#new(path, open_cmd) abort
+function! vimonga#buffer#document#new(collection, open_cmd) abort
+    let path = vimonga#buffer#documents#path(a:collection) . '/new'
+    let buf = vimonga#buffer#impl#buffer(s:filetype_new, path, a:open_cmd)
     let content = ['{', '  ', '}']
-    call vimonga#buffer#impl#buffer(content, s:filetype_new, a:path, a:open_cmd)
+    let result = vimonga#buffer#impl#content(buf, content)
     setlocal modifiable
+    return result
 endfunction
 
 function! vimonga#buffer#document#ensure_new() abort

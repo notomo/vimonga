@@ -11,16 +11,21 @@ function! vimonga#action#document#update(params) abort
 endfunction
 
 function! vimonga#action#document#open(params) abort
-    let document = vimonga#buffer#document#model(a:params)
-    let funcs = [{ -> vimonga#repo#document#find_by_id(document)}]
-    call vimonga#buffer#document#open(funcs, a:params.open_cmd)
+    call vimonga#job#new()
+        \.map_ok({ _ -> vimonga#buffer#document#model(a:params) })
+        \.map_ok({ document -> vimonga#buffer#document#open(document, a:params.open_cmd) })
+        \.map_extend_ok({ buf -> vimonga#repo#document#find_by_id(buf.document) })
+        \.map_ok({ buf, result -> vimonga#buffer#document#content(buf.id, result) })
+        \.map_err({ err -> vimonga#message#error(err) })
+        \.execute()
 endfunction
 
 function! vimonga#action#document#new(params) abort
-    call vimonga#buffer#documents#ensure()
-
-    let document = vimonga#buffer#document#model(a:params)
-    call vimonga#buffer#document#new(bufname('%') . '/new', a:params.open_cmd)
+    call vimonga#job#new()
+        \.map_ok({ _ -> vimonga#buffer#collections#model(a:params) })
+        \.map_ok({ collection -> vimonga#buffer#document#new(collection, a:params.open_cmd) })
+        \.map_err({ err -> vimonga#message#error(err) })
+        \.execute()
 endfunction
 
 function! vimonga#action#document#insert(params) abort

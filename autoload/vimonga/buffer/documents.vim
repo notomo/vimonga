@@ -1,10 +1,6 @@
 
 let s:filetype = 'vimonga-docs'
 
-function! vimonga#buffer#documents#ensure() abort
-    call vimonga#buffer#impl#assert_filetype(s:filetype)
-endfunction
-
 function! vimonga#buffer#documents#open(collection, open_cmd, options) abort
     let path = vimonga#buffer#documents#path(a:collection)
     let buf = vimonga#buffer#impl#buffer(s:filetype, path, a:open_cmd)

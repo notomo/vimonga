@@ -5,25 +5,33 @@ function! vimonga#buffer#documents#ensure() abort
     call vimonga#buffer#impl#assert_filetype(s:filetype)
 endfunction
 
-function! vimonga#buffer#documents#open(funcs, open_cmd, options) abort
-    let [result, err] = vimonga#buffer#impl#execute(a:funcs)
-    if !empty(err)
-        return vimonga#buffer#impl#error(err, a:open_cmd)
-    endif
-    call vimonga#buffer#impl#buffer(result['body'], s:filetype, result['path'], a:open_cmd)
-
-    let b:vimonga_options = a:options
-    let b:vimonga_options['limit'] = result['limit']
-    let b:vimonga_options['is_first'] = result['offset'] == 0
-    let b:vimonga_options['is_last'] = result['is_last'] ==# 'true'
-    let b:vimonga_options['first_number'] = result['first_number']
-    let b:vimonga_options['last_number'] = result['last_number']
-    let b:vimonga_options['count'] = result['count']
+function! vimonga#buffer#documents#open(collection, open_cmd, options) abort
+    let path = vimonga#buffer#documents#path(a:collection)
+    let buf = vimonga#buffer#impl#buffer(s:filetype, path, a:open_cmd)
 
     augroup vimonga_docs
         autocmd!
         autocmd BufReadCmd <buffer> Vimonga document.find
     augroup END
+
+    return vimonga#job#ok({'id': buf, 'collection': a:collection})
+endfunction
+
+function! vimonga#buffer#documents#path(collection) abort
+    let coll = vimonga#buffer#collections#path(a:collection.database())
+    return printf('%s/%s/docs', coll, a:collection.name)
+endfunction
+
+function! vimonga#buffer#documents#content(buffer, result, options) abort
+    let buffer_options = a:options
+    let buffer_options['limit'] = a:result['limit']
+    let buffer_options['is_first'] = a:result['offset'] == 0
+    let buffer_options['is_last'] = a:result['is_last'] ==# 'true'
+    let buffer_options['first_number'] = a:result['first_number']
+    let buffer_options['last_number'] = a:result['last_number']
+    let buffer_options['count'] = a:result['count']
+    call nvim_buf_set_var(a:buffer, 'vimonga_options', buffer_options)
+    return vimonga#buffer#impl#content(a:buffer, a:result['body'])
 endfunction
 
 let s:SEPARATER = '": '

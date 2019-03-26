@@ -10,6 +10,9 @@ function! vimonga#buffer#impl#assert_filetype(...) abort
 endfunction
 
 function! vimonga#buffer#impl#buffer(filetype, path, open_cmd) abort
+    if bufname('%') ==# a:path && &modified
+        return
+    endif
     execute printf('%s %s', a:open_cmd, a:path)
 
     let buf = bufnr('%')

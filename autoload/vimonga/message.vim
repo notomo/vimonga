@@ -16,6 +16,14 @@ function! vimonga#message#confirm_strongly(message) abort
     return vimonga#job#ok([])
 endfunction
 
+function! vimonga#message#confirm(message) abort
+    let message = printf('%s y/n: ', a:message)
+    if input(message) !=# 'y'
+        redraw | return vimonga#job#err(['Canceled'])
+    endif
+    return vimonga#job#ok([])
+endfunction
+
 function! vimonga#message#input(message) abort
     let input = input(a:message)
     if empty(input)

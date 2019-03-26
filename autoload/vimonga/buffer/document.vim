@@ -73,6 +73,12 @@ function! vimonga#buffer#document#ensure_new() abort
 endfunction
 
 let s:filetype_delete = 'vimonga-doc-delete'
-function! vimonga#buffer#document#filetype_delete() abort
-    return s:filetype_delete
+
+function! vimonga#buffer#document#open_deleted(buffer, document) abort
+    execute printf('autocmd! vimonga_doc * <buffer=%s>', a:buffer)
+    call nvim_buf_set_option(a:buffer, 'modifiable', v:false)
+    call nvim_buf_set_option(a:buffer, 'buftype', 'nofile')
+    call nvim_buf_set_option(a:buffer, 'modified', v:false)
+    call nvim_buf_set_option(a:buffer, 'filetype', s:filetype_delete)
+    return vimonga#job#ok([])
 endfunction

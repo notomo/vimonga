@@ -40,7 +40,7 @@ function! vimonga#repo#document#insert(collection, content) abort
     let collection = vimonga#repo#impl#option('collection', a:collection.name)
     let content = vimonga#repo#impl#option('content', a:content)
     let args = ['document', database, collection, 'insert', content]
-    return vimonga#repo#impl#execute(args)
+    return vimonga#repo#impl#execute(args, v:true)
 endfunction
 
 function! vimonga#repo#document#delete(document) abort

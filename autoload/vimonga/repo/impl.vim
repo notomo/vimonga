@@ -1,5 +1,5 @@
 
-function! vimonga#repo#impl#execute(args) abort
+function! vimonga#repo#impl#execute(args, ...) abort
     let host = vimonga#config#get('default_host')
     let port = vimonga#config#get('default_port')
 
@@ -11,7 +11,12 @@ function! vimonga#repo#impl#execute(args) abort
     \ ]
 
     let cmd = join(default_args + a:args, ' ')
-    return vimonga#job#pending(cmd, {'handle_ok': function('s:decode_ok')})
+    if !empty(a:000)
+        let F = function('s:decode_ok')
+    else
+        let F = function('s:decode_ok_with_split')
+    endif
+    return vimonga#job#pending(cmd, {'handle_ok': F})
 endfunction
 
 function! vimonga#repo#impl#option(key, value) abort
@@ -21,8 +26,13 @@ function! vimonga#repo#impl#option(key, value) abort
     return '--' . a:key . '=' . shellescape(a:value)
 endfunction
 
-function! s:decode_ok(result) abort
+function! s:decode_ok_with_split(result) abort
     let json = json_decode(a:result)
     let json['body'] = split(json['body'], '\%x00')
+    return json
+endfunction
+
+function! s:decode_ok(result) abort
+    let json = json_decode(a:result)
     return json
 endfunction

@@ -152,7 +152,7 @@ function! s:handle_exit(job_id, data, event) abort dict
     if self.is_err
         let result = vimonga#job#err(self.err)
     else
-        let ok = self.handle_ok(self.ok)
+        let ok = self.handle_ok(join(self.ok, ''))
         let result = vimonga#job#ok(ok)
         if self.is_extend
             let result.ok = extend(self.old_ok, result.ok)

@@ -31,6 +31,12 @@ exampleDb.teams.insert({
   createdAt: new Date()
 });
 
+for (let i = 0; i < 10; ++i) {
+  exampleDb.heavy.insert({
+    [i]: "A".repeat(200000)
+  });
+}
+
 const testUser1 = exampleDb.getUser("test-user1");
 if (testUser1 == undefined) {
   exampleDb.createUser({

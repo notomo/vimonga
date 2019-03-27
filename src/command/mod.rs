@@ -5,10 +5,13 @@ mod collection;
 pub use collection::{CollectionCreateCommand, CollectionDropCommand, CollectionListCommand};
 
 mod database;
-pub use database::{DatabaseDropCommand, DatabaseListCommand, DatabaseUserListCommand};
+pub use database::{DatabaseDropCommand, DatabaseListCommand};
 
 mod index;
 pub use index::{IndexCreateCommand, IndexListCommand};
+
+mod user;
+pub use user::UserListCommand;
 
 mod document;
 pub use document::{

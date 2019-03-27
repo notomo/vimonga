@@ -22,27 +22,6 @@ impl<'a> Command for DatabaseListCommand<'a> {
     }
 }
 
-pub struct DatabaseUserListCommand<'a> {
-    pub database_repository: &'a DatabaseRepository,
-    pub buffer_repository: &'a BufferRepository,
-    pub database_name: &'a str,
-}
-
-impl<'a> Command for DatabaseUserListCommand<'a> {
-    fn run(&self) -> Result<String, error::CommandError> {
-        let documents = self.database_repository.get_users(self.database_name)?;
-
-        let mut view = HashMap::new();
-        view.insert("body", serde_json::to_string_pretty(&documents)?);
-        view.insert(
-            "path",
-            self.buffer_repository.get_users_path(self.database_name),
-        );
-
-        Ok(serde_json::to_string(&view)?)
-    }
-}
-
 pub struct DatabaseDropCommand<'a> {
     pub database_repository: &'a DatabaseRepository,
     pub database_name: &'a str,

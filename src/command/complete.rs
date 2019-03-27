@@ -53,6 +53,8 @@ impl<'a> CompleteVimongaCommand<'a> {
             "collection.create",
             "collection.drop",
             "index.list",
+            "index.new",
+            "index.create",
             "document.find",
             "document.page.next",
             "document.page.first",

@@ -107,7 +107,15 @@ fn main() {
                         .takes_value(true)
                         .required(true),
                 )
-                .subcommand(SubCommand::with_name("list")),
+                .subcommand(SubCommand::with_name("list"))
+                .subcommand(
+                    SubCommand::with_name("create").arg(
+                        Arg::with_name("keys")
+                            .long("keys")
+                            .takes_value(true)
+                            .required(true),
+                    ),
+                ),
         )
         .subcommand(
             SubCommand::with_name("document")
@@ -295,30 +303,35 @@ fn main() {
                 _ => command::HelpCommand {}.run(),
             }
         }
-        ("index", Some(cmd)) => match cmd.subcommand() {
-            ("list", Some(_)) => {
-                let database_name = cmd.value_of("database_name").unwrap();
-                let collection_name = cmd.value_of("collection_name").unwrap();
+        ("index", Some(cmd)) => {
+            let database_name = cmd.value_of("database_name").unwrap();
+            let collection_name = cmd.value_of("collection_name").unwrap();
 
-                let collection_repo = datastore::CollectionRepositoryImpl {
-                    connection_factory: &connection_factory,
-                };
-
-                let repo = datastore::IndexRepositoryImpl {
-                    connection_factory: &connection_factory,
-                };
-
-                command::IndexListCommand {
+            let repo = datastore::IndexRepositoryImpl {
+                connection_factory: &connection_factory,
+            };
+            match cmd.subcommand() {
+                ("list", Some(_)) => command::IndexListCommand {
                     index_repository: &repo,
-                    collection_repository: &collection_repo,
                     buffer_repository: &buffer_repo,
                     database_name,
                     collection_name,
                 }
-                .run()
+                .run(),
+                ("create", Some(cmd)) => {
+                    let keys_json = cmd.value_of("keys").unwrap();
+
+                    command::IndexCreateCommand {
+                        index_repository: &repo,
+                        database_name,
+                        collection_name,
+                        keys_json,
+                    }
+                }
+                .run(),
+                _ => command::HelpCommand {}.run(),
             }
-            _ => command::HelpCommand {}.run(),
-        },
+        }
         ("document", Some(cmd)) => {
             let database_name = cmd.value_of("database_name").unwrap();
             let collection_name = cmd.value_of("collection_name").unwrap();

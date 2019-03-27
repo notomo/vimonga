@@ -8,4 +8,11 @@ pub trait IndexRepository {
         database_name: &str,
         collection_name: &str,
     ) -> Result<Vec<Document>, RepositoryError>;
+
+    fn create(
+        &self,
+        database_name: &str,
+        collection_name: &str,
+        keys_json: &str,
+    ) -> Result<bool, RepositoryError>;
 }

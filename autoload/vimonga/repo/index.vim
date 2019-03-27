@@ -4,3 +4,10 @@ function! vimonga#repo#index#list(collection) abort
     let coll = vimonga#repo#impl#option('collection', a:collection.name)
     return vimonga#repo#impl#execute(['index', db, coll, 'list'])
 endfunction
+
+function! vimonga#repo#index#create(collection, content) abort
+    let db = vimonga#repo#impl#option('database', a:collection.database_name)
+    let coll = vimonga#repo#impl#option('collection', a:collection.name)
+    let keys = vimonga#repo#impl#option('keys', a:content)
+    return vimonga#repo#impl#execute(['index', db, coll, 'create', keys])
+endfunction

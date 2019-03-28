@@ -49,6 +49,8 @@ impl<'a> CompleteVimongaCommand<'a> {
             "database.list",
             "database.drop",
             "user.list",
+            "user.new",
+            "user.create",
             "collection.list",
             "collection.create",
             "collection.drop",

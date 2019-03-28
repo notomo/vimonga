@@ -7,6 +7,9 @@ use command::Command;
 mod datastore;
 mod domain;
 
+#[macro_use]
+extern crate serde_derive;
+
 use failure::Fail;
 
 fn main() {
@@ -67,7 +70,15 @@ fn main() {
                         .takes_value(true)
                         .required(true),
                 )
-                .subcommand(SubCommand::with_name("list")),
+                .subcommand(SubCommand::with_name("list"))
+                .subcommand(
+                    SubCommand::with_name("create").arg(
+                        Arg::with_name("info")
+                            .long("info")
+                            .takes_value(true)
+                            .required(true),
+                    ),
+                ),
         )
         .subcommand(
             SubCommand::with_name("collection")
@@ -273,6 +284,15 @@ fn main() {
                     database_name,
                 }
                 .run(),
+                ("create", Some(cmd)) => {
+                    let create_info_json = cmd.value_of("info").unwrap();
+                    command::UserCreateCommand {
+                        database_repository: &repo,
+                        database_name,
+                        create_info_json,
+                    }
+                    .run()
+                }
                 _ => command::HelpCommand {}.run(),
             }
         }

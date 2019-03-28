@@ -3,6 +3,7 @@ use crate::command::Command;
 
 use std::collections::HashMap;
 
+use crate::domain::model::UserRole;
 use crate::domain::repository::{BufferRepository, DatabaseRepository};
 
 pub struct UserListCommand<'a> {
@@ -21,6 +22,39 @@ impl<'a> Command for UserListCommand<'a> {
             "path",
             self.buffer_repository.get_users_path(self.database_name),
         );
+
+        Ok(serde_json::to_string(&view)?)
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct CreateInfo<'a> {
+    #[serde(rename = "user")]
+    user_name: &'a str,
+    #[serde(rename = "pwd")]
+    password: &'a str,
+    roles: Vec<UserRole<'a>>,
+}
+
+pub struct UserCreateCommand<'a> {
+    pub database_repository: &'a DatabaseRepository,
+    pub database_name: &'a str,
+    pub create_info_json: &'a str,
+}
+
+impl<'a> Command for UserCreateCommand<'a> {
+    fn run(&self) -> Result<String, error::CommandError> {
+        let info: CreateInfo = serde_json::from_str(self.create_info_json)?;
+
+        self.database_repository.create_user(
+            self.database_name,
+            info.user_name,
+            info.password,
+            info.roles,
+        )?;
+
+        let mut view = HashMap::new();
+        view.insert("body", "");
 
         Ok(serde_json::to_string(&view)?)
     }

@@ -3,6 +3,8 @@ let s:actions = {
     \ 'database.list': { params -> vimonga#action#databases#list(params) },
     \ 'database.drop': { params -> vimonga#action#databases#drop(params) },
     \ 'user.list': { params -> vimonga#action#database#users#list(params) },
+    \ 'user.create': { params -> vimonga#action#database#user#create(params) },
+    \ 'user.new': { params -> vimonga#action#database#user#new(params) },
     \ 'collection.list': { params -> vimonga#action#collections#list(params) },
     \ 'collection.create': { params -> vimonga#action#collections#create(params) },
     \ 'collection.drop': { params -> vimonga#action#collections#drop(params) },

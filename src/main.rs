@@ -78,6 +78,14 @@ fn main() {
                             .takes_value(true)
                             .required(true),
                     ),
+                )
+                .subcommand(
+                    SubCommand::with_name("drop").arg(
+                        Arg::with_name("name")
+                            .long("name")
+                            .takes_value(true)
+                            .required(true),
+                    ),
                 ),
         )
         .subcommand(
@@ -290,6 +298,15 @@ fn main() {
                         database_repository: &repo,
                         database_name,
                         create_info_json,
+                    }
+                    .run()
+                }
+                ("drop", Some(cmd)) => {
+                    let user_name = cmd.value_of("name").unwrap();
+                    command::UserDropCommand {
+                        database_repository: &repo,
+                        database_name,
+                        user_name,
                     }
                     .run()
                 }

@@ -11,7 +11,7 @@ mod index;
 pub use index::{IndexCreateCommand, IndexListCommand};
 
 mod user;
-pub use user::{UserCreateCommand, UserListCommand};
+pub use user::{UserCreateCommand, UserDropCommand, UserListCommand};
 
 mod document;
 pub use document::{

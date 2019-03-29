@@ -62,12 +62,18 @@ impl<'a> DatabaseRepository for DatabaseRepositoryImpl<'a> {
             })
             .collect();
 
-        let documents =
-            client
-                .db(database_name)
-                .create_user(name, password, Some(create_option))?;
+        client
+            .db(database_name)
+            .create_user(name, password, Some(create_option))?;
 
-        Ok(documents)
+        Ok(())
+    }
+
+    fn drop_user(&self, database_name: &str, name: &str) -> Result<(), RepositoryError> {
+        let client = self.connection_factory.get()?;
+        client.db(database_name).drop_user(name, None)?;
+
+        Ok(())
     }
 
     fn drop(&self, database_name: &str) -> Result<bool, RepositoryError> {

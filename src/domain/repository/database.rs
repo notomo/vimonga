@@ -12,5 +12,6 @@ pub trait DatabaseRepository {
         password: &str,
         roles: Vec<UserRole>,
     ) -> Result<(), RepositoryError>;
+    fn drop_user(&self, database_name: &str, name: &str) -> Result<(), RepositoryError>;
     fn drop(&self, database_name: &str) -> Result<bool, RepositoryError>;
 }

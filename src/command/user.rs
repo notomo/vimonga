@@ -59,3 +59,21 @@ impl<'a> Command for UserCreateCommand<'a> {
         Ok(serde_json::to_string(&view)?)
     }
 }
+
+pub struct UserDropCommand<'a> {
+    pub database_repository: &'a DatabaseRepository,
+    pub database_name: &'a str,
+    pub user_name: &'a str,
+}
+
+impl<'a> Command for UserDropCommand<'a> {
+    fn run(&self) -> Result<String, error::CommandError> {
+        self.database_repository
+            .drop_user(self.database_name, self.user_name)?;
+
+        let mut view = HashMap::new();
+        view.insert("body", "");
+
+        Ok(serde_json::to_string(&view)?)
+    }
+}

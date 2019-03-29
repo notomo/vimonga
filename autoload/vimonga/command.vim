@@ -5,6 +5,7 @@ let s:actions = {
     \ 'user.list': { params -> vimonga#action#database#users#list(params) },
     \ 'user.create': { params -> vimonga#action#database#user#create(params) },
     \ 'user.new': { params -> vimonga#action#database#user#new(params) },
+    \ 'user.drop': { params -> vimonga#action#database#user#drop(params) },
     \ 'collection.list': { params -> vimonga#action#collections#list(params) },
     \ 'collection.create': { params -> vimonga#action#collections#create(params) },
     \ 'collection.drop': { params -> vimonga#action#collections#drop(params) },
@@ -48,6 +49,7 @@ endfunction
 
 let s:params = {
     \ 'db': 'database name',
+    \ 'user': 'user name',
     \ 'coll': 'collection name',
     \ 'id': 'document id',
     \ 'open': 'command to open buffer',
@@ -77,12 +79,14 @@ endfunction
 function! s:new_params(params) abort
     let params = {
         \ 'database_name': has_key(a:params, 'db') ? a:params['db'] : '',
+        \ 'user_name': has_key(a:params, 'user') ? a:params['user'] : '',
         \ 'collection_name': has_key(a:params, 'coll') ? a:params['coll'] : '',
         \ 'document_id': has_key(a:params, 'id') ? a:params['id'] : '',
         \ 'open_cmd': has_key(a:params, 'open') ? a:params['open'] : 'edit',
     \ }
 
     let params['has_db'] = !empty(params['database_name'])
+    let params['has_user'] = !empty(params['user_name'])
     let params['has_coll'] = !empty(params['collection_name'])
     let params['has_id'] = !empty(params['document_id'])
 

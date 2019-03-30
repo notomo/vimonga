@@ -106,3 +106,98 @@ impl<'a> CompleteVimongaCommand<'a> {
         Ok(values)
     }
 }
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+    use crate::domain::repository::RepositoryError;
+
+    struct DatabaseRepositoryMock<'a> {
+        pub names: Vec<&'a str>,
+    }
+
+    impl<'a> DatabaseRepository for DatabaseRepositoryMock<'a> {
+        fn get_names(&self) -> Result<Vec<String>, RepositoryError> {
+            Ok(self.names.iter().map(|x| x.to_string()).collect())
+        }
+        fn drop(&self, _database_name: &str) -> Result<bool, RepositoryError> {
+            Ok(true)
+        }
+    }
+
+    struct CollectionRepositoryMock;
+
+    impl CollectionRepository for CollectionRepositoryMock {
+        fn get_names(&self, _database_name: &str) -> Result<Vec<String>, RepositoryError> {
+            Ok(vec!["".to_string()])
+        }
+        fn create(
+            &self,
+            _database_name: &str,
+            _collection_name: &str,
+        ) -> Result<bool, RepositoryError> {
+            Ok(true)
+        }
+        fn drop(
+            &self,
+            _database_name: &str,
+            _collection_name: &str,
+        ) -> Result<bool, RepositoryError> {
+            Ok(true)
+        }
+    }
+
+    #[test]
+    fn param_keys() {
+        let db_repo = DatabaseRepositoryMock { names: vec![""] };
+        let coll_repo = CollectionRepositoryMock {};
+        let command = CompleteVimongaCommand {
+            database_repository: &db_repo,
+            collection_repository: &coll_repo,
+            current_arg: "",
+            args: vec!["collection.list"],
+        };
+
+        let result = command.run();
+
+        assert_eq!(true, result.is_ok());
+        assert_eq!("-db=".to_string(), result.unwrap());
+    }
+
+    #[test]
+    fn action_names() {
+        let db_repo = DatabaseRepositoryMock { names: vec![""] };
+        let coll_repo = CollectionRepositoryMock {};
+        let command = CompleteVimongaCommand {
+            database_repository: &db_repo,
+            collection_repository: &coll_repo,
+            current_arg: "",
+            args: vec![],
+        };
+
+        let result = command.run();
+
+        assert_eq!(true, result.is_ok());
+        assert_eq!(true, result.unwrap().starts_with("database.list"));
+    }
+
+    #[test]
+    fn param_values() {
+        let db_repo = DatabaseRepositoryMock {
+            names: vec!["example", "local"],
+        };
+        let coll_repo = CollectionRepositoryMock {};
+        let command = CompleteVimongaCommand {
+            database_repository: &db_repo,
+            collection_repository: &coll_repo,
+            current_arg: "-db=",
+            args: vec!["collection.list", "-db="],
+        };
+
+        let result = command.run();
+
+        assert_eq!(true, result.is_ok());
+        assert_eq!("-db=example\n-db=local".to_string(), result.unwrap());
+    }
+}

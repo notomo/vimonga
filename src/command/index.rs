@@ -52,3 +52,22 @@ impl<'a> Command for IndexCreateCommand<'a> {
         Ok(serde_json::to_string(&view)?)
     }
 }
+
+pub struct IndexDropCommand<'a> {
+    pub index_repository: &'a IndexRepository,
+    pub database_name: &'a str,
+    pub collection_name: &'a str,
+    pub index_name: &'a str,
+}
+
+impl<'a> Command for IndexDropCommand<'a> {
+    fn run(&self) -> Result<String, error::CommandError> {
+        self.index_repository
+            .drop(self.database_name, self.collection_name, self.index_name)?;
+
+        let mut view = HashMap::new();
+        view.insert("body", "".to_string());
+
+        Ok(serde_json::to_string(&view)?)
+    }
+}

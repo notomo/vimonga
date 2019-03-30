@@ -65,4 +65,19 @@ impl<'a> IndexRepository for IndexRepositoryImpl<'a> {
 
         Ok(true)
     }
+
+    fn drop(
+        &self,
+        database_name: &str,
+        collection_name: &str,
+        name: &str,
+    ) -> Result<bool, RepositoryError> {
+        let client = self.connection_factory.get()?;
+        client
+            .db(database_name)
+            .collection(collection_name)
+            .drop_index_string(name.to_string())?;
+
+        Ok(true)
+    }
 }

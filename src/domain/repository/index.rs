@@ -15,4 +15,11 @@ pub trait IndexRepository {
         collection_name: &str,
         keys_json: &str,
     ) -> Result<bool, RepositoryError>;
+
+    fn drop(
+        &self,
+        database_name: &str,
+        collection_name: &str,
+        name: &str,
+    ) -> Result<bool, RepositoryError>;
 }

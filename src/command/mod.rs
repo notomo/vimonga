@@ -8,7 +8,7 @@ mod database;
 pub use database::{DatabaseDropCommand, DatabaseListCommand};
 
 mod index;
-pub use index::{IndexCreateCommand, IndexListCommand};
+pub use index::{IndexCreateCommand, IndexDropCommand, IndexListCommand};
 
 mod user;
 pub use user::{UserCreateCommand, UserDropCommand, UserListCommand};

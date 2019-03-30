@@ -12,6 +12,7 @@ let s:actions = {
     \ 'index.list': { params -> vimonga#action#collection#indexes#list(params) },
     \ 'index.create': { params -> vimonga#action#collection#index#create(params) },
     \ 'index.new': { params -> vimonga#action#collection#index#new(params) },
+    \ 'index.drop': { params -> vimonga#action#collection#index#drop(params) },
     \ 'document.find': { params -> vimonga#action#documents#find(params, {}) },
     \ 'document.page.next': { params -> vimonga#action#documents#move_page(params, 1) },
     \ 'document.page.first': { params -> vimonga#action#documents#first(params) },
@@ -51,6 +52,7 @@ let s:params = {
     \ 'db': 'database name',
     \ 'user': 'user name',
     \ 'coll': 'collection name',
+    \ 'index': 'index name',
     \ 'id': 'document id',
     \ 'open': 'command to open buffer',
 \ }
@@ -81,6 +83,7 @@ function! s:new_params(params) abort
         \ 'database_name': has_key(a:params, 'db') ? a:params['db'] : '',
         \ 'user_name': has_key(a:params, 'user') ? a:params['user'] : '',
         \ 'collection_name': has_key(a:params, 'coll') ? a:params['coll'] : '',
+        \ 'index_name': has_key(a:params, 'index') ? a:params['index'] : '',
         \ 'document_id': has_key(a:params, 'id') ? a:params['id'] : '',
         \ 'open_cmd': has_key(a:params, 'open') ? a:params['open'] : 'edit',
     \ }
@@ -88,6 +91,7 @@ function! s:new_params(params) abort
     let params['has_db'] = !empty(params['database_name'])
     let params['has_user'] = !empty(params['user_name'])
     let params['has_coll'] = !empty(params['collection_name'])
+    let params['has_index'] = !empty(params['index_name'])
     let params['has_id'] = !empty(params['document_id'])
 
     return params

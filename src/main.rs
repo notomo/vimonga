@@ -136,6 +136,14 @@ fn main() {
                             .takes_value(true)
                             .required(true),
                     ),
+                )
+                .subcommand(
+                    SubCommand::with_name("drop").arg(
+                        Arg::with_name("name")
+                            .long("name")
+                            .takes_value(true)
+                            .required(true),
+                    ),
                 ),
         )
         .subcommand(
@@ -372,6 +380,17 @@ fn main() {
                         database_name,
                         collection_name,
                         keys_json,
+                    }
+                }
+                .run(),
+                ("drop", Some(cmd)) => {
+                    let index_name = cmd.value_of("name").unwrap();
+
+                    command::IndexDropCommand {
+                        index_repository: &repo,
+                        database_name,
+                        collection_name,
+                        index_name,
                     }
                 }
                 .run(),

@@ -18,3 +18,14 @@ function! vimonga#action#collection#index#create(params) abort
         \.map_err({ err -> vimonga#message#error(err) })
         \.execute()
 endfunction
+
+function! vimonga#action#collection#index#drop(params) abort
+    call vimonga#job#new()
+        \.map_ok({ _ -> vimonga#buffer#collection#index#model(a:params) })
+        \.map_through_ok({ index -> vimonga#repo#index#drop(index) })
+        \.map_ok({ index -> vimonga#buffer#collection#indexes#open(index.collection(), a:params.open_cmd) })
+        \.map_extend_ok({ buf -> vimonga#repo#index#list(buf.collection) })
+        \.map_ok({ buf, result -> vimonga#buffer#impl#content(buf.id, result['body']) })
+        \.map_err({ err -> vimonga#message#error(err) })
+        \.execute()
+endfunction

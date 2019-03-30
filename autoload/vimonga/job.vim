@@ -2,6 +2,8 @@
 let s:PARAM_TYPE_PASS = 'PASS'
 let s:PARAM_TYPE_THROUGH_OK = 'THROUGH_OK'
 let s:PARAM_TYPE_EXTEND_OK = 'EXTEND_OK'
+let s:id = 0
+let s:id_map = {}
 
 function! vimonga#job#new() abort
     let dict = {'jobs': []}
@@ -28,7 +30,9 @@ function! vimonga#job#new() abort
 
     function! dict.execute() abort
         let result = vimonga#job#ok([])
-        call vimonga#job#execute(self.jobs, result)
+        let s:id += 1
+        call vimonga#job#execute(self.jobs, result, s:id)
+        return s:id
     endfunction
 
     return dict
@@ -96,7 +100,7 @@ function! vimonga#job#pending(cmd, options) abort
     return result
 endfunction
 
-function! vimonga#job#execute(jobs, result) abort
+function! vimonga#job#execute(jobs, result, id) abort
     let result = a:result
     for index in range(len(a:jobs))
         let job = a:jobs[index]
@@ -125,13 +129,19 @@ function! vimonga#job#execute(jobs, result) abort
             \ 'old_ok': old_ok,
             \ 'err': [],
             \ 'is_err': v:false,
+            \ 'id': a:id,
         \ }
         if has_key(result.options, 'handle_ok')
             let options.handle_ok = result.options.handle_ok
         endif
+        let s:id_map[a:id] = v:true
         call jobstart(result.cmd, options)
         break
     endfor
+
+    if index == len(a:jobs) - 1 && has_key(s:id_map, a:id)
+        call remove(s:id_map, a:id)
+    endif
 endfunction
 
 function! s:handle_stdout(job_id, data, event) abort dict
@@ -161,5 +171,13 @@ function! s:handle_exit(job_id, data, event) abort dict
         endif
     endif
 
-    call vimonga#job#execute(self.jobs, result)
+    call vimonga#job#execute(self.jobs, result, self.id)
+endfunction
+
+function! vimonga#job#has_done(id) abort
+    if a:id <= 0 || a:id > s:id
+        throw 'invalid id: ' . a:id
+    endif
+
+    return !has_key(s:id_map, a:id)
 endfunction

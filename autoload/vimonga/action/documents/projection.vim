@@ -1,7 +1,7 @@
 
 function! vimonga#action#documents#projection#reset_all(params) abort
     let options = vimonga#repo#document#options({'projection': {}})
-    call vimonga#action#documents#find(a:params, options)
+    return vimonga#action#documents#find(a:params, options)
 endfunction
 
 function! vimonga#action#documents#projection#hide(params) abort
@@ -12,5 +12,5 @@ function! vimonga#action#documents#projection#hide(params) abort
     let options = vimonga#repo#document#options()
     let options['projection'][field_name] = 0
 
-    call vimonga#action#documents#find(a:params, options)
+    return vimonga#action#documents#find(a:params, options)
 endfunction

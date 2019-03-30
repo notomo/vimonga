@@ -1,6 +1,6 @@
 
 function! vimonga#action#database#users#list(params) abort
-    call vimonga#job#new()
+    return vimonga#job#new()
         \.map_ok({ _ -> vimonga#buffer#databases#model(a:params) })
         \.map_ok({ database -> vimonga#buffer#database#users#open(database, a:params.open_cmd) })
         \.map_extend_ok({ buf -> vimonga#repo#user#list(buf.database) })

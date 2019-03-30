@@ -1,6 +1,6 @@
 
 function! vimonga#action#collection#indexes#list(params) abort
-    call vimonga#job#new()
+    return vimonga#job#new()
         \.map_ok({ _ -> vimonga#buffer#collections#model(a:params) })
         \.map_ok({ collection -> vimonga#buffer#collection#indexes#open(collection, a:params.open_cmd) })
         \.map_extend_ok({ buf -> vimonga#repo#index#list(buf.collection) })

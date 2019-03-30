@@ -1,7 +1,7 @@
 
 function! vimonga#action#documents#sort#reset_all(params) abort
     let options = vimonga#repo#document#options({'sort': {}})
-    call vimonga#action#documents#find(a:params, options)
+    return vimonga#action#documents#find(a:params, options)
 endfunction
 
 function! vimonga#action#documents#sort#toggle(params) abort
@@ -18,7 +18,7 @@ function! vimonga#action#documents#sort#toggle(params) abort
     endif
     let options['offset'] = 0
 
-    call vimonga#action#documents#find(a:params, options)
+    return vimonga#action#documents#find(a:params, options)
 endfunction
 
 function! vimonga#action#documents#sort#do(params, direction) abort
@@ -37,5 +37,5 @@ function! vimonga#action#documents#sort#do(params, direction) abort
     endif
     let options['offset'] = 0
 
-    call vimonga#action#documents#find(a:params, options)
+    return vimonga#action#documents#find(a:params, options)
 endfunction

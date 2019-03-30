@@ -42,7 +42,7 @@ function! vimonga#command#execute(arg_string) abort
 
     let action_name = args[0]
     if has_key(s:actions, action_name)
-        call s:actions[action_name](params) | return
+        return s:actions[action_name](params)
     endif
 
     echohl ErrorMsg | echo 'invalid argument: ' . a:arg_string | echohl None

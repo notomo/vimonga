@@ -1,7 +1,7 @@
 
 function! vimonga#action#databases#list(params) abort
     let conn = vimonga#buffer#connections#model(a:params)
-    call vimonga#job#new()
+    return vimonga#job#new()
         \.map_ok({ _ -> vimonga#buffer#databases#open(conn, a:params.open_cmd) })
         \.map_extend_ok({ _ -> vimonga#repo#database#list() })
         \.map_ok({ buf, result -> vimonga#buffer#impl#content(buf, result['body']) })
@@ -10,7 +10,7 @@ function! vimonga#action#databases#list(params) abort
 endfunction
 
 function! vimonga#action#databases#drop(params) abort
-    call vimonga#job#new()
+    return vimonga#job#new()
         \.map_ok({ _ -> vimonga#buffer#databases#model(a:params) })
         \.map_through_ok({ database -> vimonga#message#confirm_strongly('Drop ' . database.name . '?') })
         \.map_through_ok({ database -> vimonga#repo#database#drop(database) })

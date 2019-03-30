@@ -1,6 +1,6 @@
 
 function! vimonga#action#collections#drop(params) abort
-    call vimonga#job#new()
+    return vimonga#job#new()
         \.map_ok({ _ -> vimonga#buffer#collections#model(a:params) })
         \.map_through_ok({ collection -> vimonga#message#confirm_strongly('Drop ' . collection.name . '?') })
         \.map_through_ok({ collection -> vimonga#repo#collection#drop(collection) })
@@ -12,7 +12,7 @@ function! vimonga#action#collections#drop(params) abort
 endfunction
 
 function! vimonga#action#collections#list(params) abort
-    call vimonga#job#new()
+    return vimonga#job#new()
         \.map_ok({ _ -> vimonga#buffer#databases#model(a:params) })
         \.map_ok({ database -> vimonga#buffer#collections#open(database, a:params.open_cmd) })
         \.map_extend_ok({ buf -> vimonga#repo#collection#list(buf.database) })
@@ -22,7 +22,7 @@ function! vimonga#action#collections#list(params) abort
 endfunction
 
 function! vimonga#action#collections#create(params) abort
-    call vimonga#job#new()
+    return vimonga#job#new()
         \.map_ok({ _ -> vimonga#buffer#databases#model(a:params) })
         \.map_extend_ok({ _ -> vimonga#message#input('Create: ') })
         \.map_through_ok({ database, name -> vimonga#repo#collection#create(database.collection(name)) })

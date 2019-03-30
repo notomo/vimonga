@@ -7,6 +7,9 @@ pub use collection::CollectionRepository;
 mod index;
 pub use index::IndexRepository;
 
+mod user;
+pub use user::UserRepository;
+
 mod document;
 pub use document::DocumentRepository;
 

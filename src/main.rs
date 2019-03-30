@@ -290,12 +290,12 @@ fn main() {
         ("user", Some(cmd)) => {
             let database_name = cmd.value_of("database_name").unwrap();
 
-            let repo = datastore::DatabaseRepositoryImpl {
+            let repo = datastore::UserRepositoryImpl {
                 connection_factory: &connection_factory,
             };
             match cmd.subcommand() {
                 ("list", Some(_)) => command::UserListCommand {
-                    database_repository: &repo,
+                    user_repository: &repo,
                     buffer_repository: &buffer_repo,
                     database_name,
                 }
@@ -303,7 +303,7 @@ fn main() {
                 ("create", Some(cmd)) => {
                     let create_info_json = cmd.value_of("info").unwrap();
                     command::UserCreateCommand {
-                        database_repository: &repo,
+                        user_repository: &repo,
                         database_name,
                         create_info_json,
                     }
@@ -312,7 +312,7 @@ fn main() {
                 ("drop", Some(cmd)) => {
                     let user_name = cmd.value_of("name").unwrap();
                     command::UserDropCommand {
-                        database_repository: &repo,
+                        user_repository: &repo,
                         database_name,
                         user_name,
                     }

@@ -7,6 +7,9 @@ pub use collection::CollectionRepositoryImpl;
 mod index;
 pub use index::IndexRepositoryImpl;
 
+mod user;
+pub use user::UserRepositoryImpl;
+
 mod document;
 pub use document::DocumentRepositoryImpl;
 

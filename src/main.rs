@@ -484,9 +484,9 @@ fn main() {
     match command_result {
         Ok(content) => println!("{}", content),
         Err(err) => {
-            println!("{}", err);
+            eprintln!("{}", err);
             if let Some(backtrace) = err.backtrace() {
-                println!("{}", backtrace);
+                eprintln!("{}", backtrace);
             }
             std::process::exit(1);
         }

@@ -37,6 +37,13 @@ impl<'a> Command for CompleteVimongaCommand<'a> {
             })
             .collect();
 
+        let database_name = self
+            .args
+            .iter()
+            .filter(|arg| arg.starts_with("-db=") && arg.contains("="))
+            .map(|arg| arg.split("=").collect::<Vec<&str>>()[1])
+            .last();
+
         let candidates = if actions.len() != 0
             && (self.current_arg == "" || self.current_arg.starts_with("-"))
             && !self.current_arg.contains("=")
@@ -46,7 +53,7 @@ impl<'a> Command for CompleteVimongaCommand<'a> {
             && self.current_arg.starts_with("-")
             && self.current_arg.contains("=")
         {
-            self.param_values(&keys.last().unwrap())?
+            self.param_values(&keys.last().unwrap(), database_name)?
         } else {
             self.action_names()
         };
@@ -112,9 +119,14 @@ impl<'a> CompleteVimongaCommand<'a> {
         .collect()
     }
 
-    fn param_values(&self, key: &String) -> Result<Vec<String>, error::CommandError> {
+    fn param_values(
+        &self,
+        key: &String,
+        database_name: Option<&str>,
+    ) -> Result<Vec<String>, error::CommandError> {
         let values = match key.as_str() {
             DB => self.database_repository.get_names()?,
+            COLL => self.get_collection_names(database_name)?,
             _ => vec![],
         }
         .iter()
@@ -122,6 +134,18 @@ impl<'a> CompleteVimongaCommand<'a> {
         .collect();
 
         Ok(values)
+    }
+
+    fn get_collection_names(
+        &self,
+        database_name: Option<&str>,
+    ) -> Result<Vec<String>, error::CommandError> {
+        let names = match database_name {
+            Some(database_name) => self.collection_repository.get_names(database_name)?,
+            None => vec![],
+        };
+
+        Ok(names)
     }
 }
 
@@ -144,11 +168,13 @@ mod tests {
         }
     }
 
-    struct CollectionRepositoryMock;
+    struct CollectionRepositoryMock<'a> {
+        pub names: Vec<&'a str>,
+    }
 
-    impl CollectionRepository for CollectionRepositoryMock {
+    impl<'a> CollectionRepository for CollectionRepositoryMock<'a> {
         fn get_names(&self, _database_name: &str) -> Result<Vec<String>, RepositoryError> {
-            Ok(vec!["".to_string()])
+            Ok(self.names.iter().map(|x| x.to_string()).collect())
         }
         fn create(
             &self,
@@ -168,8 +194,8 @@ mod tests {
 
     #[test]
     fn param_keys() {
-        let db_repo = DatabaseRepositoryMock { names: vec![""] };
-        let coll_repo = CollectionRepositoryMock {};
+        let db_repo = DatabaseRepositoryMock { names: vec![] };
+        let coll_repo = CollectionRepositoryMock { names: vec![] };
         let command = CompleteVimongaCommand {
             database_repository: &db_repo,
             collection_repository: &coll_repo,
@@ -185,8 +211,8 @@ mod tests {
 
     #[test]
     fn action_names() {
-        let db_repo = DatabaseRepositoryMock { names: vec![""] };
-        let coll_repo = CollectionRepositoryMock {};
+        let db_repo = DatabaseRepositoryMock { names: vec![] };
+        let coll_repo = CollectionRepositoryMock { names: vec![] };
         let command = CompleteVimongaCommand {
             database_repository: &db_repo,
             collection_repository: &coll_repo,
@@ -201,11 +227,11 @@ mod tests {
     }
 
     #[test]
-    fn param_values() {
+    fn db_names() {
         let db_repo = DatabaseRepositoryMock {
             names: vec!["example", "local"],
         };
-        let coll_repo = CollectionRepositoryMock {};
+        let coll_repo = CollectionRepositoryMock { names: vec![] };
         let command = CompleteVimongaCommand {
             database_repository: &db_repo,
             collection_repository: &coll_repo,
@@ -217,5 +243,43 @@ mod tests {
 
         assert_eq!(true, result.is_ok());
         assert_eq!("-db=example\n-db=local".to_string(), result.unwrap());
+    }
+
+    #[test]
+    fn collection_names() {
+        let db_repo = DatabaseRepositoryMock { names: vec![] };
+        let coll_repo = CollectionRepositoryMock {
+            names: vec!["teams", "skills"],
+        };
+        let command = CompleteVimongaCommand {
+            database_repository: &db_repo,
+            collection_repository: &coll_repo,
+            current_arg: "-coll=",
+            args: vec!["collection.list", "-db=example", "-coll="],
+        };
+
+        let result = command.run();
+
+        assert_eq!(true, result.is_ok());
+        assert_eq!("-coll=teams\n-coll=skills".to_string(), result.unwrap());
+    }
+
+    #[test]
+    fn collection_names_without_db() {
+        let db_repo = DatabaseRepositoryMock { names: vec![] };
+        let coll_repo = CollectionRepositoryMock {
+            names: vec!["teams", "skills"],
+        };
+        let command = CompleteVimongaCommand {
+            database_repository: &db_repo,
+            collection_repository: &coll_repo,
+            current_arg: "-coll=",
+            args: vec!["collection.list", "-coll="],
+        };
+
+        let result = command.run();
+
+        assert_eq!(true, result.is_ok());
+        assert_eq!("".to_string(), result.unwrap());
     }
 }

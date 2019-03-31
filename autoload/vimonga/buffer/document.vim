@@ -68,10 +68,6 @@ function! vimonga#buffer#document#new(collection, open_cmd) abort
     return result
 endfunction
 
-function! vimonga#buffer#document#ensure_new() abort
-    call vimonga#buffer#impl#assert_filetype(s:filetype_new)
-endfunction
-
 let s:filetype_delete = 'vimonga-doc-delete'
 
 function! vimonga#buffer#document#open_deleted(buffer, document) abort

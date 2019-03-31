@@ -1,14 +1,4 @@
 
-function! vimonga#buffer#impl#error(contents, open_cmd) abort
-    call vimonga#buffer#impl#buffer(a:contents, '', 'vimonga://error', a:open_cmd)
-endfunction
-
-function! vimonga#buffer#impl#assert_filetype(...) abort
-    if index(a:000, &filetype) == -1
-        throw printf('&filetype must be in [%s] but actual: %s', join(a:000, ', '), &filetype)
-    endif
-endfunction
-
 function! vimonga#buffer#impl#buffer(filetype, path, open_cmd) abort
     if bufname('%') ==# a:path && &modified
         return
@@ -53,15 +43,4 @@ endfunction
 
 function! vimonga#buffer#impl#document_id() abort
     return matchstr(bufname('%'), '\vvimonga:\/\/.*\/dbs\/[^/]*\/colls\/[^/]*\/docs\/\zs[^/]*\ze')
-endfunction
-
-function! vimonga#buffer#impl#execute(funcs) abort
-    let result = []
-    for F in a:funcs
-        let [result, err] = F()
-        if !empty(err)
-            return [[], err]
-        endif
-    endfor
-    return [result, []]
 endfunction

@@ -1,25 +1,18 @@
 
 function! vimonga#buffer#collection#index#model(params) abort
-    let host = vimonga#buffer#impl#host()
-    let port = vimonga#buffer#impl#port()
-    if a:params.has_index && a:params.has_db && a:params.has_coll
-        let database_name = a:params.database_name
-        let collection_name = a:params.collection_name
-        let index_name = a:params.index_name
-    elseif a:params.has_index
-        let database_name = vimonga#buffer#impl#database_name()
-        let collection_name = vimonga#buffer#impl#collection_name()
-        let index_name = a:params.index_name
-    else
+    let result = vimonga#buffer#collections#model(a:params)
+    if result.is_err
+        return result
+    endif
+
+    let [coll] = result.ok
+    if a:params.has_index
+        let name = a:params.index_name
+    endif
+    if empty(name)
         return vimonga#job#err(['index name is required'])
     endif
-    let index = vimonga#model#index#new(
-        \ host,
-        \ port,
-        \ database_name,
-        \ collection_name,
-        \ index_name,
-    \ )
+    let index = coll.index(name)
     return vimonga#job#ok(index)
 endfunction
 

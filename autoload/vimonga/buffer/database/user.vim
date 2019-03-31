@@ -1,22 +1,20 @@
 
 function! vimonga#buffer#database#user#model(params) abort
-    let host = vimonga#buffer#impl#host()
-    let port = vimonga#buffer#impl#port()
-    if a:params.has_user && a:params.has_db
-        let database_name = a:params.database_name
-        let user_name = a:params.user_name
-    elseif a:params.has_user
-        let database_name = vimonga#buffer#impl#database_name()
-        let user_name = a:params.user_name
-    else
+    let result = vimonga#buffer#databases#model(a:params)
+    if result.is_err
+        return result
+    endif
+
+    let [db] = result.ok
+    let name = ''
+    if a:params.has_user
+        let name = a:params.user_name
+    endif
+    if empty(name)
         return vimonga#job#err(['user name is required'])
     endif
-    let user = vimonga#model#user#new(
-        \ host,
-        \ port,
-        \ database_name,
-        \ user_name,
-    \ )
+
+    let user = db.user(name)
     return vimonga#job#ok(user)
 endfunction
 

@@ -1,13 +1,10 @@
 
-function! vimonga#repo#impl#execute(args, ...) abort
-    let host = vimonga#config#get('default_host')
-    let port = vimonga#config#get('default_port')
-
+function! vimonga#repo#impl#execute(conn, args, ...) abort
     let default_args = [
         \ 'RUST_BACKTRACE=1',
         \ shellescape(vimonga#config#get('executable')),
-        \ vimonga#repo#impl#option('host', host),
-        \ vimonga#repo#impl#option('port', port)
+        \ vimonga#repo#impl#option('host', a:conn.host),
+        \ vimonga#repo#impl#option('port', a:conn.port)
     \ ]
 
     let cmd = join(default_args + a:args, ' ')

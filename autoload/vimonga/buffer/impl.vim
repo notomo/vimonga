@@ -25,12 +25,10 @@ function! vimonga#buffer#impl#content(buffer, content) abort
     return vimonga#job#ok([])
 endfunction
 
-function! vimonga#buffer#impl#host() abort
-    return matchstr(bufname('%'), '\vvimonga:\/\/\zs[^/]*\ze')
-endfunction
-
-function! vimonga#buffer#impl#port() abort
-    return matchstr(bufname('%'), '\vvimonga:\/\/[^/]*\/\zs[^/]*\ze')
+function! vimonga#buffer#impl#host_port() abort
+    let host = matchstr(bufname('%'), '\vvimonga:\/\/\zs[^/]*\ze')
+    let port = matchstr(bufname('%'), '\vvimonga:\/\/[^/]*\/\zs[^/]*\ze')
+    return [host, port]
 endfunction
 
 function! vimonga#buffer#impl#database_name() abort

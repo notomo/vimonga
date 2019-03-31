@@ -2,33 +2,24 @@
 let s:filetype = 'vimonga-doc'
 
 function! vimonga#buffer#document#model(params) abort
-    if a:params.has_db && a:params.has_coll && a:params.has_id
-        let database_name = a:params.database_name
-        let collection_name = a:params.collection_name
-        let document_id = a:params.document_id
-    elseif &filetype == s:filetype
-        let host = vimonga#buffer#impl#host()
-        let port = vimonga#buffer#impl#port()
-        let database_name = vimonga#buffer#impl#database_name()
-        let collection_name = vimonga#buffer#impl#collection_name()
-        let document_id = vimonga#buffer#impl#document_id()
-    else
-        let host = vimonga#buffer#impl#host()
-        let port = vimonga#buffer#impl#port()
-        let database_name = vimonga#buffer#impl#database_name()
-        let collection_name = vimonga#buffer#impl#collection_name()
-        let document_id = vimonga#buffer#documents#get_id()
-        if empty(document_id)
-            return vimonga#job#err(['object id is not found in this buffer'])
-        endif
+    let result = vimonga#buffer#collections#model(a:params)
+    if result.is_err
+        return result
     endif
-    let doc = vimonga#model#document#new(
-        \ host,
-        \ port,
-        \ document_id,
-        \ database_name,
-        \ collection_name,
-    \ )
+
+    let [coll] = result.ok
+    if a:params.has_id
+        let id = a:params.document_id
+    elseif &filetype == s:filetype
+        let id = vimonga#buffer#impl#document_id()
+    else
+        let id = vimonga#buffer#documents#get_id()
+    endif
+    if empty(id)
+        return vimonga#job#err(['document id is required'])
+    endif
+
+    let doc = coll.document(id)
     return vimonga#job#ok(doc)
 endfunction
 

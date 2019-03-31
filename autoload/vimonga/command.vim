@@ -54,6 +54,8 @@ let s:params = {
     \ 'coll': 'collection name',
     \ 'index': 'index name',
     \ 'id': 'document id',
+    \ 'host': 'host',
+    \ 'port': 'port',
     \ 'open': 'command to open buffer',
 \ }
 function! s:parse(arg_string) abort
@@ -85,6 +87,8 @@ function! s:new_params(params) abort
         \ 'collection_name': has_key(a:params, 'coll') ? a:params['coll'] : '',
         \ 'index_name': has_key(a:params, 'index') ? a:params['index'] : '',
         \ 'document_id': has_key(a:params, 'id') ? a:params['id'] : '',
+        \ 'host': has_key(a:params, 'host') ? a:params['host'] : '',
+        \ 'port': has_key(a:params, 'port') ? a:params['port'] : '',
         \ 'open_cmd': has_key(a:params, 'open') ? a:params['open'] : 'edit',
     \ }
 
@@ -93,6 +97,7 @@ function! s:new_params(params) abort
     let params['has_coll'] = !empty(params['collection_name'])
     let params['has_index'] = !empty(params['index_name'])
     let params['has_id'] = !empty(params['document_id'])
+    let params['has_conn'] = !empty(params['host']) && !empty(params['port'])
 
     return params
 endfunction

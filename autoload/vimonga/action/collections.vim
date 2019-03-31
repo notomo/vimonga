@@ -6,7 +6,7 @@ function! vimonga#action#collections#drop(params) abort
         \.map_through_ok({ collection -> vimonga#repo#collection#drop(collection) })
         \.map_ok({ collection -> vimonga#buffer#collections#open(collection.database(), a:params.open_cmd) })
         \.map_extend_ok({ buf -> vimonga#repo#collection#list(buf.database) })
-        \.map_ok({ buf, result -> vimonga#buffer#impl#content(buf.id, result['body']) })
+        \.map_ok({ buf, names -> vimonga#buffer#impl#content(buf.id, names) })
         \.map_err({ err -> vimonga#message#error(err) })
         \.execute()
 endfunction
@@ -16,7 +16,7 @@ function! vimonga#action#collections#list(params) abort
         \.map_ok({ _ -> vimonga#buffer#databases#model(a:params) })
         \.map_ok({ database -> vimonga#buffer#collections#open(database, a:params.open_cmd) })
         \.map_extend_ok({ buf -> vimonga#repo#collection#list(buf.database) })
-        \.map_ok({ buf, result -> vimonga#buffer#impl#content(buf.id, result['body']) })
+        \.map_ok({ buf, names -> vimonga#buffer#impl#content(buf.id, names) })
         \.map_err({ err -> vimonga#message#error(err) })
         \.execute()
 endfunction
@@ -28,7 +28,7 @@ function! vimonga#action#collections#create(params) abort
         \.map_through_ok({ database, name -> vimonga#repo#collection#create(database.collection(name)) })
         \.map_ok({ database, _ -> vimonga#buffer#collections#open(database, a:params.open_cmd) })
         \.map_extend_ok({ buf -> vimonga#repo#collection#list(buf.database) })
-        \.map_ok({ buf, result -> vimonga#buffer#impl#content(buf.id, result['body']) })
+        \.map_ok({ buf, names -> vimonga#buffer#impl#content(buf.id, names) })
         \.map_err({ err -> vimonga#message#error(err) })
         \.execute()
 endfunction

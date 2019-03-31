@@ -18,6 +18,3 @@ pub use error::RepositoryError;
 
 mod connection;
 pub use connection::ConnectionFactory;
-
-mod buffer;
-pub use buffer::BufferRepositoryImpl;

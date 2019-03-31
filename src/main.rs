@@ -243,7 +243,6 @@ fn main() {
     let host = matches.value_of("host").unwrap();
     let port = matches.value_of("port").unwrap().parse().unwrap();
     let connection_factory = datastore::ConnectionFactory::new(host, port);
-    let buffer_repo = datastore::BufferRepositoryImpl::new(host, port);
 
     let command_result = match matches.subcommand() {
         ("complete", Some(cmd)) => {
@@ -277,7 +276,6 @@ fn main() {
             match cmd.subcommand() {
                 ("list", Some(_)) => command::DatabaseListCommand {
                     database_repository: &repo,
-                    buffer_repository: &buffer_repo,
                 }
                 .run(),
                 ("drop", Some(cmd)) => {
@@ -300,7 +298,6 @@ fn main() {
             match cmd.subcommand() {
                 ("list", Some(_)) => command::UserListCommand {
                     user_repository: &repo,
-                    buffer_repository: &buffer_repo,
                     database_name,
                 }
                 .run(),
@@ -334,7 +331,6 @@ fn main() {
             match cmd.subcommand() {
                 ("list", Some(_)) => command::CollectionListCommand {
                     collection_repository: &repo,
-                    buffer_repository: &buffer_repo,
                     database_name,
                 }
                 .run(),
@@ -342,7 +338,6 @@ fn main() {
                     let collection_name = cmd.value_of("collection_name").unwrap();
                     command::CollectionCreateCommand {
                         collection_repository: &repo,
-                        buffer_repository: &buffer_repo,
                         database_name,
                         collection_name,
                     }
@@ -352,7 +347,6 @@ fn main() {
                     let collection_name = cmd.value_of("collection_name").unwrap();
                     command::CollectionDropCommand {
                         collection_repository: &repo,
-                        buffer_repository: &buffer_repo,
                         database_name,
                         collection_name,
                     }
@@ -371,7 +365,6 @@ fn main() {
             match cmd.subcommand() {
                 ("list", Some(_)) => command::IndexListCommand {
                     index_repository: &repo,
-                    buffer_repository: &buffer_repo,
                     database_name,
                     collection_name,
                 }
@@ -414,7 +407,6 @@ fn main() {
 
                     command::DocumentGetCommand {
                         document_repository: &repo,
-                        buffer_repository: &buffer_repo,
                         database_name,
                         collection_name,
                         id,
@@ -426,7 +418,6 @@ fn main() {
 
                     command::DocumentDeleteCommand {
                         document_repository: &repo,
-                        buffer_repository: &buffer_repo,
                         database_name,
                         collection_name,
                         id,
@@ -438,7 +429,6 @@ fn main() {
 
                     command::DocumentInsertCommand {
                         document_repository: &repo,
-                        buffer_repository: &buffer_repo,
                         database_name,
                         collection_name,
                         content,
@@ -451,7 +441,6 @@ fn main() {
 
                     command::DocumentUpdateCommand {
                         document_repository: &repo,
-                        buffer_repository: &buffer_repo,
                         database_name,
                         collection_name,
                         id,
@@ -468,7 +457,6 @@ fn main() {
 
                     command::DocumentListCommand {
                         document_repository: &repo,
-                        buffer_repository: &buffer_repo,
                         database_name,
                         collection_name,
                         query_json,

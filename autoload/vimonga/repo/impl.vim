@@ -11,12 +11,11 @@ function! vimonga#repo#impl#execute(args, ...) abort
     \ ]
 
     let cmd = join(default_args + a:args, ' ')
+    let options = {}
     if !empty(a:000)
-        let F = function('s:decode_ok')
-    else
-        let F = function('s:decode_ok_with_split')
+        let options = {'handle_ok': a:000[0]} 
     endif
-    return vimonga#job#pending(cmd, {'handle_ok': F})
+    return vimonga#job#pending(cmd, options)
 endfunction
 
 function! vimonga#repo#impl#option(key, value) abort
@@ -26,13 +25,16 @@ function! vimonga#repo#impl#option(key, value) abort
     return '--' . a:key . '=' . shellescape(a:value)
 endfunction
 
-function! s:decode_ok_with_split(result) abort
-    let json = json_decode(a:result)
-    let json['body'] = split(json['body'], '\%x00')
-    return json
+function! vimonga#repo#impl#join() abort
+    return { result -> join(result, '') }
 endfunction
 
-function! s:decode_ok(result) abort
-    let json = json_decode(a:result)
+function! vimonga#repo#impl#decode() abort
+    return function('s:decode')
+endfunction
+
+function! s:decode(result) abort
+    let json = json_decode(join(a:result, ''))
+    let json['body'] = split(json['body'], '\%x00')
     return json
 endfunction

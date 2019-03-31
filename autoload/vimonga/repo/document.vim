@@ -14,8 +14,8 @@ function! vimonga#repo#document#find(collection, options) abort
         \ vimonga#repo#impl#option('offset', a:options['offset']),
     \ ]
 
-    let args = ['document', database, collection] + ['find'] + option_args 
-    return vimonga#repo#impl#execute(args)
+    let args = ['document', database, collection, 'find'] + option_args 
+    return vimonga#repo#impl#execute(args, vimonga#repo#impl#decode())
 endfunction
 
 function! vimonga#repo#document#find_by_id(document) abort
@@ -40,7 +40,7 @@ function! vimonga#repo#document#insert(collection, content) abort
     let collection = vimonga#repo#impl#option('collection', a:collection.name)
     let content = vimonga#repo#impl#option('content', a:content)
     let args = ['document', database, collection, 'insert', content]
-    return vimonga#repo#impl#execute(args, v:true)
+    return vimonga#repo#impl#execute(args, vimonga#repo#impl#join())
 endfunction
 
 function! vimonga#repo#document#delete(document) abort

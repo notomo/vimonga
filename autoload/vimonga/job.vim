@@ -123,7 +123,7 @@ function! vimonga#job#execute(jobs, result, id) abort
             \ 'on_exit': function('s:handle_exit'),
             \ 'jobs': rest_jobs,
             \ 'ok': [],
-            \ 'handle_ok': { _, v -> v },
+            \ 'handle_ok': { v -> v },
             \ 'is_extend': job.param_type ==? s:PARAM_TYPE_EXTEND_OK,
             \ 'is_ok_through': job.param_type ==? s:PARAM_TYPE_THROUGH_OK,
             \ 'old_ok': old_ok,
@@ -162,7 +162,7 @@ function! s:handle_exit(job_id, data, event) abort dict
     if self.is_err
         let result = vimonga#job#err(self.err)
     else
-        let ok = self.handle_ok(join(self.ok, ''))
+        let ok = self.handle_ok(self.ok)
         let result = vimonga#job#ok(ok)
         if self.is_extend
             let result.ok = extend(self.old_ok, result.ok)

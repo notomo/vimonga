@@ -51,7 +51,7 @@ function! vimonga#buffer#document#path(document) abort
 endfunction
 
 function! vimonga#buffer#document#content(buffer, result) abort
-    let result = vimonga#buffer#impl#content(a:buffer, a:result['body'])
+    let result = vimonga#buffer#impl#content(a:buffer, a:result)
     call nvim_buf_set_option(a:buffer, 'modifiable', v:true)
     call nvim_buf_set_option(a:buffer, 'buftype', 'acwrite')
     call nvim_buf_set_option(a:buffer, 'modified', v:false)

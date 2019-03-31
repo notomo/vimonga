@@ -5,11 +5,10 @@ use std::collections::HashMap;
 
 use bson::Bson;
 
-use crate::domain::repository::{BufferRepository, DocumentRepository};
+use crate::domain::repository::DocumentRepository;
 
 pub struct DocumentListCommand<'a> {
     pub document_repository: &'a DocumentRepository,
-    pub buffer_repository: &'a BufferRepository,
     pub database_name: &'a str,
     pub collection_name: &'a str,
     pub query_json: &'a str,
@@ -49,11 +48,6 @@ impl<'a> Command for DocumentListCommand<'a> {
         view.insert("offset", self.offset.to_string());
         view.insert("limit", self.limit.to_string());
         view.insert("count", count.to_string());
-        view.insert(
-            "path",
-            self.buffer_repository
-                .get_documents_path(self.database_name, self.collection_name),
-        );
         view.insert("collection_name", self.collection_name.to_string());
 
         Ok(serde_json::to_string(&view)?)
@@ -62,7 +56,6 @@ impl<'a> Command for DocumentListCommand<'a> {
 
 pub struct DocumentGetCommand<'a> {
     pub document_repository: &'a DocumentRepository,
-    pub buffer_repository: &'a BufferRepository,
     pub database_name: &'a str,
     pub collection_name: &'a str,
     pub id: &'a str,
@@ -76,26 +69,12 @@ impl<'a> Command for DocumentGetCommand<'a> {
             self.id,
         )?;
 
-        let mut view = HashMap::new();
-        view.insert("body", serde_json::to_string_pretty(&document)?);
-        view.insert("database_name", self.database_name.to_string());
-        view.insert(
-            "path",
-            self.buffer_repository.get_document_path(
-                self.database_name,
-                self.collection_name,
-                self.id,
-            ),
-        );
-        view.insert("collection_name", self.collection_name.to_string());
-
-        Ok(serde_json::to_string(&view)?)
+        Ok(serde_json::to_string_pretty(&document)?)
     }
 }
 
 pub struct DocumentUpdateCommand<'a> {
     pub document_repository: &'a DocumentRepository,
-    pub buffer_repository: &'a BufferRepository,
     pub database_name: &'a str,
     pub collection_name: &'a str,
     pub id: &'a str,
@@ -111,24 +90,12 @@ impl<'a> Command for DocumentUpdateCommand<'a> {
             self.content,
         )?;
 
-        let mut view = HashMap::new();
-        view.insert("body", "");
-        view.insert("database_name", self.database_name);
-        let path = self.buffer_repository.get_document_path(
-            self.database_name,
-            self.collection_name,
-            self.id,
-        );
-        view.insert("path", &path);
-        view.insert("collection_name", self.collection_name);
-
-        Ok(serde_json::to_string(&view)?)
+        Ok("".to_string())
     }
 }
 
 pub struct DocumentInsertCommand<'a> {
     pub document_repository: &'a DocumentRepository,
-    pub buffer_repository: &'a BufferRepository,
     pub database_name: &'a str,
     pub collection_name: &'a str,
     pub content: &'a str,
@@ -151,18 +118,12 @@ impl<'a> Command for DocumentInsertCommand<'a> {
             None => "".to_string(),
         };
 
-        let mut view = HashMap::new();
-        view.insert("body", body.as_str());
-        view.insert("database_name", self.database_name);
-        view.insert("collection_name", self.collection_name);
-
-        Ok(serde_json::to_string(&view)?)
+        Ok(body)
     }
 }
 
 pub struct DocumentDeleteCommand<'a> {
     pub document_repository: &'a DocumentRepository,
-    pub buffer_repository: &'a BufferRepository,
     pub database_name: &'a str,
     pub collection_name: &'a str,
     pub id: &'a str,
@@ -173,17 +134,6 @@ impl<'a> Command for DocumentDeleteCommand<'a> {
         self.document_repository
             .delete_one(self.database_name, self.collection_name, self.id)?;
 
-        let mut view = HashMap::new();
-        view.insert("body", "");
-        view.insert("database_name", self.database_name);
-        let path = self.buffer_repository.get_document_path(
-            self.database_name,
-            self.collection_name,
-            self.id,
-        );
-        view.insert("path", &path);
-        view.insert("collection_name", self.collection_name);
-
-        Ok(serde_json::to_string(&view)?)
+        Ok("".to_string())
     }
 }

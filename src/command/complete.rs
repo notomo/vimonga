@@ -10,6 +10,12 @@ pub struct CompleteVimongaCommand<'a> {
     pub args: Vec<&'a str>,
 }
 
+const DB: &str = "db";
+const COLL: &str = "coll";
+const USER: &str = "user";
+const INDEX: &str = "index";
+const DOC_ID: &str = "id";
+
 impl<'a> Command for CompleteVimongaCommand<'a> {
     fn run(&self) -> Result<String, error::CommandError> {
         let actions: Vec<_> = self
@@ -22,7 +28,13 @@ impl<'a> Command for CompleteVimongaCommand<'a> {
             .args
             .iter()
             .filter(|arg| arg.starts_with("-"))
-            .map(|arg| arg.split("=").collect::<Vec<&str>>()[0])
+            .map(|arg| {
+                arg.split("=").collect::<Vec<&str>>()[0]
+                    .chars()
+                    .into_iter()
+                    .skip(1)
+                    .collect::<String>()
+            })
             .collect();
 
         let candidates = if actions.len() != 0
@@ -34,7 +46,7 @@ impl<'a> Command for CompleteVimongaCommand<'a> {
             && self.current_arg.starts_with("-")
             && self.current_arg.contains("=")
         {
-            self.param_values(keys[0])?
+            self.param_values(&keys[0])?
         } else {
             self.action_names()
         };
@@ -51,12 +63,14 @@ impl<'a> CompleteVimongaCommand<'a> {
             "user.list",
             "user.new",
             "user.create",
+            "user.drop",
             "collection.list",
             "collection.create",
             "collection.drop",
             "index.list",
             "index.new",
             "index.create",
+            "index.drop",
             "document.find",
             "document.page.next",
             "document.page.first",
@@ -82,25 +96,29 @@ impl<'a> CompleteVimongaCommand<'a> {
         .collect()
     }
 
-    fn param_keys(&self, action: &str, keys: Vec<&str>) -> Vec<String> {
+    fn param_keys(&self, action: &str, keys: Vec<String>) -> Vec<String> {
         match action {
-            "database.drop" | "collection.list" | "collection.create" | "user.list" => vec!["-db"],
-            "collection.drop" | "index.list" => vec!["-db", "-coll"],
+            "database.drop" | "collection.list" | "collection.create" | "user.list"
+            | "user.new" => vec![DB],
+            "collection.drop" | "index.list" | "index.new" | "document.new" => vec![DB, COLL],
+            "user.drop" => vec![DB, COLL, USER],
+            "index.drop" => vec![DB, COLL, INDEX],
+            "document.one" | "document.one.delete" => vec![DB, COLL, DOC_ID],
             _ => vec![],
         }
         .iter()
-        .filter(|action| !keys.contains(action))
-        .map(|action| format!("{}=", action))
+        .filter(|key| !keys.contains(&key.to_string()))
+        .map(|key| format!("-{}=", key))
         .collect()
     }
 
-    fn param_values(&self, key: &str) -> Result<Vec<String>, error::CommandError> {
-        let values = match key {
-            "-db" => self.database_repository.get_names()?,
+    fn param_values(&self, key: &String) -> Result<Vec<String>, error::CommandError> {
+        let values = match key.as_str() {
+            DB => self.database_repository.get_names()?,
             _ => vec![],
         }
         .iter()
-        .map(|action| format!("{}={}", key, action))
+        .map(|value| format!("-{}={}", key, value))
         .collect();
 
         Ok(values)

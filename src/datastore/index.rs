@@ -34,7 +34,7 @@ impl<'a> IndexRepositoryImpl<'a> {
 }
 
 impl<'a> IndexRepository for IndexRepositoryImpl<'a> {
-    fn get_names(
+    fn get_documents(
         &self,
         database_name: &str,
         collection_name: &str,
@@ -49,12 +49,39 @@ impl<'a> IndexRepository for IndexRepositoryImpl<'a> {
         Ok(documents)
     }
 
+    fn get_names(
+        &self,
+        database_name: &str,
+        collection_name: &str,
+    ) -> Result<Vec<String>, RepositoryError> {
+        let client = self.connection_factory.get()?;
+        let cursor = client
+            .db(database_name)
+            .collection(collection_name)
+            .list_indexes()?;
+
+        let names = cursor
+            .map(|doc| {
+                doc.unwrap_or(Document::new())
+                    .iter()
+                    .filter(|(k, _v)| k.as_str() == "name")
+                    .map(|(_k, v)| match v {
+                        Bson::String(v) => v.to_string(),
+                        _ => "".to_string(),
+                    })
+                    .collect::<String>()
+            })
+            .collect();
+
+        Ok(names)
+    }
+
     fn create(
         &self,
         database_name: &str,
         collection_name: &str,
         keys_json: &str,
-    ) -> Result<bool, RepositoryError> {
+    ) -> Result<(), RepositoryError> {
         let keys = self.to_document_from_str(keys_json);
 
         let client = self.connection_factory.get()?;
@@ -63,7 +90,7 @@ impl<'a> IndexRepository for IndexRepositoryImpl<'a> {
             .collection(collection_name)
             .create_index(keys, None)?;
 
-        Ok(true)
+        Ok(())
     }
 
     fn drop(
@@ -71,13 +98,13 @@ impl<'a> IndexRepository for IndexRepositoryImpl<'a> {
         database_name: &str,
         collection_name: &str,
         name: &str,
-    ) -> Result<bool, RepositoryError> {
+    ) -> Result<(), RepositoryError> {
         let client = self.connection_factory.get()?;
         client
             .db(database_name)
             .collection(collection_name)
             .drop_index_string(name.to_string())?;
 
-        Ok(true)
+        Ok(())
     }
 }

@@ -257,6 +257,9 @@ fn main() {
             let user_repo = datastore::UserRepositoryImpl {
                 connection_factory: &connection_factory,
             };
+            let index_repo = datastore::IndexRepositoryImpl {
+                connection_factory: &connection_factory,
+            };
             match cmd.subcommand() {
                 ("vimonga", Some(_)) => command::CompleteVimongaCommand {
                     current_arg: current_arg,
@@ -264,6 +267,7 @@ fn main() {
                     database_repository: &db_repo,
                     collection_repository: &coll_repo,
                     user_repository: &user_repo,
+                    index_repository: &index_repo,
                 }
                 .run(),
                 _ => command::HelpCommand {}.run(),

@@ -111,7 +111,7 @@ impl<'a> DocumentRepository for DocumentRepositoryImpl<'a> {
         collection_name: &str,
         id: &str,
         update_document: &str,
-    ) -> Result<bool, RepositoryError> {
+    ) -> Result<(), RepositoryError> {
         let filter = self.to_document_from_id(id)?;
         let doc = self.to_document_from_str(update_document);
 
@@ -124,7 +124,7 @@ impl<'a> DocumentRepository for DocumentRepositoryImpl<'a> {
             .collection(collection_name)
             .update_one(filter, update, None)?;
 
-        Ok(true)
+        Ok(())
     }
 
     fn insert_one(
@@ -150,7 +150,7 @@ impl<'a> DocumentRepository for DocumentRepositoryImpl<'a> {
         database_name: &str,
         collection_name: &str,
         id: &str,
-    ) -> Result<bool, RepositoryError> {
+    ) -> Result<(), RepositoryError> {
         let filter = self.to_document_from_id(id)?;
 
         let client = self.connection_factory.get()?;
@@ -159,6 +159,6 @@ impl<'a> DocumentRepository for DocumentRepositoryImpl<'a> {
             .collection(collection_name)
             .delete_one(filter, None)?;
 
-        Ok(true)
+        Ok(())
     }
 }

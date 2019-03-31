@@ -1,12 +1,15 @@
 use crate::command::error;
 use crate::command::Command;
 
-use crate::domain::repository::{CollectionRepository, DatabaseRepository, UserRepository};
+use crate::domain::repository::{
+    CollectionRepository, DatabaseRepository, IndexRepository, UserRepository,
+};
 
 pub struct CompleteVimongaCommand<'a> {
     pub database_repository: &'a DatabaseRepository,
     pub collection_repository: &'a CollectionRepository,
     pub user_repository: &'a UserRepository,
+    pub index_repository: &'a IndexRepository,
     pub current_arg: &'a str,
     pub args: Vec<&'a str>,
 }
@@ -45,6 +48,13 @@ impl<'a> Command for CompleteVimongaCommand<'a> {
             .map(|arg| arg.split("=").collect::<Vec<&str>>()[1])
             .last();
 
+        let collection_name = self
+            .args
+            .iter()
+            .filter(|arg| arg.starts_with("-coll=") && arg.contains("="))
+            .map(|arg| arg.split("=").collect::<Vec<&str>>()[1])
+            .last();
+
         let candidates = if actions.len() != 0
             && (self.current_arg == "" || self.current_arg.starts_with("-"))
             && !self.current_arg.contains("=")
@@ -54,7 +64,7 @@ impl<'a> Command for CompleteVimongaCommand<'a> {
             && self.current_arg.starts_with("-")
             && self.current_arg.contains("=")
         {
-            self.param_values(&keys.last().unwrap(), database_name)?
+            self.param_values(&keys.last().unwrap(), database_name, collection_name)?
         } else {
             self.action_names()
         };
@@ -124,11 +134,13 @@ impl<'a> CompleteVimongaCommand<'a> {
         &self,
         key: &String,
         database_name: Option<&str>,
+        collection_name: Option<&str>,
     ) -> Result<Vec<String>, error::CommandError> {
         let values = match key.as_str() {
             DB => self.database_repository.get_names()?,
             COLL => self.get_collection_names(database_name)?,
             USER => self.get_user_names(database_name)?,
+            INDEX => self.get_index_names(database_name, collection_name)?,
             _ => vec![],
         }
         .iter()
@@ -161,6 +173,21 @@ impl<'a> CompleteVimongaCommand<'a> {
 
         Ok(names)
     }
+
+    fn get_index_names(
+        &self,
+        database_name: Option<&str>,
+        collection_name: Option<&str>,
+    ) -> Result<Vec<String>, error::CommandError> {
+        let names = match (database_name, collection_name) {
+            (Some(database_name), Some(collection_name)) => self
+                .index_repository
+                .get_names(database_name, collection_name)?,
+            _ => vec![],
+        };
+
+        Ok(names)
+    }
 }
 
 #[cfg(test)]
@@ -179,8 +206,8 @@ mod tests {
         fn get_names(&self) -> Result<Vec<String>, RepositoryError> {
             Ok(self.names.iter().map(|x| x.to_string()).collect())
         }
-        fn drop(&self, _database_name: &str) -> Result<bool, RepositoryError> {
-            Ok(true)
+        fn drop(&self, _database_name: &str) -> Result<(), RepositoryError> {
+            Ok(())
         }
     }
 
@@ -196,15 +223,15 @@ mod tests {
             &self,
             _database_name: &str,
             _collection_name: &str,
-        ) -> Result<bool, RepositoryError> {
-            Ok(true)
+        ) -> Result<(), RepositoryError> {
+            Ok(())
         }
         fn drop(
             &self,
             _database_name: &str,
             _collection_name: &str,
-        ) -> Result<bool, RepositoryError> {
-            Ok(true)
+        ) -> Result<(), RepositoryError> {
+            Ok(())
         }
     }
 
@@ -233,15 +260,54 @@ mod tests {
         }
     }
 
+    struct IndexRepositoryMock<'a> {
+        pub names: Vec<&'a str>,
+    }
+
+    impl<'a> IndexRepository for IndexRepositoryMock<'a> {
+        fn get_documents(
+            &self,
+            _database_name: &str,
+            _collection_name: &str,
+        ) -> Result<Vec<Document>, RepositoryError> {
+            Ok(vec![])
+        }
+        fn get_names(
+            &self,
+            _database_name: &str,
+            _collection_name: &str,
+        ) -> Result<Vec<String>, RepositoryError> {
+            Ok(self.names.iter().map(|x| x.to_string()).collect())
+        }
+        fn create(
+            &self,
+            _database_name: &str,
+            _collection_name: &str,
+            _keys_json: &str,
+        ) -> Result<(), RepositoryError> {
+            Ok(())
+        }
+        fn drop(
+            &self,
+            _database_name: &str,
+            _collection_name: &str,
+            _name: &str,
+        ) -> Result<(), RepositoryError> {
+            Ok(())
+        }
+    }
+
     #[test]
     fn param_keys() {
         let db_repo = DatabaseRepositoryMock { names: vec![] };
         let coll_repo = CollectionRepositoryMock { names: vec![] };
         let user_repo = UserRepositoryMock { names: vec![] };
+        let index_repo = IndexRepositoryMock { names: vec![] };
         let command = CompleteVimongaCommand {
             database_repository: &db_repo,
             collection_repository: &coll_repo,
             user_repository: &user_repo,
+            index_repository: &index_repo,
             current_arg: "",
             args: vec!["collection.list"],
         };
@@ -257,10 +323,12 @@ mod tests {
         let db_repo = DatabaseRepositoryMock { names: vec![] };
         let coll_repo = CollectionRepositoryMock { names: vec![] };
         let user_repo = UserRepositoryMock { names: vec![] };
+        let index_repo = IndexRepositoryMock { names: vec![] };
         let command = CompleteVimongaCommand {
             database_repository: &db_repo,
             collection_repository: &coll_repo,
             user_repository: &user_repo,
+            index_repository: &index_repo,
             current_arg: "",
             args: vec![],
         };
@@ -278,10 +346,12 @@ mod tests {
         };
         let coll_repo = CollectionRepositoryMock { names: vec![] };
         let user_repo = UserRepositoryMock { names: vec![] };
+        let index_repo = IndexRepositoryMock { names: vec![] };
         let command = CompleteVimongaCommand {
             database_repository: &db_repo,
             collection_repository: &coll_repo,
             user_repository: &user_repo,
+            index_repository: &index_repo,
             current_arg: "-db=",
             args: vec!["collection.list", "-db="],
         };
@@ -299,10 +369,12 @@ mod tests {
             names: vec!["teams", "skills"],
         };
         let user_repo = UserRepositoryMock { names: vec![] };
+        let index_repo = IndexRepositoryMock { names: vec![] };
         let command = CompleteVimongaCommand {
             database_repository: &db_repo,
             collection_repository: &coll_repo,
             user_repository: &user_repo,
+            index_repository: &index_repo,
             current_arg: "-coll=",
             args: vec!["collection.list", "-db=example", "-coll="],
         };
@@ -320,10 +392,12 @@ mod tests {
             names: vec!["teams", "skills"],
         };
         let user_repo = UserRepositoryMock { names: vec![] };
+        let index_repo = IndexRepositoryMock { names: vec![] };
         let command = CompleteVimongaCommand {
             database_repository: &db_repo,
             collection_repository: &coll_repo,
             user_repository: &user_repo,
+            index_repository: &index_repo,
             current_arg: "-coll=",
             args: vec!["collection.list", "-coll="],
         };
@@ -341,10 +415,12 @@ mod tests {
         let user_repo = UserRepositoryMock {
             names: vec!["read-only", "read-write"],
         };
+        let index_repo = IndexRepositoryMock { names: vec![] };
         let command = CompleteVimongaCommand {
             database_repository: &db_repo,
             collection_repository: &coll_repo,
             user_repository: &user_repo,
+            index_repository: &index_repo,
             current_arg: "-user=",
             args: vec!["collection.list", "-db=example", "-user="],
         };
@@ -365,12 +441,60 @@ mod tests {
         let user_repo = UserRepositoryMock {
             names: vec!["read-only", "read-write"],
         };
+        let index_repo = IndexRepositoryMock { names: vec![] };
         let command = CompleteVimongaCommand {
             database_repository: &db_repo,
             collection_repository: &coll_repo,
             user_repository: &user_repo,
+            index_repository: &index_repo,
             current_arg: "-user=",
             args: vec!["collection.list", "-user="],
+        };
+
+        let result = command.run();
+
+        assert_eq!(true, result.is_ok());
+        assert_eq!("".to_string(), result.unwrap());
+    }
+
+    #[test]
+    fn index_names() {
+        let db_repo = DatabaseRepositoryMock { names: vec![] };
+        let coll_repo = CollectionRepositoryMock { names: vec![] };
+        let user_repo = UserRepositoryMock { names: vec![] };
+        let index_repo = IndexRepositoryMock {
+            names: vec!["name", "role"],
+        };
+        let command = CompleteVimongaCommand {
+            database_repository: &db_repo,
+            collection_repository: &coll_repo,
+            user_repository: &user_repo,
+            index_repository: &index_repo,
+            current_arg: "-index=",
+            args: vec!["index.drop", "-db=example", "-coll=tests", "-index="],
+        };
+
+        let result = command.run();
+
+        assert_eq!(true, result.is_ok());
+        assert_eq!("-index=name\n-index=role".to_string(), result.unwrap());
+    }
+
+    #[test]
+    fn index_names_without_db() {
+        let db_repo = DatabaseRepositoryMock { names: vec![] };
+        let coll_repo = CollectionRepositoryMock { names: vec![] };
+        let user_repo = UserRepositoryMock { names: vec![] };
+        let index_repo = IndexRepositoryMock {
+            names: vec!["name", "role"],
+        };
+        let command = CompleteVimongaCommand {
+            database_repository: &db_repo,
+            collection_repository: &coll_repo,
+            user_repository: &user_repo,
+            index_repository: &index_repo,
+            current_arg: "-index=",
+            args: vec!["index.drop", "-coll=tests", "-index="],
         };
 
         let result = command.run();

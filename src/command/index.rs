@@ -13,7 +13,7 @@ impl<'a> Command for IndexListCommand<'a> {
     fn run(&self) -> Result<String, error::CommandError> {
         let indexes = self
             .index_repository
-            .get_names(self.database_name, self.collection_name)?;
+            .get_documents(self.database_name, self.collection_name)?;
 
         Ok(serde_json::to_string_pretty(&indexes)?)
     }

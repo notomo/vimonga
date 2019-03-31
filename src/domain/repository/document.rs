@@ -34,7 +34,7 @@ pub trait DocumentRepository {
         collection_name: &str,
         id: &str,
         update_document: &str,
-    ) -> Result<bool, RepositoryError>;
+    ) -> Result<(), RepositoryError>;
 
     fn insert_one(
         &self,
@@ -48,5 +48,5 @@ pub trait DocumentRepository {
         database_name: &str,
         collection_name: &str,
         id: &str,
-    ) -> Result<bool, RepositoryError>;
+    ) -> Result<(), RepositoryError>;
 }

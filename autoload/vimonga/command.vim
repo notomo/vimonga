@@ -65,7 +65,7 @@ function! s:parse(arg_string) abort
             continue
         endif
 
-        let [key, value] = split(factor[1:], '=')
+        let [key, value] = split(factor[1:], '=', v:true)
         if has_key(s:params, key)
             let raw_params[key] = value
             continue

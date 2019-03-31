@@ -1,11 +1,12 @@
 use crate::command::error;
 use crate::command::Command;
 
-use crate::domain::repository::{CollectionRepository, DatabaseRepository};
+use crate::domain::repository::{CollectionRepository, DatabaseRepository, UserRepository};
 
 pub struct CompleteVimongaCommand<'a> {
     pub database_repository: &'a DatabaseRepository,
     pub collection_repository: &'a CollectionRepository,
+    pub user_repository: &'a UserRepository,
     pub current_arg: &'a str,
     pub args: Vec<&'a str>,
 }
@@ -108,7 +109,7 @@ impl<'a> CompleteVimongaCommand<'a> {
             "database.drop" | "collection.list" | "collection.create" | "user.list"
             | "user.new" => vec![DB],
             "collection.drop" | "index.list" | "index.new" | "document.new" => vec![DB, COLL],
-            "user.drop" => vec![DB, COLL, USER],
+            "user.drop" => vec![DB, USER],
             "index.drop" => vec![DB, COLL, INDEX],
             "document.one" | "document.one.delete" => vec![DB, COLL, DOC_ID],
             _ => vec![],
@@ -127,6 +128,7 @@ impl<'a> CompleteVimongaCommand<'a> {
         let values = match key.as_str() {
             DB => self.database_repository.get_names()?,
             COLL => self.get_collection_names(database_name)?,
+            USER => self.get_user_names(database_name)?,
             _ => vec![],
         }
         .iter()
@@ -147,13 +149,27 @@ impl<'a> CompleteVimongaCommand<'a> {
 
         Ok(names)
     }
+
+    fn get_user_names(
+        &self,
+        database_name: Option<&str>,
+    ) -> Result<Vec<String>, error::CommandError> {
+        let names = match database_name {
+            Some(database_name) => self.user_repository.get_names(database_name)?,
+            None => vec![],
+        };
+
+        Ok(names)
+    }
 }
 
 #[cfg(test)]
 mod tests {
 
     use super::*;
+    use crate::domain::model::UserRole;
     use crate::domain::repository::RepositoryError;
+    use bson::Document;
 
     struct DatabaseRepositoryMock<'a> {
         pub names: Vec<&'a str>,
@@ -192,13 +208,40 @@ mod tests {
         }
     }
 
+    struct UserRepositoryMock<'a> {
+        pub names: Vec<&'a str>,
+    }
+
+    impl<'a> UserRepository for UserRepositoryMock<'a> {
+        fn get_documents(&self, _database_name: &str) -> Result<Vec<Document>, RepositoryError> {
+            Ok(vec![])
+        }
+        fn get_names(&self, _database_name: &str) -> Result<Vec<String>, RepositoryError> {
+            Ok(self.names.iter().map(|x| x.to_string()).collect())
+        }
+        fn create(
+            &self,
+            _database_name: &str,
+            _name: &str,
+            _password: &str,
+            _roles: Vec<UserRole>,
+        ) -> Result<(), RepositoryError> {
+            Ok(())
+        }
+        fn drop(&self, _database_name: &str, _name: &str) -> Result<(), RepositoryError> {
+            Ok(())
+        }
+    }
+
     #[test]
     fn param_keys() {
         let db_repo = DatabaseRepositoryMock { names: vec![] };
         let coll_repo = CollectionRepositoryMock { names: vec![] };
+        let user_repo = UserRepositoryMock { names: vec![] };
         let command = CompleteVimongaCommand {
             database_repository: &db_repo,
             collection_repository: &coll_repo,
+            user_repository: &user_repo,
             current_arg: "",
             args: vec!["collection.list"],
         };
@@ -213,9 +256,11 @@ mod tests {
     fn action_names() {
         let db_repo = DatabaseRepositoryMock { names: vec![] };
         let coll_repo = CollectionRepositoryMock { names: vec![] };
+        let user_repo = UserRepositoryMock { names: vec![] };
         let command = CompleteVimongaCommand {
             database_repository: &db_repo,
             collection_repository: &coll_repo,
+            user_repository: &user_repo,
             current_arg: "",
             args: vec![],
         };
@@ -232,9 +277,11 @@ mod tests {
             names: vec!["example", "local"],
         };
         let coll_repo = CollectionRepositoryMock { names: vec![] };
+        let user_repo = UserRepositoryMock { names: vec![] };
         let command = CompleteVimongaCommand {
             database_repository: &db_repo,
             collection_repository: &coll_repo,
+            user_repository: &user_repo,
             current_arg: "-db=",
             args: vec!["collection.list", "-db="],
         };
@@ -251,9 +298,11 @@ mod tests {
         let coll_repo = CollectionRepositoryMock {
             names: vec!["teams", "skills"],
         };
+        let user_repo = UserRepositoryMock { names: vec![] };
         let command = CompleteVimongaCommand {
             database_repository: &db_repo,
             collection_repository: &coll_repo,
+            user_repository: &user_repo,
             current_arg: "-coll=",
             args: vec!["collection.list", "-db=example", "-coll="],
         };
@@ -270,11 +319,58 @@ mod tests {
         let coll_repo = CollectionRepositoryMock {
             names: vec!["teams", "skills"],
         };
+        let user_repo = UserRepositoryMock { names: vec![] };
         let command = CompleteVimongaCommand {
             database_repository: &db_repo,
             collection_repository: &coll_repo,
+            user_repository: &user_repo,
             current_arg: "-coll=",
             args: vec!["collection.list", "-coll="],
+        };
+
+        let result = command.run();
+
+        assert_eq!(true, result.is_ok());
+        assert_eq!("".to_string(), result.unwrap());
+    }
+
+    #[test]
+    fn user_names() {
+        let db_repo = DatabaseRepositoryMock { names: vec![] };
+        let coll_repo = CollectionRepositoryMock { names: vec![] };
+        let user_repo = UserRepositoryMock {
+            names: vec!["read-only", "read-write"],
+        };
+        let command = CompleteVimongaCommand {
+            database_repository: &db_repo,
+            collection_repository: &coll_repo,
+            user_repository: &user_repo,
+            current_arg: "-user=",
+            args: vec!["collection.list", "-db=example", "-user="],
+        };
+
+        let result = command.run();
+
+        assert_eq!(true, result.is_ok());
+        assert_eq!(
+            "-user=read-only\n-user=read-write".to_string(),
+            result.unwrap()
+        );
+    }
+
+    #[test]
+    fn user_names_without_db() {
+        let db_repo = DatabaseRepositoryMock { names: vec![] };
+        let coll_repo = CollectionRepositoryMock { names: vec![] };
+        let user_repo = UserRepositoryMock {
+            names: vec!["read-only", "read-write"],
+        };
+        let command = CompleteVimongaCommand {
+            database_repository: &db_repo,
+            collection_repository: &coll_repo,
+            user_repository: &user_repo,
+            current_arg: "-user=",
+            args: vec!["collection.list", "-user="],
         };
 
         let result = command.run();

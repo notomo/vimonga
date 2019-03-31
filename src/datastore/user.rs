@@ -3,7 +3,7 @@ use crate::domain::repository::{RepositoryError, UserRepository};
 
 use super::connection::ConnectionFactory;
 
-use bson::Document;
+use bson::{Bson, Document};
 
 use mongodb::db::options::CreateUserOptions;
 use mongodb::db::roles::{Role, SingleDatabaseRole};
@@ -20,6 +20,26 @@ impl<'a> UserRepository for UserRepositoryImpl<'a> {
         let documents = client.db(database_name).get_all_users(false)?;
 
         Ok(documents)
+    }
+
+    fn get_names(&self, database_name: &str) -> Result<Vec<String>, RepositoryError> {
+        let client = self.connection_factory.get()?;
+        let names = client
+            .db(database_name)
+            .get_all_users(false)?
+            .iter()
+            .map(|doc| {
+                doc.iter()
+                    .filter(|(k, _v)| k.as_str() == "user")
+                    .map(|(_k, v)| match v {
+                        Bson::String(v) => v.to_string(),
+                        _ => "".to_string(),
+                    })
+                    .collect::<String>()
+            })
+            .collect();
+
+        Ok(names)
     }
 
     fn create(

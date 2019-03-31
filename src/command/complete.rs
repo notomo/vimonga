@@ -27,7 +27,7 @@ impl<'a> Command for CompleteVimongaCommand<'a> {
         let keys: Vec<_> = self
             .args
             .iter()
-            .filter(|arg| arg.starts_with("-"))
+            .filter(|arg| arg.starts_with("-") && arg.contains("="))
             .map(|arg| {
                 arg.split("=").collect::<Vec<&str>>()[0]
                     .chars()
@@ -46,7 +46,7 @@ impl<'a> Command for CompleteVimongaCommand<'a> {
             && self.current_arg.starts_with("-")
             && self.current_arg.contains("=")
         {
-            self.param_values(&keys[0])?
+            self.param_values(&keys.last().unwrap())?
         } else {
             self.action_names()
         };

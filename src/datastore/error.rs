@@ -5,6 +5,7 @@ pub use crate::domain::repository::{RepositoryError, RepositoryErrorKind};
 
 use bson::oid::Error as OidError;
 use mongodb::Error as MongodbError;
+use serde_json::error::Category as SerdeJsonErrorCategory;
 use serde_json::Error as SerdeJsonError;
 
 impl Fail for RepositoryError {
@@ -40,8 +41,14 @@ impl From<Context<RepositoryErrorKind>> for RepositoryError {
 impl From<SerdeJsonError> for RepositoryError {
     fn from(e: SerdeJsonError) -> Self {
         let message = e.to_string();
+        let kind = match e.classify() {
+            SerdeJsonErrorCategory::Syntax | SerdeJsonErrorCategory::Eof => {
+                RepositoryErrorKind::DocumentSyntaxError { message: message }
+            }
+            _ => RepositoryErrorKind::InternalError { message },
+        };
         RepositoryError {
-            inner: e.context(RepositoryErrorKind::InternalError { message }),
+            inner: e.context(kind),
         }
     }
 }

@@ -16,15 +16,14 @@ pub struct DocumentRepositoryImpl<'a> {
     pub connection_factory: &'a ConnectionFactory<'a>,
 }
 impl<'a> DocumentRepositoryImpl<'a> {
-    fn to_document_from_str(&self, json_str: &str) -> Document {
-        // TODO: remove unwrap()
-        let decoded_json: HashMap<String, Value> = serde_json::from_str(json_str).unwrap();
+    fn to_document_from_str(&self, json_str: &str) -> Result<Document, RepositoryError> {
+        let decoded_json: HashMap<String, Value> = serde_json::from_str(json_str)?;
 
         let mut document = Document::new();
         for (key, value) in decoded_json {
             document.insert_bson(key, value.into());
         }
-        document
+        Ok(document)
     }
 
     fn to_document_from_id(&self, id: &str) -> Result<Document, RepositoryError> {
@@ -46,9 +45,9 @@ impl<'a> DocumentRepository for DocumentRepositoryImpl<'a> {
         limit: i64,
         skip: i64,
     ) -> Result<Vec<Document>, RepositoryError> {
-        let query = Some(self.to_document_from_str(query_json));
-        let projection = Some(self.to_document_from_str(projection_json));
-        let sort = Some(self.to_document_from_str(sort_json));
+        let query = Some(self.to_document_from_str(query_json)?);
+        let projection = Some(self.to_document_from_str(projection_json)?);
+        let sort = Some(self.to_document_from_str(sort_json)?);
 
         let mut find_option = FindOptions::new();
         find_option.limit = Some(limit);
@@ -94,7 +93,7 @@ impl<'a> DocumentRepository for DocumentRepositoryImpl<'a> {
         collection_name: &str,
         query_json: &str,
     ) -> Result<i64, RepositoryError> {
-        let query = Some(self.to_document_from_str(query_json));
+        let query = Some(self.to_document_from_str(query_json)?);
 
         let client = self.connection_factory.get()?;
         let count = client
@@ -113,7 +112,7 @@ impl<'a> DocumentRepository for DocumentRepositoryImpl<'a> {
         update_document: &str,
     ) -> Result<(), RepositoryError> {
         let filter = self.to_document_from_id(id)?;
-        let doc = self.to_document_from_str(update_document);
+        let doc = self.to_document_from_str(update_document)?;
 
         let mut update = Document::new();
         update.insert_bson("$set".to_string(), doc.into());
@@ -133,7 +132,7 @@ impl<'a> DocumentRepository for DocumentRepositoryImpl<'a> {
         collection_name: &str,
         insert_document: &str,
     ) -> Result<Option<Bson>, RepositoryError> {
-        let doc = self.to_document_from_str(insert_document);
+        let doc = self.to_document_from_str(insert_document)?;
 
         let client = self.connection_factory.get()?;
         let id = client

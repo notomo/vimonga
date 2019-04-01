@@ -16,9 +16,8 @@ pub struct IndexRepositoryImpl<'a> {
 }
 
 impl<'a> IndexRepositoryImpl<'a> {
-    fn to_document_from_str(&self, json_str: &str) -> Document {
-        // TODO: remove unwrap()
-        let decoded_json: HashMap<String, Value> = serde_json::from_str(json_str).unwrap();
+    fn to_document_from_str(&self, json_str: &str) -> Result<Document, RepositoryError> {
+        let decoded_json: HashMap<String, Value> = serde_json::from_str(json_str)?;
 
         let mut document = Document::new();
         for (key, value) in decoded_json {
@@ -29,7 +28,7 @@ impl<'a> IndexRepositoryImpl<'a> {
             };
             document.insert_bson(key, bs);
         }
-        document
+        Ok(document)
     }
 }
 
@@ -82,7 +81,7 @@ impl<'a> IndexRepository for IndexRepositoryImpl<'a> {
         collection_name: &str,
         keys_json: &str,
     ) -> Result<(), RepositoryError> {
-        let keys = self.to_document_from_str(keys_json);
+        let keys = self.to_document_from_str(keys_json)?;
 
         let client = self.connection_factory.get()?;
         client

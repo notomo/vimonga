@@ -41,7 +41,8 @@ impl From<SerdeJsonError> for CommandError {
 impl From<RepositoryError> for CommandError {
     fn from(e: RepositoryError) -> Self {
         let (message, is_backtrace) = match e.inner.get_context() {
-            RepositoryErrorKind::AlreadyExists { message } => (message.clone(), false),
+            RepositoryErrorKind::AlreadyExists { message: _ }
+            | RepositoryErrorKind::DocumentSyntaxError { message: _ } => (e.to_string(), false),
             _ => match e.backtrace() {
                 Some(backtrace) => (format!("{}\n{}", e, backtrace), true),
                 None => (e.to_string(), true),

@@ -8,6 +8,8 @@ pub enum RepositoryErrorKind {
     AlreadyExists { message: String },
     #[fail(display = "Document syntax error: {}", message)]
     DocumentSyntaxError { message: String },
+    #[fail(display = "Not found error: {}", message)]
+    NotFound { message: String },
 }
 
 #[derive(Debug)]

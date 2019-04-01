@@ -57,10 +57,18 @@ impl From<MongodbError> for RepositoryError {
     fn from(e: MongodbError) -> Self {
         let message = e.to_string();
         let kind = match &e {
-            MongodbError::OperationError(m)
+            MongodbError::OperationError(_)
+                if message.starts_with("User ") && message.ends_with(" not found") =>
+            {
+                RepositoryErrorKind::NotFound { message: message }
+            }
+            MongodbError::OperationError(_) if message.starts_with("index not found with name") => {
+                RepositoryErrorKind::NotFound { message: message }
+            }
+            MongodbError::OperationError(_)
                 if message.starts_with("a ") && message.ends_with(" already exists") =>
             {
-                RepositoryErrorKind::AlreadyExists { message: m.clone() }
+                RepositoryErrorKind::AlreadyExists { message: message }
             }
             _ => RepositoryErrorKind::InternalError { message },
         };

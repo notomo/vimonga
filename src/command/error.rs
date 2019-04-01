@@ -42,6 +42,7 @@ impl From<RepositoryError> for CommandError {
     fn from(e: RepositoryError) -> Self {
         let (message, is_backtrace) = match e.inner.get_context() {
             RepositoryErrorKind::AlreadyExists { message: _ }
+            | RepositoryErrorKind::NotFound { message: _ }
             | RepositoryErrorKind::DocumentSyntaxError { message: _ } => (e.to_string(), false),
             _ => match e.backtrace() {
                 Some(backtrace) => (format!("{}\n{}", e, backtrace), true),

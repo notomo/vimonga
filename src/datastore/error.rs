@@ -49,8 +49,17 @@ impl From<SerdeJsonError> for RepositoryError {
 impl From<MongodbError> for RepositoryError {
     fn from(e: MongodbError) -> Self {
         let message = e.to_string();
+        let kind = match &e {
+            MongodbError::OperationError(m)
+                if message.starts_with("a ") && message.ends_with(" already exists") =>
+            {
+                RepositoryErrorKind::AlreadyExists { message: m.clone() }
+            }
+            _ => RepositoryErrorKind::InternalError { message },
+        };
+
         RepositoryError {
-            inner: e.context(RepositoryErrorKind::InternalError { message }),
+            inner: e.context(kind),
         }
     }
 }

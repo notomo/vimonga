@@ -1,12 +1,13 @@
 use core::fmt::{self, Display};
 use failure::{Backtrace, Context, Fail};
 
-use crate::domain::repository::RepositoryError;
+use crate::domain::repository::{RepositoryError, RepositoryErrorKind};
 use serde_json::Error as SerdeJsonError;
 
 #[derive(Debug)]
 pub struct CommandError {
     inner: Context<String>,
+    is_backtrace: bool,
 }
 
 impl Fail for CommandError {
@@ -15,7 +16,10 @@ impl Fail for CommandError {
     }
 
     fn backtrace(&self) -> Option<&Backtrace> {
-        self.inner.backtrace()
+        match self.is_backtrace {
+            true => self.inner.backtrace(),
+            false => None,
+        }
     }
 }
 
@@ -29,18 +33,24 @@ impl From<SerdeJsonError> for CommandError {
     fn from(e: SerdeJsonError) -> Self {
         CommandError {
             inner: Context::new(e.to_string()),
+            is_backtrace: true,
         }
     }
 }
 
 impl From<RepositoryError> for CommandError {
     fn from(e: RepositoryError) -> Self {
-        let message = match e.backtrace() {
-            Some(backtrace) => format!("{}\n{}", e, backtrace),
-            None => e.to_string(),
+        let (message, is_backtrace) = match e.inner.get_context() {
+            RepositoryErrorKind::AlreadyExists { message } => (message.clone(), false),
+            _ => match e.backtrace() {
+                Some(backtrace) => (format!("{}\n{}", e, backtrace), true),
+                None => (e.to_string(), true),
+            },
         };
+
         CommandError {
             inner: Context::new(message),
+            is_backtrace: is_backtrace,
         }
     }
 }

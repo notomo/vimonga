@@ -15,3 +15,22 @@ function! vimonga#action#documents#query#add(params) abort
 
     return vimonga#action#documents#find(a:params, options)
 endfunction
+
+function! vimonga#action#documents#query#find_by_oid(params) abort
+    let field_name = vimonga#buffer#documents#field_name(line('.'))
+    if empty(field_name)
+        return
+    endif
+
+    let message = printf('field=%s, ObjectId?: ', field_name)
+    let result = vimonga#message#input(message)
+    if result.is_err
+        return
+    endif
+    let [oid] = result.ok
+
+    let options = vimonga#repo#document#options()
+    let options['query'][field_name] = {'$oid': oid}
+
+    return vimonga#action#documents#find(a:params, options)
+endfunction

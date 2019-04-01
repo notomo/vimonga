@@ -26,6 +26,7 @@ let s:actions = {
     \ 'document.projection.hide': { params -> vimonga#action#documents#projection#hide(params) },
     \ 'document.projection.reset_all': { params -> vimonga#action#documents#projection#reset_all(params) },
     \ 'document.query.add': { params -> vimonga#action#documents#query#add(params) },
+    \ 'document.query.find_by_oid': { params -> vimonga#action#documents#query#find_by_oid(params) },
     \ 'document.query.reset_all': { params -> vimonga#action#documents#query#reset_all(params) },
     \ 'document.one': { params -> vimonga#action#document#open(params) },
     \ 'document.one.insert': { params -> vimonga#action#document#insert(params) },

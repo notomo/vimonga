@@ -10,7 +10,8 @@ pub struct CollectionListCommand<'a> {
 
 impl<'a> Command for CollectionListCommand<'a> {
     fn run(&self) -> Result<String, error::CommandError> {
-        let names = self.collection_repository.get_names(self.database_name)?;
+        let mut names = self.collection_repository.get_names(self.database_name)?;
+        names.sort_unstable();
 
         Ok(names.join("\n"))
     }

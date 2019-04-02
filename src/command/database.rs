@@ -9,7 +9,8 @@ pub struct DatabaseListCommand<'a> {
 
 impl<'a> Command for DatabaseListCommand<'a> {
     fn run(&self) -> Result<String, error::CommandError> {
-        let names = self.database_repository.get_names()?;
+        let mut names = self.database_repository.get_names()?;
+        names.sort_unstable();
 
         Ok(names.join("\n"))
     }

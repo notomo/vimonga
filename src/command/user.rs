@@ -34,7 +34,8 @@ pub struct UserCreateCommand<'a> {
 
 impl<'a> Command for UserCreateCommand<'a> {
     fn run(&self) -> Result<String, error::CommandError> {
-        let info: CreateInfo = serde_json::from_str(self.create_info_json)?;
+        let info: CreateInfo =
+            serde_json::from_str(self.create_info_json).map_err(|e| e.to_string())?;
 
         self.user_repository.create(
             self.database_name,

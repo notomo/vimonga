@@ -29,6 +29,15 @@ impl Display for CommandError {
     }
 }
 
+impl From<String> for CommandError {
+    fn from(message: String) -> CommandError {
+        CommandError {
+            inner: Context::new(message),
+            is_backtrace: false,
+        }
+    }
+}
+
 impl From<SerdeJsonError> for CommandError {
     fn from(e: SerdeJsonError) -> Self {
         CommandError {

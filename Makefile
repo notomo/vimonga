@@ -8,6 +8,8 @@ setup_data:
 	docker-compose exec mongodb mongo /provision/data.js
 
 test:
+	docker-compose exec mongodb2 mongo /provision/test.js
+	THEMIS_ARGS="-e -s --headless" themis
 	cargo test
 
 .PHONY: build

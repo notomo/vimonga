@@ -1,0 +1,23 @@
+
+call themis#option('recursive', 1)
+
+function! VimongaTestBeforeEach() abort
+    call vimonga#config#set('default_port', 27021)
+endfunction
+
+function! VimongaTestAfterEach() abort
+    call vimonga#config#clear()
+    silent! %bwipeout!
+endfunction
+
+function! VimongaWait(id, timeout_msec, assert) abort
+    for _ in range(a:timeout_msec - 1)
+        if vimonga#job#has_done(a:id)
+            return
+        endif
+        sleep 1 m
+    endfor
+
+    let message = printf('%s has not done in %d ms.', a:id, a:timeout_msec)
+    call a:assert.fail(message)
+endfunction

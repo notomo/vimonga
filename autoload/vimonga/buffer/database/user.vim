@@ -25,5 +25,11 @@ function! vimonga#buffer#database#user#new(database, open_cmd) abort
     let content = ['{', '  "user": "",', '  "pwd": "",', '  "roles": [', '    {"role": "readWrite", "db": ""}', '  ]', '}']
     let result = vimonga#buffer#impl#content(buf, content)
     setlocal modifiable
+
+    augroup vimonga_user_new
+        autocmd!
+        autocmd BufReadCmd <buffer> Vimonga user.new
+    augroup END
+
     return result
 endfunction

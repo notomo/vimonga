@@ -56,6 +56,12 @@ function! vimonga#buffer#document#new(collection, open_cmd) abort
     let content = ['{', '  ', '}']
     let result = vimonga#buffer#impl#content(buf, content)
     setlocal modifiable
+
+    augroup vimonga_doc_new
+        autocmd!
+        autocmd BufReadCmd <buffer> Vimonga document.new
+    augroup END
+
     return result
 endfunction
 

@@ -1,5 +1,5 @@
 
-let s:suite = themis#suite('documents')
+let s:suite = themis#suite('users')
 let s:assert = themis#helper('assert')
 
 function! s:suite.before_each()
@@ -10,8 +10,8 @@ function! s:suite.after_each()
     call VimongaTestAfterEach()
 endfunction
 
-function! s:suite.find_but_empty()
-    let id = vimonga#command#execute('document.find -db=example -coll=empty')
+function! s:suite.list_but_empty()
+    let id = vimonga#command#execute('user.list -db=example')
     call VimongaWait(id, 100, s:assert)
 
     let lines = getbufline('%', 0, '$')

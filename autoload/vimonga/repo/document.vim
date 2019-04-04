@@ -15,7 +15,7 @@ function! vimonga#repo#document#find(collection, options) abort
         \ vimonga#repo#impl#option('offset', a:options['offset']),
     \ ]
 
-    let args = ['document', database, collection, 'find'] + option_args 
+    let args = ['document', database, collection, 'find'] + option_args
     return vimonga#repo#impl#execute(conn, args, vimonga#repo#impl#decode())
 endfunction
 

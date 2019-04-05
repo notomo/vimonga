@@ -58,18 +58,24 @@ let s:params = {
     \ 'host': 'host',
     \ 'port': 'port',
     \ 'open': 'command to open buffer',
+    \ 'force': 'ignore confirmation',
 \ }
 function! s:parse(arg_string) abort
     let args = []
     let raw_params = {}
     for factor in split(a:arg_string, '\v\s+')
-        if stridx(factor, '=') == -1 || factor[0] !=# '-'
+        if factor[0] !=# '-'
             call add(args, factor)
             continue
         endif
 
-        let [key, value] = split(factor[1:], '=', v:true)
-        if has_key(s:params, key)
+        let key_value = split(factor[1:], '=', v:true)
+        if len(key_value) == 1 && has_key(s:params, key_value[0])
+            let [key] = key_value
+            let raw_params[key] = v:true
+            continue
+        elseif len(key_value) == 2 && has_key(s:params, key_value[0])
+            let [key, value] = key_value
             let raw_params[key] = value
             continue
         endif
@@ -91,6 +97,7 @@ function! s:new_params(params) abort
         \ 'host': has_key(a:params, 'host') ? a:params['host'] : '',
         \ 'port': has_key(a:params, 'port') ? a:params['port'] : '',
         \ 'open_cmd': has_key(a:params, 'open') ? a:params['open'] : 'edit',
+        \ 'force': has_key(a:params, 'force') ? a:params['force'] : v:false,
     \ }
 
     let params['has_db'] = !empty(params['database_name'])

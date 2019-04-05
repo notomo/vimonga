@@ -10,3 +10,8 @@ exampleDb.tests1.insert({
   _id: ObjectId("5ca3f45b1edab35868df1e0e"),
   name: "hoge"
 });
+
+let dropped = new Mongo().getDB("dropped");
+dropped.dropAllUsers();
+dropped.dropDatabase();
+dropped.createCollection("dropped");

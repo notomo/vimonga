@@ -2,7 +2,7 @@
 function! vimonga#action#collections#drop(params) abort
     return vimonga#job#new()
         \.map_ok({ _ -> vimonga#buffer#collections#model(a:params) })
-        \.map_through_ok({ collection -> vimonga#message#confirm_strongly('Drop ' . collection.name . '?') })
+        \.map_through_ok({ collection -> vimonga#message#confirm_strongly('Drop ' . collection.name . '?', a:params.force) })
         \.map_through_ok({ collection -> vimonga#repo#collection#drop(collection) })
         \.map_ok({ collection -> vimonga#buffer#collections#open(collection.database(), a:params.open_cmd) })
         \.map_extend_ok({ buf -> vimonga#repo#collection#list(buf.database) })

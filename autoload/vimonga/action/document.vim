@@ -44,7 +44,7 @@ endfunction
 function! vimonga#action#document#delete(params) abort
     return vimonga#job#new()
         \.map_ok({ _ -> vimonga#buffer#document#model(a:params) })
-        \.map_through_ok({ document -> vimonga#message#confirm('Delete ' . document.id . '?') })
+        \.map_through_ok({ document -> vimonga#message#confirm('Delete ' . document.id . '?', a:params.force) })
         \.map_extend_ok({ document -> vimonga#buffer#document#open(document, a:params.open_cmd) })
         \.map_through_ok({ document, _ -> vimonga#repo#document#delete(document) })
         \.map_ok({ _, buf -> vimonga#buffer#document#open_deleted(buf.id, buf.document) })

@@ -35,7 +35,7 @@ let s:actions = {
     \ 'document.new': { params -> vimonga#action#document#new(params) },
 \ }
 function! vimonga#command#execute(arg_string) abort
-    let [args, params] = s:parse(a:arg_string)
+    let [args, params] = vimonga#command#parse(a:arg_string)
 
     if empty(args)
         echohl ErrorMsg | echo 'no arguments' | echohl None | return
@@ -60,7 +60,7 @@ let s:params = {
     \ 'open': 'command to open buffer',
     \ 'force': 'ignore confirmation',
 \ }
-function! s:parse(arg_string) abort
+function! vimonga#command#parse(arg_string) abort
     let args = []
     let raw_params = {}
     for factor in split(a:arg_string, '\v\s+')
@@ -105,7 +105,8 @@ function! s:new_params(params) abort
     let params['has_coll'] = !empty(params['collection_name'])
     let params['has_index'] = !empty(params['index_name'])
     let params['has_id'] = !empty(params['document_id'])
-    let params['has_conn'] = !empty(params['host']) && !empty(params['port'])
+    let params['has_host'] = !empty(params['host'])
+    let params['has_port'] = !empty(params['port'])
 
     return params
 endfunction

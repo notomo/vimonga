@@ -1,7 +1,18 @@
 
 function! vimonga#complete#get(current_arg, line, cursor_position) abort
-    let host = vimonga#config#get('default_host')
-    let port = vimonga#config#get('default_port')
+    let [_, params] = vimonga#command#parse(a:line)
+
+    if params.has_host
+        let host = params.host
+    else
+        let host = vimonga#config#get('default_host')
+    endif
+
+    if params.has_port
+        let port = params.port
+    else
+        let port = vimonga#config#get('default_port')
+    endif
 
     let current_args = split(a:line, '\v\s+')[1:]
     let args = [

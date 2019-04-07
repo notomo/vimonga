@@ -7,7 +7,6 @@ function! vimonga#buffer#databases#model(params) abort
         return result
     endif
 
-    let [conn] = result.ok
     if a:params.has_db
         let name = a:params.database_name
     elseif &filetype == s:filetype
@@ -19,6 +18,7 @@ function! vimonga#buffer#databases#model(params) abort
         return vimonga#job#err(['database name is required'])
     endif
 
+    let [conn] = result.ok
     let db = conn.database(name)
     return vimonga#job#ok(db)
 endfunction

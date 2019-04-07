@@ -7,7 +7,6 @@ function! vimonga#buffer#document#model(params) abort
         return result
     endif
 
-    let [coll] = result.ok
     if a:params.has_id
         let id = a:params.document_id
     elseif &filetype == s:filetype
@@ -19,6 +18,7 @@ function! vimonga#buffer#document#model(params) abort
         return vimonga#job#err(['document id is required'])
     endif
 
+    let [coll] = result.ok
     let doc = coll.document(id)
     return vimonga#job#ok(doc)
 endfunction

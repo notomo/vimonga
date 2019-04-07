@@ -5,13 +5,14 @@ function! vimonga#buffer#collection#index#model(params) abort
         return result
     endif
 
-    let [coll] = result.ok
     if a:params.has_index
         let name = a:params.index_name
     endif
     if empty(name)
         return vimonga#job#err(['index name is required'])
     endif
+
+    let [coll] = result.ok
     let index = coll.index(name)
     return vimonga#job#ok(index)
 endfunction

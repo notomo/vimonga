@@ -5,7 +5,6 @@ function! vimonga#buffer#database#user#model(params) abort
         return result
     endif
 
-    let [db] = result.ok
     let name = ''
     if a:params.has_user
         let name = a:params.user_name
@@ -14,6 +13,7 @@ function! vimonga#buffer#database#user#model(params) abort
         return vimonga#job#err(['user name is required'])
     endif
 
+    let [db] = result.ok
     let user = db.user(name)
     return vimonga#job#ok(user)
 endfunction

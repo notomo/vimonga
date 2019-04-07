@@ -7,7 +7,6 @@ function! vimonga#buffer#collections#model(params) abort
         return result
     endif
 
-    let [db] = result.ok
     if a:params.has_coll
         let name = a:params.collection_name
     elseif &filetype == s:filetype
@@ -19,6 +18,7 @@ function! vimonga#buffer#collections#model(params) abort
         return vimonga#job#err(['collection name is required'])
     endif
 
+    let [db] = result.ok
     let coll = db.collection(name)
     return vimonga#job#ok(coll)
 endfunction

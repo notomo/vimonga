@@ -23,7 +23,7 @@ function! vimonga#action#documents#query#find_by_oid(params) abort
     endif
 
     let message = printf('field=%s, ObjectId?: ', field_name)
-    let result = vimonga#message#input(message)
+    let result = vimonga#message#input(message, a:params.document_id)
     if result.is_err
         return
     endif

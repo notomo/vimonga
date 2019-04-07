@@ -30,7 +30,10 @@ function! vimonga#message#confirm(message, force) abort
     return vimonga#job#ok([])
 endfunction
 
-function! vimonga#message#input(message) abort
+function! vimonga#message#input(message, input) abort
+    if !empty(a:input)
+        return vimonga#job#ok(a:input)
+    endif
     let input = input(a:message)
     if empty(input)
         return vimonga#job#err(['Canceled'])

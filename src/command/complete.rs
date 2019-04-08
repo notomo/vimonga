@@ -76,6 +76,7 @@ impl<'a> Command for CompleteVimongaCommand<'a> {
 impl<'a> CompleteVimongaCommand<'a> {
     fn action_names(&self) -> Vec<String> {
         vec![
+            "connection.list",
             "database.list",
             "database.drop",
             "user.list",
@@ -102,6 +103,7 @@ impl<'a> CompleteVimongaCommand<'a> {
             "document.projection.hide",
             "document.projection.reset_all",
             "document.query.add",
+            "document.query.find_by_oid",
             "document.query.reset_all",
             "document.one",
             "document.one.insert",
@@ -336,7 +338,7 @@ mod tests {
         let result = command.run();
 
         assert_eq!(true, result.is_ok());
-        assert_eq!(true, result.unwrap().starts_with("database.list"));
+        assert_eq!(true, result.unwrap().starts_with("connection.list"));
     }
 
     #[test]

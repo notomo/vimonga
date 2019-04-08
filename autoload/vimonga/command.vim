@@ -1,5 +1,6 @@
 
 let s:actions = {
+    \ 'connection.list': { params -> vimonga#action#connections#list(params) },
     \ 'database.list': { params -> vimonga#action#databases#list(params) },
     \ 'database.drop': { params -> vimonga#action#databases#drop(params) },
     \ 'user.list': { params -> vimonga#action#database#users#list(params) },

@@ -36,5 +36,6 @@ function! vimonga#buffer#databases#open(connection, open_cmd) abort
 endfunction
 
 function! vimonga#buffer#databases#path(connection) abort
-    return printf('vimonga://%s/%s/dbs', a:connection.host, a:connection.port)
+    let conns = vimonga#buffer#connections#path()
+    return printf('%s/%s/%s/dbs', conns, a:connection.host, a:connection.port)
 endfunction

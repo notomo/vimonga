@@ -10,7 +10,7 @@ setup_data:
 test:
 	docker-compose exec mongodb2 mongo /provision/test.js
 	THEMIS_ARGS="-e -s --headless" themis
-	cargo test
+	RUST_BACKTRACE=1 cargo test
 
 .PHONY: build
 .PHONY: release_build

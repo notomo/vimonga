@@ -80,15 +80,17 @@ function! vimonga#buffer#documents#key_value(line_num) abort
 endfunction
 
 function! vimonga#buffer#documents#get_id() abort
+    let open_line = search('^' . repeat(' ', s:INDENT_SIZE) . '{', 'bncW')
     let indent = repeat(' ', s:INDENT_SIZE * 2)
-    let line_num = search('^' . indent . '"_id": {', 'bn')
+    let line_num = search('^' . indent . '"_id": {', 'bncW', open_line)
     if line_num != 0
         let oid_line = getline(line_num + 1)
         let id = values(json_decode('{' . oid_line . '}'))[0]
         return id
     endif
 
-    let line_num = search('^' . indent . '"_id": {', 'n')
+    let close_line = search('^' . repeat(' ', s:INDENT_SIZE) . '}', 'ncW')
+    let line_num = search('^' . indent . '"_id": {', 'ncW', close_line)
     if line_num != 0
         let oid_line = getline(line_num + 1)
         let id = values(json_decode('{' . oid_line . '}'))[0]

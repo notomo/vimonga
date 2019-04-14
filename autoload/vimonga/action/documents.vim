@@ -10,16 +10,26 @@ function! vimonga#action#documents#find(params, options) abort
         \.execute()
 endfunction
 
-function! vimonga#action#documents#move_page(params, direction) abort
+function! vimonga#action#documents#next(params) abort
     let options = vimonga#repo#document#options()
-    if (options['is_last'] && a:direction > 0) || (options['offset'] == 0 && a:direction < 0)
+    if options['is_last']
         return
     endif
-    let options['offset'] += options['limit'] * a:direction
+
+    let options['offset'] += options['limit']
+    return vimonga#action#documents#find(a:params, options)
+endfunction
+
+function! vimonga#action#documents#prev(params) abort
+    let options = vimonga#repo#document#options()
+    if options['offset'] == 0
+        return
+    endif
+
+    let options['offset'] -= options['limit']
     if options['offset'] < 0
         let options['offset'] = 0
     endif
-
     return vimonga#action#documents#find(a:params, options)
 endfunction
 

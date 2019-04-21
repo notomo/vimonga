@@ -12,7 +12,7 @@ endfunction
 
 function! s:suite.list_but_empty()
     let id = vimonga#command#execute('user.list -db=example')
-    call VimongaWait(id, 100, s:assert)
+    call VimongaWait(id, s:assert)
 
     let lines = getbufline('%', 0, '$')
     call s:assert.equals(lines, ['[]'])

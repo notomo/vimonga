@@ -12,14 +12,14 @@ endfunction
 
 function! s:suite.drop()
     let id = vimonga#command#execute('collection.list -db=example')
-    call VimongaWait(id, 100, s:assert)
+    call VimongaWait(id, s:assert)
 
     let lines = getbufline('%', 0, '$')
     let dropped_index = index(lines, 'dropped')
     call s:assert.not_equals(dropped_index, -1)
 
     let id = vimonga#command#execute('collection.drop -db=example -coll=dropped -force')
-    call VimongaWait(id, 100, s:assert)
+    call VimongaWait(id, s:assert)
 
     let lines = getbufline('%', 0, '$')
     let dropped_index = index(lines, 'dropped')
@@ -28,7 +28,7 @@ endfunction
 
 function! s:suite.list()
     let id = vimonga#command#execute('collection.list -db=example')
-    call VimongaWait(id, 100, s:assert)
+    call VimongaWait(id, s:assert)
 
     let lines = getbufline('%', 0, '$')
     call s:assert.equals(lines, ['empty', 'tests1', 'tests2'])
@@ -36,14 +36,14 @@ endfunction
 
 function! s:suite.create()
     let id = vimonga#command#execute('collection.list -db=example')
-    call VimongaWait(id, 100, s:assert)
+    call VimongaWait(id, s:assert)
 
     let lines = getbufline('%', 0, '$')
     let created_index = index(lines, 'created')
     call s:assert.equals(created_index, -1)
 
     let id = vimonga#command#execute('collection.create -db=example -coll=created')
-    call VimongaWait(id, 100, s:assert)
+    call VimongaWait(id, s:assert)
 
     let lines = getbufline('%', 0, '$')
     let created_index = index(lines, 'created')

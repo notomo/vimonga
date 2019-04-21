@@ -12,7 +12,7 @@ endfunction
 
 function! s:suite.find_but_empty()
     let id = vimonga#command#execute('document.find -db=example -coll=empty')
-    call VimongaWait(id, 100, s:assert)
+    call VimongaWait(id, s:assert)
 
     let lines = getbufline('%', 0, '$')
     call s:assert.equals(lines, ['[]'])

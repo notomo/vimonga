@@ -12,7 +12,7 @@ endfunction
 
 function! s:suite.list()
     let id = vimonga#command#execute('index.list -db=example -coll=tests1')
-    call VimongaWait(id, 100, s:assert)
+    call VimongaWait(id, s:assert)
 
     let json = join(getbufline('%', 0, '$'), '')
     let name_index = stridx(json, '"name": "_id_",')

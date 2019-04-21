@@ -11,14 +11,20 @@ function! VimongaTestAfterEach() abort
     silent! %bdelete!
 endfunction
 
-function! VimongaWait(id, timeout_msec, assert) abort
-    for _ in range(a:timeout_msec - 1)
+function! VimongaWait(id, assert, ...) abort
+    if empty(a:000)
+        let timeout_msec = 150
+    else
+        let timeout_msec = a:000[0]
+    endif
+
+    for _ in range(timeout_msec - 1)
         if vimonga#job#has_done(a:id)
             return
         endif
         sleep 1 m
     endfor
 
-    let message = printf('%s has not done in %d ms.', a:id, a:timeout_msec)
+    let message = printf('%s has not done in %d ms.', a:id, timeout_msec)
     call a:assert.fail(message)
 endfunction

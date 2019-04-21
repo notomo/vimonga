@@ -12,13 +12,13 @@ endfunction
 
 function! s:suite.drop()
     let id = vimonga#command#execute('database.list')
-    call VimongaWait(id, 100, s:assert)
+    call VimongaWait(id, s:assert)
 
     let lines = getbufline('%', 0, '$')
     call s:assert.equals(lines, ['admin', 'dropped', 'example', 'local'])
 
     let id = vimonga#command#execute('database.drop -db=dropped -force')
-    call VimongaWait(id, 100, s:assert)
+    call VimongaWait(id, s:assert)
 
     let lines = getbufline('%', 0, '$')
     call s:assert.equals(lines, ['admin', 'example', 'local'])
@@ -26,7 +26,7 @@ endfunction
 
 function! s:suite.list()
     let id = vimonga#command#execute('database.list')
-    call VimongaWait(id, 100, s:assert)
+    call VimongaWait(id, s:assert)
 
     let lines = getbufline('%', 0, '$')
     call s:assert.equals(lines, ['admin', 'example', 'local'])

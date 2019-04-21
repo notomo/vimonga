@@ -14,7 +14,7 @@ function! s:suite.list()
     call vimonga#config#set('connection_config', './test/_test_data/connection.json')
 
     let id = vimonga#command#execute('connection.list')
-    call VimongaWait(id, 100, s:assert)
+    call VimongaWait(id, s:assert)
 
     let lines = getbufline('%', 0, '$')
     call s:assert.equals(lines, ['localhost:27020', 'localhost:27021'])

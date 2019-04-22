@@ -16,7 +16,7 @@ function! vimonga#repo#document#find(collection, options) abort
     \ ]
 
     let args = ['document', database, collection, 'find'] + option_args
-    return vimonga#repo#impl#execute(conn, args, vimonga#repo#impl#decode())
+    return vimonga#repo#impl#execute(args, conn, vimonga#repo#impl#decode())
 endfunction
 
 function! vimonga#repo#document#find_by_id(document) abort
@@ -25,7 +25,7 @@ function! vimonga#repo#document#find_by_id(document) abort
     let collection = vimonga#repo#impl#option('collection', a:document.collection_name)
     let id = vimonga#repo#impl#option('id', a:document.id)
     let args = ['document', database, collection, 'get', id]
-    return vimonga#repo#impl#execute(conn, args)
+    return vimonga#repo#impl#execute(args, conn)
 endfunction
 
 function! vimonga#repo#document#update(document, content) abort
@@ -35,7 +35,7 @@ function! vimonga#repo#document#update(document, content) abort
     let id = vimonga#repo#impl#option('id', a:document.id)
     let content = vimonga#repo#impl#option('content', a:content)
     let args = ['document', database, collection, 'update', id, content]
-    return vimonga#repo#impl#execute(conn, args)
+    return vimonga#repo#impl#execute(args, conn)
 endfunction
 
 function! vimonga#repo#document#insert(collection, content) abort
@@ -44,7 +44,7 @@ function! vimonga#repo#document#insert(collection, content) abort
     let collection = vimonga#repo#impl#option('collection', a:collection.name)
     let content = vimonga#repo#impl#option('content', a:content)
     let args = ['document', database, collection, 'insert', content]
-    return vimonga#repo#impl#execute(conn, args, vimonga#repo#impl#join())
+    return vimonga#repo#impl#execute(args, conn, vimonga#repo#impl#join())
 endfunction
 
 function! vimonga#repo#document#delete(document) abort
@@ -53,7 +53,7 @@ function! vimonga#repo#document#delete(document) abort
     let collection = vimonga#repo#impl#option('collection', a:document.collection_name)
     let id = vimonga#repo#impl#option('id', a:document.id)
     let args = ['document', database, collection, 'delete', id]
-    return vimonga#repo#impl#execute(conn, args)
+    return vimonga#repo#impl#execute(args, conn)
 endfunction
 
 function! vimonga#repo#document#options(...) abort

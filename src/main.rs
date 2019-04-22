@@ -16,22 +16,6 @@ fn main() {
     let app = App::new("monga")
         .version("0.0.1")
         .setting(AppSettings::ArgRequiredElseHelp)
-        .arg(
-            Arg::with_name("host")
-                .short("h")
-                .long("host")
-                .default_value("localhost")
-                .takes_value(true)
-                .required(false),
-        )
-        .arg(
-            Arg::with_name("port")
-                .short("p")
-                .long("port")
-                .default_value("27017")
-                .takes_value(true)
-                .required(false),
-        )
         .subcommand(
             SubCommand::with_name("complete")
                 .arg(
@@ -48,10 +32,38 @@ fn main() {
                         .takes_value(true)
                         .required(false),
                 )
+                .arg(
+                    Arg::with_name("host")
+                        .short("h")
+                        .long("host")
+                        .takes_value(true)
+                        .required(true),
+                )
+                .arg(
+                    Arg::with_name("port")
+                        .short("p")
+                        .long("port")
+                        .takes_value(true)
+                        .required(true),
+                )
                 .subcommand(SubCommand::with_name("vimonga")),
         )
         .subcommand(
             SubCommand::with_name("database")
+                .arg(
+                    Arg::with_name("host")
+                        .short("h")
+                        .long("host")
+                        .takes_value(true)
+                        .required(true),
+                )
+                .arg(
+                    Arg::with_name("port")
+                        .short("p")
+                        .long("port")
+                        .takes_value(true)
+                        .required(true),
+                )
                 .subcommand(SubCommand::with_name("list"))
                 .subcommand(
                     SubCommand::with_name("drop").arg(
@@ -67,6 +79,20 @@ fn main() {
                 .arg(
                     Arg::with_name("database_name")
                         .long("database")
+                        .takes_value(true)
+                        .required(true),
+                )
+                .arg(
+                    Arg::with_name("host")
+                        .short("h")
+                        .long("host")
+                        .takes_value(true)
+                        .required(true),
+                )
+                .arg(
+                    Arg::with_name("port")
+                        .short("p")
+                        .long("port")
                         .takes_value(true)
                         .required(true),
                 )
@@ -93,6 +119,20 @@ fn main() {
                 .arg(
                     Arg::with_name("database_name")
                         .long("database")
+                        .takes_value(true)
+                        .required(true),
+                )
+                .arg(
+                    Arg::with_name("host")
+                        .short("h")
+                        .long("host")
+                        .takes_value(true)
+                        .required(true),
+                )
+                .arg(
+                    Arg::with_name("port")
+                        .short("p")
+                        .long("port")
                         .takes_value(true)
                         .required(true),
                 )
@@ -128,6 +168,20 @@ fn main() {
                         .takes_value(true)
                         .required(true),
                 )
+                .arg(
+                    Arg::with_name("host")
+                        .short("h")
+                        .long("host")
+                        .takes_value(true)
+                        .required(true),
+                )
+                .arg(
+                    Arg::with_name("port")
+                        .short("p")
+                        .long("port")
+                        .takes_value(true)
+                        .required(true),
+                )
                 .subcommand(SubCommand::with_name("list"))
                 .subcommand(
                     SubCommand::with_name("create").arg(
@@ -157,6 +211,20 @@ fn main() {
                 .arg(
                     Arg::with_name("collection_name")
                         .long("collection")
+                        .takes_value(true)
+                        .required(true),
+                )
+                .arg(
+                    Arg::with_name("host")
+                        .short("h")
+                        .long("host")
+                        .takes_value(true)
+                        .required(true),
+                )
+                .arg(
+                    Arg::with_name("port")
+                        .short("p")
+                        .long("port")
                         .takes_value(true)
                         .required(true),
                 )
@@ -240,12 +308,12 @@ fn main() {
         );
     let matches = app.get_matches();
 
-    let host = matches.value_of("host").unwrap();
-    let port = matches.value_of("port").unwrap().parse().unwrap();
-    let connection_factory = datastore::ConnectionFactory::new(host, port);
-
     let command_result = match matches.subcommand() {
         ("complete", Some(cmd)) => {
+            let host = cmd.value_of("host").unwrap();
+            let port = cmd.value_of("port").unwrap().parse().unwrap();
+            let connection_factory = datastore::ConnectionFactory::new(host, port);
+
             let current_arg = cmd.value_of("current_arg").unwrap();
             let args: Vec<_> = cmd.values_of("args").unwrap_or_default().collect();
             let db_repo = datastore::DatabaseRepositoryImpl {
@@ -274,6 +342,10 @@ fn main() {
             }
         }
         ("database", Some(cmd)) => {
+            let host = cmd.value_of("host").unwrap();
+            let port = cmd.value_of("port").unwrap().parse().unwrap();
+            let connection_factory = datastore::ConnectionFactory::new(host, port);
+
             let repo = datastore::DatabaseRepositoryImpl {
                 connection_factory: &connection_factory,
             };
@@ -294,6 +366,10 @@ fn main() {
             }
         }
         ("user", Some(cmd)) => {
+            let host = cmd.value_of("host").unwrap();
+            let port = cmd.value_of("port").unwrap().parse().unwrap();
+            let connection_factory = datastore::ConnectionFactory::new(host, port);
+
             let database_name = cmd.value_of("database_name").unwrap();
 
             let repo = datastore::UserRepositoryImpl {
@@ -327,6 +403,10 @@ fn main() {
             }
         }
         ("collection", Some(cmd)) => {
+            let host = cmd.value_of("host").unwrap();
+            let port = cmd.value_of("port").unwrap().parse().unwrap();
+            let connection_factory = datastore::ConnectionFactory::new(host, port);
+
             let database_name = cmd.value_of("database_name").unwrap();
 
             let repo = datastore::CollectionRepositoryImpl {
@@ -360,6 +440,10 @@ fn main() {
             }
         }
         ("index", Some(cmd)) => {
+            let host = cmd.value_of("host").unwrap();
+            let port = cmd.value_of("port").unwrap().parse().unwrap();
+            let connection_factory = datastore::ConnectionFactory::new(host, port);
+
             let database_name = cmd.value_of("database_name").unwrap();
             let collection_name = cmd.value_of("collection_name").unwrap();
 
@@ -399,6 +483,10 @@ fn main() {
             }
         }
         ("document", Some(cmd)) => {
+            let host = cmd.value_of("host").unwrap();
+            let port = cmd.value_of("port").unwrap().parse().unwrap();
+            let connection_factory = datastore::ConnectionFactory::new(host, port);
+
             let database_name = cmd.value_of("database_name").unwrap();
             let collection_name = cmd.value_of("collection_name").unwrap();
 

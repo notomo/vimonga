@@ -18,9 +18,9 @@ function! vimonga#complete#get(current_arg, line, cursor_position) abort
     let args = [
         \ 'RUST_BACKTRACE=1',
         \ shellescape(vimonga#config#get('executable')),
+        \ 'complete',
         \ vimonga#repo#impl#option('host', host),
         \ vimonga#repo#impl#option('port', port),
-        \ 'complete',
         \ vimonga#repo#impl#option('current', a:current_arg),
         \ join(map(current_args, { _, arg -> vimonga#repo#impl#option('args', arg) }), ' '),
         \ 'vimonga',

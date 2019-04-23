@@ -17,6 +17,11 @@ exampleDb.tests1.insert({
   name: "foo"
 });
 
+exampleDb.tests1.insert({
+  _id: ObjectId("7ca3f45b1edab35868df1e0e"),
+  name: "bar"
+});
+
 let dropped = new Mongo().getDB("dropped");
 dropped.dropAllUsers();
 dropped.dropDatabase();

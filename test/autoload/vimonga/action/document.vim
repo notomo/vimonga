@@ -18,6 +18,19 @@ function! s:suite.one()
     call s:assert.equals(decoded['_id']['$oid'], '5ca3f45b1edab35868df1e0e')
 endfunction
 
+function! s:suite.update()
+    let id = vimonga#command#execute('document.one -db=example -coll=tests1 -id=7ca3f45b1edab35868df1e0e')
+    call VimongaWait(id, s:assert)
+
+    call setline(search('bar'), '"name": "updated"')
+    let id = vimonga#command#execute('document.one.update')
+    call VimongaWait(id, s:assert)
+
+    let decoded = json_decode(join(getbufline('%', 0, '$'), ''))
+    call s:assert.equals(decoded['name'], 'updated')
+    call s:assert.equals(&modified, v:false)
+endfunction
+
 function! s:suite.delete()
     let id = vimonga#command#execute('document.one.delete -db=example -coll=tests1 -id=6ca3f45b1edab35868df1e0e -force')
     call VimongaWait(id, s:assert)

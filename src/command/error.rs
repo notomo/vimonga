@@ -3,6 +3,7 @@ use failure::{Backtrace, Context, Fail};
 
 use crate::domain::repository::{RepositoryError, RepositoryErrorKind};
 use serde_json::Error as SerdeJsonError;
+use std::io::Error as IoError;
 
 #[derive(Debug)]
 pub struct CommandError {
@@ -40,6 +41,15 @@ impl From<String> for CommandError {
 
 impl From<SerdeJsonError> for CommandError {
     fn from(e: SerdeJsonError) -> Self {
+        CommandError {
+            inner: Context::new(e.to_string()),
+            is_backtrace: true,
+        }
+    }
+}
+
+impl From<IoError> for CommandError {
+    fn from(e: IoError) -> Self {
         CommandError {
             inner: Context::new(e.to_string()),
             is_backtrace: true,

@@ -1,6 +1,9 @@
 mod complete;
 pub use complete::CompleteVimongaCommand;
 
+mod connection;
+pub use connection::ConnectionListCommand;
+
 mod collection;
 pub use collection::{CollectionCreateCommand, CollectionDropCommand, CollectionListCommand};
 

@@ -20,6 +20,16 @@ function! vimonga#repo#impl#execute(args, ...) abort
     return vimonga#job#pending(cmd, options)
 endfunction
 
+function! vimonga#repo#impl#execute_with_handle(args, handle) abort
+    let default_args = [
+        \ 'RUST_BACKTRACE=1',
+        \ shellescape(vimonga#config#get('executable')),
+    \ ]
+    let cmd = join(default_args + a:args, ' ')
+    let options = {'handle_ok': a:handle}
+    return vimonga#job#pending(cmd, options)
+endfunction
+
 function! vimonga#repo#impl#option(key, value) abort
     if len(a:value) == 0
         return ''

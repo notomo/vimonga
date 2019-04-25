@@ -49,6 +49,16 @@ fn main() {
                 .subcommand(SubCommand::with_name("vimonga")),
         )
         .subcommand(
+            SubCommand::with_name("connection").subcommand(
+                SubCommand::with_name("list").arg(
+                    Arg::with_name("file")
+                        .long("file")
+                        .takes_value(true)
+                        .required(true),
+                ),
+            ),
+        )
+        .subcommand(
             SubCommand::with_name("database")
                 .arg(
                     Arg::with_name("host")
@@ -341,6 +351,13 @@ fn main() {
                 _ => command::HelpCommand {}.run(),
             }
         }
+        ("connection", Some(cmd)) => match cmd.subcommand() {
+            ("list", Some(cmd)) => {
+                let config_file_path = cmd.value_of("file").unwrap();
+                command::ConnectionListCommand { config_file_path }.run()
+            }
+            _ => command::HelpCommand {}.run(),
+        },
         ("database", Some(cmd)) => {
             let host = cmd.value_of("host").unwrap();
             let port = cmd.value_of("port").unwrap().parse().unwrap();

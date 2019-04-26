@@ -1,5 +1,5 @@
 
-function! vimonga#buffer#database#user#model(params) abort
+function! vimonga#buffer#user#model(params) abort
     let result = vimonga#buffer#databases#model(a:params)
     if result.is_err
         return result
@@ -19,8 +19,8 @@ function! vimonga#buffer#database#user#model(params) abort
 endfunction
 
 let s:filetype_new = 'vimonga-user-new'
-function! vimonga#buffer#database#user#new(database, open_cmd) abort
-    let path = vimonga#buffer#database#users#path(a:database) . '/new'
+function! vimonga#buffer#user#new(database, open_cmd) abort
+    let path = vimonga#buffer#users#path(a:database) . '/new'
     let buf = vimonga#buffer#impl#buffer(s:filetype_new, path, a:open_cmd)
     let content = ['{', '  "user": "",', '  "pwd": "",', '  "roles": [', '    {"role": "readWrite", "db": ""}', '  ]', '}']
     let result = vimonga#buffer#impl#content(buf, content)

@@ -1,8 +1,8 @@
 
 let s:filetype = 'vimonga-indexes'
 
-function! vimonga#buffer#collection#indexes#open(collection, open_cmd) abort
-    let path = vimonga#buffer#collection#indexes#path(a:collection)
+function! vimonga#buffer#indexes#open(collection, open_cmd) abort
+    let path = vimonga#buffer#indexes#path(a:collection)
     let buf =  vimonga#buffer#impl#buffer(s:filetype, path, a:open_cmd)
 
     augroup vimonga_indexes
@@ -13,7 +13,7 @@ function! vimonga#buffer#collection#indexes#open(collection, open_cmd) abort
     return vimonga#job#ok({'id': buf, 'collection': a:collection})
 endfunction
 
-function! vimonga#buffer#collection#indexes#path(collection) abort
+function! vimonga#buffer#indexes#path(collection) abort
     let dbs = vimonga#buffer#collections#path(a:collection.database())
     return printf('%s/%s/indexes', dbs, a:collection.name)
 endfunction

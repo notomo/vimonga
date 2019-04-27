@@ -13,7 +13,7 @@ function! vimonga#buffer#connections#model(params) abort
         let host = vimonga#config#get('default_host')
     endif
     if empty(host)
-        return vimonga#job#err(['host and port are required'])
+        return vimonga#job#err(['host is required'])
     endif
 
     let conn = vimonga#model#connection#new(host)

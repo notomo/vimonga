@@ -1,4 +1,4 @@
-use crate::domain::repository::RepositoryError;
+use crate::domain::repository::{RepositoryError, RepositoryErrorKind};
 
 use mongodb::{Client, ClientOptions, ThreadedClient};
 
@@ -8,11 +8,20 @@ pub struct ConnectionFactory<'a> {
 }
 
 impl<'a> ConnectionFactory<'a> {
-    pub fn new(host: &str, port: u16) -> ConnectionFactory {
-        ConnectionFactory {
-            host: host,
+    pub fn new(host: &str) -> Result<ConnectionFactory, RepositoryError> {
+        let host_port = host.split(":").collect::<Vec<&str>>();
+
+        let port = host_port
+            .get(1)
+            .ok_or(RepositoryErrorKind::ParseError {
+                message: "host must include `:{port}`".to_string(),
+            })?
+            .parse()?;
+
+        Ok(ConnectionFactory {
+            host: host_port[0],
             port: port,
-        }
+        })
     }
 
     pub fn get(&self) -> Result<Client, RepositoryError> {

@@ -39,13 +39,6 @@ fn main() {
                         .takes_value(true)
                         .required(true),
                 )
-                .arg(
-                    Arg::with_name("port")
-                        .short("p")
-                        .long("port")
-                        .takes_value(true)
-                        .required(true),
-                )
                 .subcommand(SubCommand::with_name("vimonga")),
         )
         .subcommand(
@@ -64,13 +57,6 @@ fn main() {
                     Arg::with_name("host")
                         .short("h")
                         .long("host")
-                        .takes_value(true)
-                        .required(true),
-                )
-                .arg(
-                    Arg::with_name("port")
-                        .short("p")
-                        .long("port")
                         .takes_value(true)
                         .required(true),
                 )
@@ -96,13 +82,6 @@ fn main() {
                     Arg::with_name("host")
                         .short("h")
                         .long("host")
-                        .takes_value(true)
-                        .required(true),
-                )
-                .arg(
-                    Arg::with_name("port")
-                        .short("p")
-                        .long("port")
                         .takes_value(true)
                         .required(true),
                 )
@@ -136,13 +115,6 @@ fn main() {
                     Arg::with_name("host")
                         .short("h")
                         .long("host")
-                        .takes_value(true)
-                        .required(true),
-                )
-                .arg(
-                    Arg::with_name("port")
-                        .short("p")
-                        .long("port")
                         .takes_value(true)
                         .required(true),
                 )
@@ -185,13 +157,6 @@ fn main() {
                         .takes_value(true)
                         .required(true),
                 )
-                .arg(
-                    Arg::with_name("port")
-                        .short("p")
-                        .long("port")
-                        .takes_value(true)
-                        .required(true),
-                )
                 .subcommand(SubCommand::with_name("list"))
                 .subcommand(
                     SubCommand::with_name("create").arg(
@@ -228,13 +193,6 @@ fn main() {
                     Arg::with_name("host")
                         .short("h")
                         .long("host")
-                        .takes_value(true)
-                        .required(true),
-                )
-                .arg(
-                    Arg::with_name("port")
-                        .short("p")
-                        .long("port")
                         .takes_value(true)
                         .required(true),
                 )
@@ -316,13 +274,25 @@ fn main() {
                         ),
                 ),
         );
-    let matches = app.get_matches();
 
-    let command_result = match matches.subcommand() {
+    match get_command_result(app) {
+        Ok(content) => println!("{}", content),
+        Err(err) => {
+            eprintln!("{}", err);
+            if let Some(backtrace) = err.backtrace() {
+                eprintln!("{}", backtrace);
+            }
+            std::process::exit(1);
+        }
+    }
+}
+
+fn get_command_result(app: clap::App) -> Result<String, command::CommandError> {
+    let matches = app.get_matches();
+    match matches.subcommand() {
         ("complete", Some(cmd)) => {
             let host = cmd.value_of("host").unwrap();
-            let port = cmd.value_of("port").unwrap().parse().unwrap();
-            let connection_factory = datastore::ConnectionFactory::new(host, port);
+            let connection_factory = datastore::ConnectionFactory::new(host)?;
 
             let current_arg = cmd.value_of("current_arg").unwrap();
             let args: Vec<_> = cmd.values_of("args").unwrap_or_default().collect();
@@ -360,8 +330,7 @@ fn main() {
         },
         ("database", Some(cmd)) => {
             let host = cmd.value_of("host").unwrap();
-            let port = cmd.value_of("port").unwrap().parse().unwrap();
-            let connection_factory = datastore::ConnectionFactory::new(host, port);
+            let connection_factory = datastore::ConnectionFactory::new(host)?;
 
             let repo = datastore::DatabaseRepositoryImpl {
                 connection_factory: &connection_factory,
@@ -384,8 +353,7 @@ fn main() {
         }
         ("user", Some(cmd)) => {
             let host = cmd.value_of("host").unwrap();
-            let port = cmd.value_of("port").unwrap().parse().unwrap();
-            let connection_factory = datastore::ConnectionFactory::new(host, port);
+            let connection_factory = datastore::ConnectionFactory::new(host)?;
 
             let database_name = cmd.value_of("database_name").unwrap();
 
@@ -421,8 +389,7 @@ fn main() {
         }
         ("collection", Some(cmd)) => {
             let host = cmd.value_of("host").unwrap();
-            let port = cmd.value_of("port").unwrap().parse().unwrap();
-            let connection_factory = datastore::ConnectionFactory::new(host, port);
+            let connection_factory = datastore::ConnectionFactory::new(host)?;
 
             let database_name = cmd.value_of("database_name").unwrap();
 
@@ -458,8 +425,7 @@ fn main() {
         }
         ("index", Some(cmd)) => {
             let host = cmd.value_of("host").unwrap();
-            let port = cmd.value_of("port").unwrap().parse().unwrap();
-            let connection_factory = datastore::ConnectionFactory::new(host, port);
+            let connection_factory = datastore::ConnectionFactory::new(host)?;
 
             let database_name = cmd.value_of("database_name").unwrap();
             let collection_name = cmd.value_of("collection_name").unwrap();
@@ -501,8 +467,7 @@ fn main() {
         }
         ("document", Some(cmd)) => {
             let host = cmd.value_of("host").unwrap();
-            let port = cmd.value_of("port").unwrap().parse().unwrap();
-            let connection_factory = datastore::ConnectionFactory::new(host, port);
+            let connection_factory = datastore::ConnectionFactory::new(host)?;
 
             let database_name = cmd.value_of("database_name").unwrap();
             let collection_name = cmd.value_of("collection_name").unwrap();
@@ -580,16 +545,5 @@ fn main() {
             }
         }
         _ => command::HelpCommand {}.run(),
-    };
-
-    match command_result {
-        Ok(content) => println!("{}", content),
-        Err(err) => {
-            eprintln!("{}", err);
-            if let Some(backtrace) = err.backtrace() {
-                eprintln!("{}", backtrace);
-            }
-            std::process::exit(1);
-        }
     }
 }

@@ -2,7 +2,7 @@
 call themis#option('recursive', 1)
 
 function! VimongaTestBeforeEach() abort
-    call vimonga#config#set('default_port', 27021)
+    call vimonga#config#set('default_host', 'localhost:27021')
 endfunction
 
 function! VimongaTestAfterEach() abort

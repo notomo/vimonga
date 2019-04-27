@@ -17,12 +17,15 @@ impl<'a> Command for ConnectionListCommand<'a> {
         let connection_config: Vec<ConnectionConfig> =
             serde_json::from_str(&content).map_err(|e| e.to_string())?;
 
-        Ok(serde_json::to_string(&connection_config)?)
+        let lines = connection_config
+            .iter()
+            .map(|conf| conf.host)
+            .collect::<Vec<&str>>();
+        Ok(lines.join("\n"))
     }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 struct ConnectionConfig<'a> {
     host: &'a str,
-    port: u16,
 }

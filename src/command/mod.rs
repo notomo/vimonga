@@ -26,6 +26,7 @@ mod help;
 pub use help::HelpCommand;
 
 mod error;
+pub use error::CommandError;
 
 pub trait Command {
     fn run(&self) -> Result<String, error::CommandError>;

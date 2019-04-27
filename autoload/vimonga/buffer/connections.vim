@@ -2,32 +2,21 @@
 let s:filetype = 'vimonga-conns'
 
 function! vimonga#buffer#connections#model(params) abort
-    let [buf_host, buf_port] = vimonga#buffer#impl#host_port()
+    let buf_host = vimonga#buffer#impl#host()
     if a:params.has_host
         let host = a:params.host
     elseif &filetype == s:filetype && !empty(getline(line('.')))
-        let line = getline(line('.'))
-        let host = split(line, ':')[0]
+        let host = getline(line('.'))
     elseif !empty(buf_host)
         let host = buf_host
     else
         let host = vimonga#config#get('default_host')
     endif
-    if a:params.has_port
-        let port = a:params.port
-    elseif &filetype == s:filetype && !empty(getline(line('.')))
-        let line = getline(line('.'))
-        let port = split(line, ':')[1]
-    elseif !empty(buf_port)
-        let port = buf_port
-    else
-        let port = vimonga#config#get('default_port')
-    endif
-    if empty(host) || empty(port)
+    if empty(host)
         return vimonga#job#err(['host and port are required'])
     endif
 
-    let conn = vimonga#model#connection#new(host, port)
+    let conn = vimonga#model#connection#new(host)
     return vimonga#job#ok(conn)
 endfunction
 
@@ -41,17 +30,6 @@ function! vimonga#buffer#connections#open(open_cmd) abort
     augroup END
 
     return vimonga#job#ok({'id': buf})
-endfunction
-
-function! vimonga#buffer#connections#content(buffer, conns) abort
-    let lines = []
-    for conn in a:conns
-        let line = printf('%s:%s', conn.host, conn.port)
-        call add(lines, line)
-    endfor
-
-    let result = vimonga#buffer#impl#content(a:buffer, lines)
-    return result
 endfunction
 
 function! vimonga#buffer#connections#path() abort

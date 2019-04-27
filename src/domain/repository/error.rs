@@ -10,6 +10,8 @@ pub enum RepositoryErrorKind {
     DocumentSyntaxError { message: String },
     #[fail(display = "Not found error: {}", message)]
     NotFound { message: String },
+    #[fail(display = "Parse error: {}", message)]
+    ParseError { message: String },
 }
 
 #[derive(Debug)]

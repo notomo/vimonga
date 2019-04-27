@@ -7,6 +7,7 @@ use bson::oid::Error as OidError;
 use mongodb::Error as MongodbError;
 use serde_json::error::Category as SerdeJsonErrorCategory;
 use serde_json::Error as SerdeJsonError;
+use std::num::ParseIntError;
 
 impl Fail for RepositoryError {
     fn cause(&self) -> Option<&Fail> {
@@ -84,6 +85,15 @@ impl From<OidError> for RepositoryError {
         let message = e.to_string();
         RepositoryError {
             inner: e.context(RepositoryErrorKind::InternalError { message }),
+        }
+    }
+}
+
+impl From<ParseIntError> for RepositoryError {
+    fn from(e: ParseIntError) -> Self {
+        let message = e.to_string();
+        RepositoryError {
+            inner: e.context(RepositoryErrorKind::ParseError { message }),
         }
     }
 }

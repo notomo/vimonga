@@ -57,7 +57,6 @@ let s:params = {
     \ 'index': 'index name',
     \ 'id': 'document id',
     \ 'host': 'host',
-    \ 'port': 'port',
     \ 'open': 'command to open buffer',
     \ 'force': 'ignore confirmation',
 \ }
@@ -96,7 +95,6 @@ function! s:new_params(params) abort
         \ 'index_name': has_key(a:params, 'index') ? a:params['index'] : '',
         \ 'document_id': has_key(a:params, 'id') ? a:params['id'] : '',
         \ 'host': has_key(a:params, 'host') ? a:params['host'] : '',
-        \ 'port': has_key(a:params, 'port') ? a:params['port'] : '',
         \ 'open_cmd': has_key(a:params, 'open') ? a:params['open'] : 'edit',
         \ 'force': has_key(a:params, 'force') ? a:params['force'] : v:false,
     \ }
@@ -107,7 +105,6 @@ function! s:new_params(params) abort
     let params['has_index'] = !empty(params['index_name'])
     let params['has_id'] = !empty(params['document_id'])
     let params['has_host'] = !empty(params['host'])
-    let params['has_port'] = !empty(params['port'])
 
     return params
 endfunction

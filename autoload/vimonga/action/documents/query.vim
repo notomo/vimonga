@@ -1,6 +1,6 @@
 
 function! vimonga#action#documents#query#reset_all(params) abort
-    let options = vimonga#repo#document#options({'query': {}})
+    let options = vimonga#buffer#documents#options({'query': {}})
     return vimonga#action#documents#find(a:params, options)
 endfunction
 
@@ -10,7 +10,7 @@ function! vimonga#action#documents#query#add(params) abort
         return
     endif
 
-    let options = vimonga#repo#document#options()
+    let options = vimonga#buffer#documents#options()
     let options['query'][key] = value
 
     return vimonga#action#documents#find(a:params, options)
@@ -29,7 +29,7 @@ function! vimonga#action#documents#query#find_by_oid(params) abort
     endif
     let [oid] = result.ok
 
-    let options = vimonga#repo#document#options()
+    let options = vimonga#buffer#documents#options()
     let options['query'][field_name] = {'$oid': oid}
 
     return vimonga#action#documents#find(a:params, options)

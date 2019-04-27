@@ -1,6 +1,6 @@
 
 function! vimonga#action#documents#sort#reset_all(params) abort
-    let options = vimonga#repo#document#options({'sort': {}})
+    let options = vimonga#buffer#documents#options({'sort': {}})
     return vimonga#action#documents#find(a:params, options)
 endfunction
 
@@ -10,7 +10,7 @@ function! vimonga#action#documents#sort#toggle(params) abort
         return
     endif
 
-    let options = vimonga#repo#document#options()
+    let options = vimonga#buffer#documents#options()
     if !has_key(options['sort'], field_name)
         let options['sort'][field_name] = -1
     else
@@ -27,7 +27,7 @@ function! vimonga#action#documents#sort#do(params, direction) abort
         return
     endif
 
-    let options = vimonga#repo#document#options()
+    let options = vimonga#buffer#documents#options()
     if a:direction == 0 && !has_key(options['sort'], field_name)
         return
     elseif a:direction == 0

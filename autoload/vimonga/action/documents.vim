@@ -1,6 +1,6 @@
 
 function! vimonga#action#documents#find(params, options) abort
-    let options = vimonga#repo#document#options(a:options)
+    let options = vimonga#buffer#documents#options(a:options)
     return vimonga#job#new()
         \.map_ok({ _ -> vimonga#buffer#collections#model(a:params) })
         \.map_ok({ collection -> vimonga#buffer#documents#open(collection, a:params.open_cmd, options) })
@@ -11,7 +11,7 @@ function! vimonga#action#documents#find(params, options) abort
 endfunction
 
 function! vimonga#action#documents#next(params) abort
-    let options = vimonga#repo#document#options()
+    let options = vimonga#buffer#documents#options()
     if options['is_last']
         return
     endif
@@ -21,7 +21,7 @@ function! vimonga#action#documents#next(params) abort
 endfunction
 
 function! vimonga#action#documents#prev(params) abort
-    let options = vimonga#repo#document#options()
+    let options = vimonga#buffer#documents#options()
     if options['offset'] == 0
         return
     endif
@@ -34,12 +34,12 @@ function! vimonga#action#documents#prev(params) abort
 endfunction
 
 function! vimonga#action#documents#first(params) abort
-    let options = vimonga#repo#document#options({'offset': 0})
+    let options = vimonga#buffer#documents#options({'offset': 0})
     return vimonga#action#documents#find(a:params, options)
 endfunction
 
 function! vimonga#action#documents#last(params) abort
-    let options = vimonga#repo#document#options()
+    let options = vimonga#buffer#documents#options()
     let options['offset'] = float2nr(options['count'] / options['limit']) * options['limit']
     return vimonga#action#documents#find(a:params, options)
 endfunction

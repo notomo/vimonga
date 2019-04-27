@@ -30,6 +30,29 @@ function! vimonga#buffer#documents#content(buffer, result, options) abort
     return vimonga#buffer#impl#content(a:buffer, a:result['body'])
 endfunction
 
+function! vimonga#buffer#documents#options(...) abort
+    let defaults = {
+        \ 'query': {},
+        \ 'projection': {},
+        \ 'sort': {},
+        \ 'limit': 10,
+        \ 'offset': 0,
+        \ 'is_last': v:false,
+        \ 'count': 0,
+    \ }
+
+    let bufffer_options = {}
+    if exists('b:vimonga_options')
+        let bufffer_options = b:vimonga_options
+    endif
+
+    let merged = extend(defaults, bufffer_options)
+    if len(a:000) == 0
+        return merged
+    endif
+    return extend(merged, a:000[0])
+endfunction
+
 let s:SEPARATER = '": '
 let s:INDENT_SIZE = 2
 function! vimonga#buffer#documents#field_name(line_num) abort

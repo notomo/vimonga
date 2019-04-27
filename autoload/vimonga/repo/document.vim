@@ -55,26 +55,3 @@ function! vimonga#repo#document#delete(document) abort
     let args = ['document', database, collection, 'delete', id]
     return vimonga#repo#impl#execute(args, conn)
 endfunction
-
-function! vimonga#repo#document#options(...) abort
-    let defaults = {
-        \ 'query': {},
-        \ 'projection': {},
-        \ 'sort': {},
-        \ 'limit': 10,
-        \ 'offset': 0,
-        \ 'is_last': v:false,
-        \ 'count': 0,
-    \ }
-
-    let bufffer_options = {}
-    if exists('b:vimonga_options')
-        let bufffer_options = b:vimonga_options
-    endif
-
-    let merged = extend(defaults, bufffer_options)
-    if len(a:000) == 0
-        return merged
-    endif
-    return extend(merged, a:000[0])
-endfunction

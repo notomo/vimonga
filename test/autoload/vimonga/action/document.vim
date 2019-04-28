@@ -31,6 +31,20 @@ function! s:suite.update()
     call s:assert.equals(&modified, v:false)
 endfunction
 
+function! s:suite.insert()
+    let id = vimonga#command#execute('document.new -db=example -coll=tests1')
+    call VimongaWait(id, s:assert)
+
+    call setline(2, '"name": "inserted"')
+    let id = vimonga#command#execute('document.one.insert')
+    call VimongaWait(id, s:assert)
+
+    let decoded = json_decode(join(getbufline('%', 0, '$'), ''))
+    call s:assert.equals('inserted', decoded['name'])
+    call s:assert.equals(v:true, has_key(decoded, '_id'))
+    call s:assert.equals(v:true, &modifiable)
+endfunction
+
 function! s:suite.delete()
     let id = vimonga#command#execute('document.one.delete -db=example -coll=tests1 -id=6ca3f45b1edab35868df1e0e -force')
     call VimongaWait(id, s:assert)

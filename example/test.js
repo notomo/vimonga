@@ -26,3 +26,8 @@ let dropped = new Mongo().getDB("dropped");
 dropped.dropAllUsers();
 dropped.dropDatabase();
 dropped.createCollection("dropped");
+
+let otherDb = new Mongo().getDB("other");
+otherDb.dropAllUsers();
+otherDb.dropDatabase();
+otherDb.createCollection("other");

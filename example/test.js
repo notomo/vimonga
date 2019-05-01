@@ -32,3 +32,8 @@ otherDb.dropAllUsers();
 otherDb.dropDatabase();
 otherDb.createCollection("other");
 otherDb.other.createIndex({ dropped_index: 1 });
+otherDb.createUser({
+  user: "dropped_user",
+  pwd: "password",
+  roles: [{ role: "read", db: "other" }]
+});

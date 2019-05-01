@@ -20,5 +20,5 @@ function! s:suite.create()
     call VimongaWait(id, s:assert)
 
     let decoded = json_decode(join(getbufline('%', 0, '$'), ''))
-    call s:assert.equals('new_user', decoded[0]['user'])
+    call s:assert.equals(decoded[0]['user'], 'new_user')
 endfunction

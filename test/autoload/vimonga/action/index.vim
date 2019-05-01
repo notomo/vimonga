@@ -20,7 +20,7 @@ function! s:suite.create()
     call VimongaWait(id, s:assert)
 
     let decoded = json_decode(join(getbufline('%', 0, '$'), ''))
-    call s:assert.equals('new_index_1', decoded[1]['name'])
+    call s:assert.equals(decoded[2]['name'], 'new_index_1')
 endfunction
 
 function! s:suite.drop()

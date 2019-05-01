@@ -22,3 +22,19 @@ function! s:suite.create()
     let decoded = json_decode(join(getbufline('%', 0, '$'), ''))
     call s:assert.equals('new_index_1', decoded[1]['name'])
 endfunction
+
+function! s:suite.drop()
+    let id = vimonga#command#execute('index.list -db=other -coll=other')
+    call VimongaWait(id, s:assert)
+
+    let lines = join(getbufline('%', 0, '$'), '')
+    let dropped_index = stridx(lines, 'dropped_index_1')
+    call s:assert.not_equals(dropped_index, -1)
+
+    let id = vimonga#command#execute('index.drop -db=other -coll=other -index=dropped_index_1 -force')
+    call VimongaWait(id, s:assert)
+
+    let lines = join(getbufline('%', 0, '$'), '')
+    let dropped_index = stridx(lines, 'dropped_index_1')
+    call s:assert.equals(dropped_index, -1)
+endfunction

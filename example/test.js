@@ -31,3 +31,4 @@ let otherDb = new Mongo().getDB("other");
 otherDb.dropAllUsers();
 otherDb.dropDatabase();
 otherDb.createCollection("other");
+otherDb.other.createIndex({ dropped_index: 1 });

@@ -1,5 +1,6 @@
 
 call themis#option('recursive', 1)
+call vimonga#test#start()
 
 function! VimongaTestBeforeEach() abort
     call vimonga#config#set('default_host', 'localhost:27021')

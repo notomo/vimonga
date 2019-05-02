@@ -39,7 +39,7 @@ function! vimonga#command#execute(arg_string) abort
     let [args, params] = vimonga#command#parse(a:arg_string)
 
     if empty(args)
-        echohl ErrorMsg | echo 'no arguments' | echohl None | return
+        return vimonga#message#error(['no arguments'])
     endif
 
     let action_name = args[0]
@@ -47,7 +47,7 @@ function! vimonga#command#execute(arg_string) abort
         return s:actions[action_name](params)
     endif
 
-    echohl ErrorMsg | echo 'invalid argument: ' . a:arg_string | echohl None
+    call vimonga#message#error(['invalid argument: ' . a:arg_string])
 endfunction
 
 let s:params = {
@@ -80,7 +80,7 @@ function! vimonga#command#parse(arg_string) abort
             continue
         endif
 
-        echohl WarningMsg | echo 'invalid param: ' . factor | echohl None
+        call vimonga#message#warn(['invalid param: ' . factor])
     endfor
 
     let params = s:new_params(raw_params)

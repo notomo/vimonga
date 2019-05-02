@@ -1,9 +1,30 @@
 
 function! vimonga#message#error(errs) abort
     echohl ErrorMsg
-    for err in a:errs
-         echomsg '[vimonga]: ' . err
-    endfor
+    if vimonga#test#is_running()
+        for err in a:errs
+            call themis#log('[vimonga]: ' . err)
+        endfor
+    else
+        for err in a:errs
+            echomsg '[vimonga]: ' . err
+        endfor
+    endif
+    echohl None
+    return vimonga#job#err(a:errs)
+endfunction
+
+function! vimonga#message#warn(errs) abort
+    echohl WarningMsg
+    if vimonga#test#is_running()
+        for err in a:errs
+            call themis#log('[vimonga]: ' . err)
+        endfor
+    else
+        for err in a:errs
+            echomsg '[vimonga]: ' . err
+        endfor
+    endif
     echohl None
     return vimonga#job#err(a:errs)
 endfunction

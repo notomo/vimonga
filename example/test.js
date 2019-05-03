@@ -22,6 +22,10 @@ exampleDb.tests1.insert({
   name: "bar"
 });
 
+for (let i = 0; i < 50; ++i) {
+  exampleDb.tests2.insert({ num: i });
+}
+
 let dropped = new Mongo().getDB("dropped");
 dropped.dropAllUsers();
 dropped.dropDatabase();

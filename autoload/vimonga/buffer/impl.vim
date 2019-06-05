@@ -1,10 +1,11 @@
 
 function! vimonga#buffer#impl#buffer(filetype, path, open_cmd) abort
     if bufname('%') ==# a:path && &modified
-        return
+        return [bufnr('%'), getpos('.')]
     endif
     execute printf('%s %s', a:open_cmd, a:path)
 
+    let cursor = getpos('.')
     let buf = bufnr('%')
     setlocal modifiable
     call nvim_buf_set_lines(buf, 0, line('$'), v:false, [])
@@ -15,13 +16,14 @@ function! vimonga#buffer#impl#buffer(filetype, path, open_cmd) abort
     setlocal nomodifiable
     let &filetype = a:filetype
 
-    return buf
+    return [buf, cursor]
 endfunction
 
 function! vimonga#buffer#impl#content(buffer, content) abort
-    call nvim_buf_set_option(a:buffer, 'modifiable', v:true)
-    call nvim_buf_set_lines(a:buffer, 0, len(a:content), v:false, a:content)
-    call nvim_buf_set_option(a:buffer, 'modifiable', v:false)
+    call nvim_buf_set_option(a:buffer.id, 'modifiable', v:true)
+    call nvim_buf_set_lines(a:buffer.id, 0, len(a:content), v:false, a:content)
+    call setpos('.', a:buffer.cursor)
+    call nvim_buf_set_option(a:buffer.id, 'modifiable', v:false)
     return vimonga#job#ok([])
 endfunction
 

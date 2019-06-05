@@ -5,7 +5,7 @@ function! vimonga#action#documents#find(params, options) abort
         \.map_ok({ _ -> vimonga#buffer#collections#model(a:params) })
         \.map_ok({ collection -> vimonga#buffer#documents#open(collection, a:params.open_cmd, options) })
         \.map_extend_ok({ buf -> vimonga#repo#document#find(buf.collection, options) })
-        \.map_ok({ buf, result -> vimonga#buffer#documents#content(buf.id, result, options) })
+        \.map_ok({ buf, result -> vimonga#buffer#documents#content(buf, result, options) })
         \.map_err({ err -> vimonga#message#error(err) })
         \.execute()
 endfunction

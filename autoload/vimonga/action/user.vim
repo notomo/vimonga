@@ -14,7 +14,7 @@ function! vimonga#action#user#create(params) abort
         \.map_through_ok({ database -> vimonga#repo#user#create(database, content) })
         \.map_ok({ database -> vimonga#buffer#users#open(database, a:params.open_cmd) })
         \.map_extend_ok({ buf -> vimonga#repo#user#list(buf.database) })
-        \.map_ok({ buf, lines -> vimonga#buffer#impl#content(buf.id, lines) })
+        \.map_ok({ buf, lines -> vimonga#buffer#impl#content(buf, lines) })
         \.map_err({ err -> vimonga#message#error(err) })
         \.execute()
 endfunction
@@ -25,7 +25,7 @@ function! vimonga#action#user#drop(params) abort
         \.map_through_ok({ user -> vimonga#repo#user#drop(user) })
         \.map_ok({ user -> vimonga#buffer#users#open(user.database(), a:params.open_cmd) })
         \.map_extend_ok({ buf -> vimonga#repo#user#list(buf.database) })
-        \.map_ok({ buf, lines -> vimonga#buffer#impl#content(buf.id, lines) })
+        \.map_ok({ buf, lines -> vimonga#buffer#impl#content(buf, lines) })
         \.map_err({ err -> vimonga#message#error(err) })
         \.execute()
 endfunction

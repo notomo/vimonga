@@ -25,14 +25,14 @@ endfunction
 
 function! vimonga#buffer#collections#open(database, open_cmd) abort
     let path = vimonga#buffer#collections#path(a:database)
-    let buf = vimonga#buffer#impl#buffer(s:filetype, path, a:open_cmd)
+    let [buf, cursor] = vimonga#buffer#impl#buffer(s:filetype, path, a:open_cmd)
 
     augroup vimonga_colls
         autocmd!
         autocmd BufReadCmd <buffer> Vimonga collection.list
     augroup END
 
-    return vimonga#job#ok({'id': buf, 'database': a:database})
+    return vimonga#job#ok({'id': buf, 'database': a:database, 'cursor': cursor})
 endfunction
 
 function! vimonga#buffer#collections#path(database) abort

@@ -25,7 +25,7 @@ endfunction
 
 function! vimonga#buffer#document#open(document, open_cmd) abort
     let path = vimonga#buffer#document#path(a:document)
-    let buf = vimonga#buffer#impl#buffer(s:filetype, path, a:open_cmd)
+    let [buf, cursor] = vimonga#buffer#impl#buffer(s:filetype, path, a:open_cmd)
 
     augroup vimonga_doc
         autocmd!
@@ -33,7 +33,7 @@ function! vimonga#buffer#document#open(document, open_cmd) abort
         autocmd BufReadCmd <buffer> Vimonga document.one
     augroup END
 
-    return vimonga#job#ok({'id': buf, 'document': a:document})
+    return vimonga#job#ok({'id': buf, 'document': a:document, 'cursor': cursor})
 endfunction
 
 function! vimonga#buffer#document#path(document) abort
@@ -43,18 +43,18 @@ endfunction
 
 function! vimonga#buffer#document#content(buffer, result) abort
     let result = vimonga#buffer#impl#content(a:buffer, a:result)
-    call nvim_buf_set_option(a:buffer, 'modifiable', v:true)
-    call nvim_buf_set_option(a:buffer, 'buftype', 'acwrite')
-    call nvim_buf_set_option(a:buffer, 'modified', v:false)
+    call nvim_buf_set_option(a:buffer.id, 'modifiable', v:true)
+    call nvim_buf_set_option(a:buffer.id, 'buftype', 'acwrite')
+    call nvim_buf_set_option(a:buffer.id, 'modified', v:false)
     return result
 endfunction
 
 let s:filetype_new = 'vimonga-doc-new'
 function! vimonga#buffer#document#new(collection, open_cmd) abort
     let path = vimonga#buffer#documents#path(a:collection) . '/new'
-    let buf = vimonga#buffer#impl#buffer(s:filetype_new, path, a:open_cmd)
+    let [buf, cursor] = vimonga#buffer#impl#buffer(s:filetype_new, path, a:open_cmd)
     let content = ['{', '  ', '}']
-    let result = vimonga#buffer#impl#content(buf, content)
+    let result = vimonga#buffer#impl#content({'id': buf, 'cursor': cursor}, content)
     setlocal modifiable
 
     augroup vimonga_doc_new
@@ -68,10 +68,10 @@ endfunction
 let s:filetype_delete = 'vimonga-doc-delete'
 
 function! vimonga#buffer#document#open_deleted(buffer, document) abort
-    execute printf('autocmd! vimonga_doc * <buffer=%s>', a:buffer)
-    call nvim_buf_set_option(a:buffer, 'modifiable', v:false)
-    call nvim_buf_set_option(a:buffer, 'buftype', 'nofile')
-    call nvim_buf_set_option(a:buffer, 'modified', v:false)
-    call nvim_buf_set_option(a:buffer, 'filetype', s:filetype_delete)
+    execute printf('autocmd! vimonga_doc * <buffer=%s>', a:buffer.id)
+    call nvim_buf_set_option(a:buffer.id, 'modifiable', v:false)
+    call nvim_buf_set_option(a:buffer.id, 'buftype', 'nofile')
+    call nvim_buf_set_option(a:buffer.id, 'modified', v:false)
+    call nvim_buf_set_option(a:buffer.id, 'filetype', s:filetype_delete)
     return vimonga#job#ok([])
 endfunction

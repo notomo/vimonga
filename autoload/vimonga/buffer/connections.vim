@@ -22,14 +22,14 @@ endfunction
 
 function! vimonga#buffer#connections#open(open_cmd) abort
     let path = vimonga#buffer#connections#path()
-    let buf = vimonga#buffer#impl#buffer(s:filetype, path, a:open_cmd)
+    let [buf, cursor] = vimonga#buffer#impl#buffer(s:filetype, path, a:open_cmd)
 
     augroup vimonga_conns
         autocmd!
         autocmd BufReadCmd <buffer> Vimonga connection.list
     augroup END
 
-    return vimonga#job#ok({'id': buf})
+    return vimonga#job#ok({'id': buf, 'cursor': cursor})
 endfunction
 
 function! vimonga#buffer#connections#path() abort

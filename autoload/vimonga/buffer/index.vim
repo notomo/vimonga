@@ -20,9 +20,9 @@ endfunction
 let s:filetype_new = 'vimonga-index-new'
 function! vimonga#buffer#index#new(collection, open_cmd) abort
     let path = vimonga#buffer#indexes#path(a:collection) . '/new'
-    let buf = vimonga#buffer#impl#buffer(s:filetype_new, path, a:open_cmd)
+    let [buf, cursor] = vimonga#buffer#impl#buffer(s:filetype_new, path, a:open_cmd)
     let content = ['{', '  "field": 1', '}']
-    let result = vimonga#buffer#impl#content(buf, content)
+    let result = vimonga#buffer#impl#content({'id': buf, 'cursor': cursor}, content)
     setlocal modifiable
 
     augroup vimonga_index_new

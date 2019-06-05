@@ -3,14 +3,14 @@ let s:filetype = 'vimonga-docs'
 
 function! vimonga#buffer#documents#open(collection, open_cmd, options) abort
     let path = vimonga#buffer#documents#path(a:collection)
-    let buf = vimonga#buffer#impl#buffer(s:filetype, path, a:open_cmd)
+    let [buf, cursor] = vimonga#buffer#impl#buffer(s:filetype, path, a:open_cmd)
 
     augroup vimonga_docs
         autocmd!
         autocmd BufReadCmd <buffer> Vimonga document.find
     augroup END
 
-    return vimonga#job#ok({'id': buf, 'collection': a:collection})
+    return vimonga#job#ok({'id': buf, 'collection': a:collection, 'cursor': cursor})
 endfunction
 
 function! vimonga#buffer#documents#path(collection) abort
@@ -26,7 +26,7 @@ function! vimonga#buffer#documents#content(buffer, result, options) abort
     let buffer_options['first_number'] = a:result['first_number']
     let buffer_options['last_number'] = a:result['last_number']
     let buffer_options['count'] = a:result['count']
-    call nvim_buf_set_var(a:buffer, 'vimonga_options', buffer_options)
+    call nvim_buf_set_var(a:buffer.id, 'vimonga_options', buffer_options)
     return vimonga#buffer#impl#content(a:buffer, a:result['body'])
 endfunction
 

@@ -21,9 +21,9 @@ endfunction
 let s:filetype_new = 'vimonga-user-new'
 function! vimonga#buffer#user#new(database, open_cmd) abort
     let path = vimonga#buffer#users#path(a:database) . '/new'
-    let buf = vimonga#buffer#impl#buffer(s:filetype_new, path, a:open_cmd)
+    let [buf, cursor] = vimonga#buffer#impl#buffer(s:filetype_new, path, a:open_cmd)
     let content = ['{', '  "user": "",', '  "pwd": "",', '  "roles": [', '    {"role": "readWrite", "db": ""}', '  ]', '}']
-    let result = vimonga#buffer#impl#content(buf, content)
+    let result = vimonga#buffer#impl#content({'id': buf, 'cursor': cursor}, content)
     setlocal modifiable
 
     augroup vimonga_user_new

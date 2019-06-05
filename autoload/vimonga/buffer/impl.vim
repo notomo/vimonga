@@ -21,7 +21,7 @@ endfunction
 
 function! vimonga#buffer#impl#content(buffer, content) abort
     call nvim_buf_set_option(a:buffer.id, 'modifiable', v:true)
-    call nvim_buf_set_lines(a:buffer.id, 0, len(a:content), v:false, a:content)
+    call nvim_buf_set_lines(a:buffer.id, 0, line('$'), v:false, a:content)
     call setpos('.', a:buffer.cursor)
     call nvim_buf_set_option(a:buffer.id, 'modifiable', v:false)
     return vimonga#job#ok([])

@@ -122,3 +122,13 @@ function! vimonga#buffer#documents#get_id() abort
 
     return ''
 endfunction
+
+function! vimonga#buffer#documents#scroll_next(wrap) abort
+    let flags = a:wrap ? '' : 'W'
+    call search('^' . repeat(' ', s:INDENT_SIZE) . '{', flags)
+endfunction
+
+function! vimonga#buffer#documents#scroll_prev(wrap) abort
+    let flags = a:wrap ? 'b' : 'bW'
+    call search('^' . repeat(' ', s:INDENT_SIZE) . '{', flags)
+endfunction

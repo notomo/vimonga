@@ -10,6 +10,14 @@ function! vimonga#action#documents#find(params, options) abort
         \.execute()
 endfunction
 
+function! vimonga#action#documents#scroll_next(params, wrap) abort
+    return vimonga#buffer#documents#scroll_next(a:wrap)
+endfunction
+
+function! vimonga#action#documents#scroll_prev(params, wrap) abort
+    return vimonga#buffer#documents#scroll_prev(a:wrap)
+endfunction
+
 function! vimonga#action#documents#next(params) abort
     let options = vimonga#buffer#documents#options()
     if options['is_last']

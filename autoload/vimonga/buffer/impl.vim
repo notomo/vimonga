@@ -3,7 +3,7 @@ function! vimonga#buffer#impl#buffer(filetype, path, open_cmd) abort
     if bufname('%') ==# a:path && &modified
         return [bufnr('%'), getpos('.')]
     endif
-    execute printf('%s %s', a:open_cmd, a:path)
+    call a:open_cmd.execute(a:path)
 
     let cursor = getpos('.')
     let buf = bufnr('%')

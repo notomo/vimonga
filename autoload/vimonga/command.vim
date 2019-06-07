@@ -62,6 +62,7 @@ let s:params = {
     \ 'id': 'document id',
     \ 'host': 'host',
     \ 'open': 'command to open buffer',
+    \ 'width': 'window width',
     \ 'force': 'ignore confirmation',
 \ }
 function! vimonga#command#parse(arg_string) abort
@@ -92,6 +93,8 @@ function! vimonga#command#parse(arg_string) abort
 endfunction
 
 function! s:new_params(params) abort
+    let raw_open_cmd = has_key(a:params, 'open') ? a:params['open'] : ''
+    let width = has_key(a:params, 'width') ? a:params['width'] : v:null
     let params = {
         \ 'database_name': has_key(a:params, 'db') ? a:params['db'] : '',
         \ 'user_name': has_key(a:params, 'user') ? a:params['user'] : '',
@@ -99,7 +102,7 @@ function! s:new_params(params) abort
         \ 'index_name': has_key(a:params, 'index') ? a:params['index'] : '',
         \ 'document_id': has_key(a:params, 'id') ? a:params['id'] : '',
         \ 'host': has_key(a:params, 'host') ? a:params['host'] : '',
-        \ 'open_cmd': has_key(a:params, 'open') ? a:params['open'] : 'edit',
+        \ 'open_cmd': vimonga#model#open_command#new(raw_open_cmd, width),
         \ 'force': has_key(a:params, 'force') ? a:params['force'] : v:false,
     \ }
 

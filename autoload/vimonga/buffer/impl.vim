@@ -1,11 +1,17 @@
 
 function! vimonga#buffer#impl#buffer(filetype, path, open_cmd) abort
-    if bufname('%') ==# a:path && &modified
+    let path_before = bufname('%')
+    if path_before ==# a:path && &modified
         return [bufnr('%'), getpos('.')]
     endif
+    let cursor_before = getpos('.')
     call a:open_cmd.execute(a:path)
 
-    let cursor = getpos('.')
+    if path_before ==# a:path
+        let cursor = cursor_before
+    else
+        let cursor = getpos('.')
+    endif
     let buf = bufnr('%')
     setlocal modifiable
     call nvim_buf_set_lines(buf, 0, line('$'), v:false, [])

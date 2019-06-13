@@ -19,6 +19,7 @@ const COLL: &str = "coll";
 const USER: &str = "user";
 const INDEX: &str = "index";
 const DOC_ID: &str = "id";
+const OPEN: &str = "open";
 
 impl<'a> Command for CompleteVimongaCommand<'a> {
     fn run(&self) -> Result<String, error::CommandError> {
@@ -119,12 +120,12 @@ impl<'a> CompleteVimongaCommand<'a> {
     fn param_keys(&self, action: &str, keys: Vec<String>) -> Vec<String> {
         match action {
             "database.drop" | "collection.list" | "collection.create" | "user.list"
-            | "user.new" => vec![DB],
-            "collection.drop" | "index.list" | "index.new" | "document.new" => vec![DB, COLL],
-            "user.drop" => vec![DB, USER],
-            "index.drop" => vec![DB, COLL, INDEX],
-            "document.one" | "document.one.delete" => vec![DB, COLL, DOC_ID],
-            _ => vec![],
+            | "user.new" => vec![DB, OPEN],
+            "collection.drop" | "index.list" | "index.new" | "document.new" => vec![DB, COLL, OPEN],
+            "user.drop" => vec![DB, USER, OPEN],
+            "index.drop" => vec![DB, COLL, INDEX, OPEN],
+            "document.one" | "document.one.delete" => vec![DB, COLL, DOC_ID, OPEN],
+            _ => vec![OPEN],
         }
         .iter()
         .filter(|key| !keys.contains(&key.to_string()))
@@ -143,6 +144,7 @@ impl<'a> CompleteVimongaCommand<'a> {
             COLL => self.get_collection_names(database_name)?,
             USER => self.get_user_names(database_name)?,
             INDEX => self.get_index_names(database_name, collection_name)?,
+            OPEN => self.get_open_commands()?,
             _ => vec![],
         }
         .iter()
@@ -187,6 +189,15 @@ impl<'a> CompleteVimongaCommand<'a> {
                 .get_names(database_name, collection_name)?,
             _ => vec![],
         };
+
+        Ok(names)
+    }
+
+    fn get_open_commands(&self) -> Result<Vec<String>, error::CommandError> {
+        let names = vec!["nosplit", "horizontal", "vertical", "tab"]
+            .iter()
+            .map(|value| value.to_string())
+            .collect();
 
         Ok(names)
     }
@@ -317,7 +328,7 @@ mod tests {
         let result = command.run();
 
         assert_eq!(true, result.is_ok());
-        assert_eq!("-db=".to_string(), result.unwrap());
+        assert_eq!("-db=\n-open=".to_string(), result.unwrap());
     }
 
     #[test]

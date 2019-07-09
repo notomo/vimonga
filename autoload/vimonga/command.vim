@@ -39,8 +39,17 @@ let s:actions = {
     \ 'document.one.update': { params -> vimonga#action#document#update(params) },
     \ 'document.new': { params -> vimonga#action#document#new(params) },
 \ }
-function! vimonga#command#execute(arg_string) abort
-    let [args, params] = vimonga#command#parse(a:arg_string)
+function! vimonga#command#execute(arg_string, ...) abort
+    if len(a:000) == 2
+        let first_line = a:000[0]
+        let last_line = a:000[1]
+    else
+        let line = line('.')
+        let first_line = line
+        let last_line = line
+    endif
+
+    let [args, params] = vimonga#command#parse(a:arg_string, first_line, last_line)
 
     if empty(args)
         return vimonga#message#error(['no arguments'])
@@ -65,7 +74,7 @@ let s:params = {
     \ 'width': 'window width',
     \ 'force': 'ignore confirmation',
 \ }
-function! vimonga#command#parse(arg_string) abort
+function! vimonga#command#parse(arg_string, first_line, last_line) abort
     let args = []
     let raw_params = {}
     for factor in split(a:arg_string, '\v\s+')
@@ -88,11 +97,11 @@ function! vimonga#command#parse(arg_string) abort
         call vimonga#message#warn(['invalid param: ' . factor])
     endfor
 
-    let params = s:new_params(raw_params)
+    let params = s:new_params(raw_params, a:first_line, a:last_line)
     return [args, params]
 endfunction
 
-function! s:new_params(params) abort
+function! s:new_params(params, first_line, last_line) abort
     let raw_open_cmd = has_key(a:params, 'open') ? a:params['open'] : ''
     let width = has_key(a:params, 'width') ? a:params['width'] : v:null
     let params = {
@@ -104,6 +113,8 @@ function! s:new_params(params) abort
         \ 'host': has_key(a:params, 'host') ? a:params['host'] : '',
         \ 'open_cmd': vimonga#model#open_command#new(raw_open_cmd, width),
         \ 'force': has_key(a:params, 'force') ? a:params['force'] : v:false,
+        \ 'first_line': a:first_line,
+        \ 'last_line': a:last_line,
     \ }
 
     let params['has_db'] = !empty(params['database_name'])

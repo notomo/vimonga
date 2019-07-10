@@ -1,6 +1,6 @@
 
 function! vimonga#buffer#index#model(params) abort
-    let result = vimonga#buffer#collections#model(a:params)
+    let result = vimonga#buffer#collections#models(a:params)
     if result.is_err
         return result
     endif
@@ -12,8 +12,8 @@ function! vimonga#buffer#index#model(params) abort
         return vimonga#job#err(['index name is required'])
     endif
 
-    let [coll] = result.ok
-    let index = coll.index(name)
+    let [colls] = result.ok
+    let index = colls[0].index(name)
     return vimonga#job#ok(index)
 endfunction
 

@@ -35,13 +35,15 @@ impl<'a> Command for CollectionCreateCommand<'a> {
 pub struct CollectionDropCommand<'a> {
     pub collection_repository: &'a CollectionRepository,
     pub database_name: &'a str,
-    pub collection_name: &'a str,
+    pub collection_names: Vec<&'a str>,
 }
 
 impl<'a> Command for CollectionDropCommand<'a> {
     fn run(&self) -> Result<String, error::CommandError> {
-        self.collection_repository
-            .drop(self.database_name, self.collection_name)?;
+        for collection_name in &self.collection_names {
+            self.collection_repository
+                .drop(self.database_name, collection_name)?;
+        }
 
         Ok("".to_string())
     }

@@ -1,10 +1,10 @@
 
 function! vimonga#action#collections#drop(params) abort
     return vimonga#job#new()
-        \.map_ok({ _ -> vimonga#buffer#collections#model(a:params) })
-        \.map_through_ok({ collection -> vimonga#message#confirm_strongly('Drop ' . collection.name . '?', a:params.force) })
-        \.map_through_ok({ collection -> vimonga#repo#collection#drop(collection) })
-        \.map_ok({ collection -> vimonga#buffer#collections#open(collection.database(), a:params.open_cmd) })
+        \.map_ok({ _ -> vimonga#buffer#collections#models(a:params) })
+        \.map_through_ok({ collections -> vimonga#message#confirm_strongly('Drop ' . join(map(copy(collections), {_, coll -> coll.name}), ' ') . '?', a:params.force) })
+        \.map_through_ok({ collections -> vimonga#repo#collection#drop(collections) })
+        \.map_ok({ collections -> vimonga#buffer#collections#open(collections[0].database(), a:params.open_cmd) })
         \.map_extend_ok({ buf -> vimonga#repo#collection#list(buf.database) })
         \.map_ok({ buf, names -> vimonga#buffer#impl#content(buf, names) })
         \.map_err({ err -> vimonga#message#error(err) })

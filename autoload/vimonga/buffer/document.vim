@@ -2,7 +2,7 @@
 let s:filetype = 'vimonga-doc'
 
 function! vimonga#buffer#document#model(params) abort
-    let result = vimonga#buffer#collections#model(a:params)
+    let result = vimonga#buffer#collections#models(a:params)
     if result.is_err
         return result
     endif
@@ -18,8 +18,8 @@ function! vimonga#buffer#document#model(params) abort
         return vimonga#job#err(['document id is required'])
     endif
 
-    let [coll] = result.ok
-    let doc = coll.document(id)
+    let [colls] = result.ok
+    let doc = colls[0].document(id)
     return vimonga#job#ok(doc)
 endfunction
 

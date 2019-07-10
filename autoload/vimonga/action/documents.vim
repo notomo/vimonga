@@ -2,8 +2,8 @@
 function! vimonga#action#documents#find(params, options) abort
     let options = vimonga#buffer#documents#options(a:options)
     return vimonga#job#new()
-        \.map_ok({ _ -> vimonga#buffer#collections#model(a:params) })
-        \.map_ok({ collection -> vimonga#buffer#documents#open(collection, a:params.open_cmd, options) })
+        \.map_ok({ _ -> vimonga#buffer#collections#models(a:params) })
+        \.map_ok({ collections -> vimonga#buffer#documents#open(collections[0], a:params.open_cmd, options) })
         \.map_extend_ok({ buf -> vimonga#repo#document#find(buf.collection, options) })
         \.map_ok({ buf, result -> vimonga#buffer#documents#content(buf, result, options) })
         \.map_err({ err -> vimonga#message#error(err) })

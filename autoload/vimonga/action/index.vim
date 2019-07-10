@@ -1,8 +1,8 @@
 
 function! vimonga#action#index#new(params) abort
     return vimonga#job#new()
-        \.map_ok({ _ -> vimonga#buffer#collections#model(a:params) })
-        \.map_ok({ collection -> vimonga#buffer#index#new(collection, a:params.open_cmd) })
+        \.map_ok({ _ -> vimonga#buffer#collections#models(a:params) })
+        \.map_ok({ collections -> vimonga#buffer#index#new(collections[0], a:params.open_cmd) })
         \.map_err({ err -> vimonga#message#error(err) })
         \.execute()
 endfunction
@@ -10,9 +10,9 @@ endfunction
 function! vimonga#action#index#create(params) abort
     let content = join(getbufline('%', 1, '$'), '')
     return vimonga#job#new()
-        \.map_ok({ _ -> vimonga#buffer#collections#model(a:params) })
-        \.map_through_ok({ collection -> vimonga#repo#index#create(collection, content) })
-        \.map_ok({ collection -> vimonga#buffer#indexes#open(collection, a:params.open_cmd) })
+        \.map_ok({ _ -> vimonga#buffer#collections#models(a:params) })
+        \.map_through_ok({ collections -> vimonga#repo#index#create(collections[0], content) })
+        \.map_ok({ collections -> vimonga#buffer#indexes#open(collections[0], a:params.open_cmd) })
         \.map_extend_ok({ buf -> vimonga#repo#index#list(buf.collection) })
         \.map_ok({ buf, lines -> vimonga#buffer#impl#content(buf, lines) })
         \.map_err({ err -> vimonga#message#error(err) })

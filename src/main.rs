@@ -63,10 +63,12 @@ fn main() {
                 .subcommand(SubCommand::with_name("list"))
                 .subcommand(
                     SubCommand::with_name("drop").arg(
-                        Arg::with_name("database_name")
-                            .long("database")
+                        Arg::with_name("database_names")
+                            .long("databases")
                             .takes_value(true)
-                            .required(true),
+                            .required(true)
+                            .multiple(true)
+                            .min_values(1),
                     ),
                 ),
         )
@@ -341,10 +343,13 @@ fn get_command_result(app: clap::App) -> Result<String, command::CommandError> {
                 }
                 .run(),
                 ("drop", Some(cmd)) => {
-                    let database_name = cmd.value_of("database_name").unwrap();
+                    let database_names: Vec<_> = cmd
+                        .values_of("database_names")
+                        .unwrap_or_default()
+                        .collect();
                     command::DatabaseDropCommand {
                         database_repository: &repo,
-                        database_name: database_name,
+                        database_names: database_names,
                     }
                     .run()
                 }

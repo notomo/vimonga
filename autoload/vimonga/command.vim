@@ -39,17 +39,8 @@ let s:actions = {
     \ 'document.one.update': { params -> vimonga#action#document#update(params) },
     \ 'document.new': { params -> vimonga#action#document#new(params) },
 \ }
-function! vimonga#command#execute(arg_string, ...) abort
-    if len(a:000) == 2
-        let first_line = a:000[0]
-        let last_line = a:000[1]
-    else
-        let line = line('.')
-        let first_line = line
-        let last_line = line
-    endif
-
-    let [args, params] = vimonga#command#parse(a:arg_string, first_line, last_line)
+function! vimonga#command#execute(arg_string) range abort
+    let [args, params] = vimonga#command#parse(a:arg_string, a:firstline, a:lastline)
 
     if empty(args)
         return vimonga#message#error(['no arguments'])

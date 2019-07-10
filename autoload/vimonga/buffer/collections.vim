@@ -2,7 +2,7 @@
 let s:filetype = 'vimonga-colls'
 
 function! vimonga#buffer#collections#model(params) abort
-    let result = vimonga#buffer#databases#model(a:params)
+    let result = vimonga#buffer#databases#models(a:params)
     if result.is_err
         return result
     endif
@@ -18,8 +18,8 @@ function! vimonga#buffer#collections#model(params) abort
         return vimonga#job#err(['collection name is required'])
     endif
 
-    let [db] = result.ok
-    let coll = db.collection(name)
+    let [dbs] = result.ok
+    let coll = dbs[0].collection(name)
     return vimonga#job#ok(coll)
 endfunction
 

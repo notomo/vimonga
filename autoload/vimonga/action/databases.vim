@@ -11,10 +11,10 @@ endfunction
 
 function! vimonga#action#databases#drop(params) abort
     return vimonga#job#new()
-        \.map_ok({ _ -> vimonga#buffer#databases#model(a:params) })
-        \.map_through_ok({ database -> vimonga#message#confirm_strongly('Drop ' . database.name . '?', a:params.force) })
-        \.map_through_ok({ database -> vimonga#repo#database#drop(database) })
-        \.map_ok({ database -> vimonga#buffer#databases#open(database.connection(), a:params.open_cmd) })
+        \.map_ok({ _ -> vimonga#buffer#databases#models(a:params) })
+        \.map_through_ok({ databases -> vimonga#message#confirm_strongly('Drop ' . join(map(copy(databases), {_, db -> db.name}), ' ') . '?', a:params.force) })
+        \.map_through_ok({ databases -> vimonga#repo#database#drop(databases) })
+        \.map_ok({ databases -> vimonga#buffer#databases#open(databases[0].connection(), a:params.open_cmd) })
         \.map_extend_ok({ buf -> vimonga#repo#database#list(buf.connection) })
         \.map_ok({ buf, names -> vimonga#buffer#impl#content(buf, names) })
         \.map_err({ err -> vimonga#message#error(err) })

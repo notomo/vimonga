@@ -1,26 +1,29 @@
 
 let s:filetype = 'vimonga-dbs'
 
-function! vimonga#buffer#databases#model(params) abort
+function! vimonga#buffer#databases#models(params) abort
     let result = vimonga#buffer#connections#model(a:params)
     if result.is_err
         return result
     endif
 
     if a:params.has_db
-        let name = a:params.database_name
+        let names = [a:params.database_name]
     elseif &filetype == s:filetype
-        let name = getline(line('.'))
+        let names = getline(a:params.first_line, a:params.last_line)
     else
-        let name = vimonga#buffer#impl#database_name()
+        let names = [vimonga#buffer#impl#database_name()]
     endif
-    if empty(name)
+
+    call filter(names, {_, name -> !empty(name)})
+
+    if empty(names)
         return vimonga#job#err(['database name is required'])
     endif
 
     let [conn] = result.ok
-    let db = conn.database(name)
-    return vimonga#job#ok(db)
+    let dbs = map(names, {_, name -> conn.database(name)})
+    return vimonga#job#ok(dbs)
 endfunction
 
 function! vimonga#buffer#databases#open(connection, open_cmd) abort

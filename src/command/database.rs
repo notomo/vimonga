@@ -18,12 +18,14 @@ impl<'a> Command for DatabaseListCommand<'a> {
 
 pub struct DatabaseDropCommand<'a> {
     pub database_repository: &'a DatabaseRepository,
-    pub database_name: &'a str,
+    pub database_names: Vec<&'a str>,
 }
 
 impl<'a> Command for DatabaseDropCommand<'a> {
     fn run(&self) -> Result<String, error::CommandError> {
-        self.database_repository.drop(self.database_name)?;
+        for database_name in &self.database_names {
+            self.database_repository.drop(database_name)?;
+        }
 
         Ok("".to_string())
     }

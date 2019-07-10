@@ -1,6 +1,6 @@
 
 function! vimonga#buffer#user#model(params) abort
-    let result = vimonga#buffer#databases#model(a:params)
+    let result = vimonga#buffer#databases#models(a:params)
     if result.is_err
         return result
     endif
@@ -13,8 +13,8 @@ function! vimonga#buffer#user#model(params) abort
         return vimonga#job#err(['user name is required'])
     endif
 
-    let [db] = result.ok
-    let user = db.user(name)
+    let [dbs] = result.ok
+    let user = dbs[0].user(name)
     return vimonga#job#ok(user)
 endfunction
 

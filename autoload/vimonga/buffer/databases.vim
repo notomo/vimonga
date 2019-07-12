@@ -8,7 +8,7 @@ function! vimonga#buffer#databases#models(params) abort
     endif
 
     if a:params.has_db
-        let names = [a:params.database_name]
+        let names = a:params.database_names
     elseif &filetype == s:filetype
         let names = getline(a:params.first_line, a:params.last_line)
     else

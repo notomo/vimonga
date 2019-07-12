@@ -59,5 +59,5 @@ function! vimonga#message#input(message, input) abort
     if empty(input)
         return vimonga#job#err(['Canceled'])
     endif
-    return vimonga#job#ok(input)
+    return vimonga#job#ok([input])
 endfunction

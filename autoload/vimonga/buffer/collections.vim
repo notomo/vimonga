@@ -8,7 +8,7 @@ function! vimonga#buffer#collections#models(params) abort
     endif
 
     if a:params.has_coll
-        let names = [a:params.collection_name]
+        let names = a:params.collection_names
     elseif &filetype == s:filetype
         let names = getline(a:params.first_line, a:params.last_line)
     else

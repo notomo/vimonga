@@ -55,19 +55,19 @@ function! vimonga#command#execute(arg_string) range abort
 endfunction
 
 let s:params = {
-    \ 'db': 'database name',
-    \ 'user': 'user name',
-    \ 'coll': 'collection name',
-    \ 'index': 'index name',
-    \ 'id': 'document id',
-    \ 'host': 'host',
-    \ 'open': 'command to open buffer',
-    \ 'width': 'window width',
-    \ 'force': 'ignore confirmation',
+    \ 'db': [],
+    \ 'user': '',
+    \ 'coll': [],
+    \ 'index': '',
+    \ 'id': '',
+    \ 'host': '',
+    \ 'open': '',
+    \ 'width': v:null,
+    \ 'force': v:false,
 \ }
 function! vimonga#command#parse(arg_string, first_line, last_line) abort
     let args = []
-    let raw_params = {}
+    let raw_params = deepcopy(s:params)
     for factor in split(a:arg_string, '\v\s+')
         if factor[0] !=# '-'
             call add(args, factor)
@@ -81,7 +81,11 @@ function! vimonga#command#parse(arg_string, first_line, last_line) abort
             continue
         elseif len(key_value) == 2 && has_key(s:params, key_value[0])
             let [key, value] = key_value
-            let raw_params[key] = value
+            if type(raw_params[key]) == v:t_list
+                call add(raw_params[key], value)
+            else
+                let raw_params[key] = value
+            endif
             continue
         endif
 
@@ -93,24 +97,24 @@ function! vimonga#command#parse(arg_string, first_line, last_line) abort
 endfunction
 
 function! s:new_params(params, first_line, last_line) abort
-    let raw_open_cmd = has_key(a:params, 'open') ? a:params['open'] : ''
-    let width = has_key(a:params, 'width') ? a:params['width'] : v:null
+    let raw_open_cmd = a:params['open']
+    let width = a:params['width']
     let params = {
-        \ 'database_name': has_key(a:params, 'db') ? a:params['db'] : '',
-        \ 'user_name': has_key(a:params, 'user') ? a:params['user'] : '',
-        \ 'collection_name': has_key(a:params, 'coll') ? a:params['coll'] : '',
-        \ 'index_name': has_key(a:params, 'index') ? a:params['index'] : '',
-        \ 'document_id': has_key(a:params, 'id') ? a:params['id'] : '',
-        \ 'host': has_key(a:params, 'host') ? a:params['host'] : '',
+        \ 'database_names': a:params['db'],
+        \ 'user_name': a:params['user'],
+        \ 'collection_names': a:params['coll'],
+        \ 'index_name': a:params['index'],
+        \ 'document_id': a:params['id'],
+        \ 'host': a:params['host'],
         \ 'open_cmd': vimonga#model#open_command#new(raw_open_cmd, width),
-        \ 'force': has_key(a:params, 'force') ? a:params['force'] : v:false,
+        \ 'force': a:params['force'],
         \ 'first_line': a:first_line,
         \ 'last_line': a:last_line,
     \ }
 
-    let params['has_db'] = !empty(params['database_name'])
+    let params['has_db'] = !empty(params['database_names'])
     let params['has_user'] = !empty(params['user_name'])
-    let params['has_coll'] = !empty(params['collection_name'])
+    let params['has_coll'] = !empty(params['collection_names'])
     let params['has_index'] = !empty(params['index_name'])
     let params['has_id'] = !empty(params['document_id'])
     let params['has_host'] = !empty(params['host'])

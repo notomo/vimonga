@@ -123,10 +123,12 @@ fn main() {
                 .subcommand(SubCommand::with_name("list"))
                 .subcommand(
                     SubCommand::with_name("create").arg(
-                        Arg::with_name("collection_name")
-                            .long("collection")
+                        Arg::with_name("collection_names")
+                            .long("collections")
                             .takes_value(true)
-                            .required(true),
+                            .required(true)
+                            .multiple(true)
+                            .min_values(1),
                     ),
                 )
                 .subcommand(
@@ -410,11 +412,14 @@ fn get_command_result(app: clap::App) -> Result<String, command::CommandError> {
                 }
                 .run(),
                 ("create", Some(cmd)) => {
-                    let collection_name = cmd.value_of("collection_name").unwrap();
+                    let collection_names: Vec<_> = cmd
+                        .values_of("collection_names")
+                        .unwrap_or_default()
+                        .collect();
                     command::CollectionCreateCommand {
                         collection_repository: &repo,
                         database_name,
-                        collection_name,
+                        collection_names,
                     }
                     .run()
                 }

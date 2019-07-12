@@ -27,10 +27,10 @@ function! vimonga#action#documents#query#find_by_oid(params) abort
     if result.is_err
         return
     endif
-    let [oid] = result.ok
+    let [oids] = result.ok
 
     let options = vimonga#buffer#documents#options()
-    let options['query'][field_name] = {'$oid': oid}
+    let options['query'][field_name] = {'$oid': oids[0]}
 
     return vimonga#action#documents#find(a:params, options)
 endfunction

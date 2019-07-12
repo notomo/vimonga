@@ -15,9 +15,9 @@ function! s:suite.drop()
     call VimongaWait(id, s:assert)
 
     let lines = getbufline('%', 0, '$')
-    call s:assert.equals(lines, ['admin', 'dropped', 'example', 'local', 'other'])
+    call s:assert.equals(lines, ['admin', 'dropped', 'dropped2', 'example', 'local', 'other'])
 
-    let id = vimonga#command#execute('database.drop -db=dropped -force')
+    let id = vimonga#command#execute('database.drop -db=dropped -db=dropped2 -force')
     call VimongaWait(id, s:assert)
 
     let lines = getbufline('%', 0, '$')

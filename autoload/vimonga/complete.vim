@@ -1,6 +1,6 @@
 
 function! vimonga#complete#get(current_arg, line, cursor_position) abort
-    let [_, params] = vimonga#command#parse(a:line)
+    let [_, params] = vimonga#command#parse(a:line, -1, -1)
 
     if params.has_host
         let host = params.host

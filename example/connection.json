@@ -4,5 +4,8 @@
     },
     {
         "host": "localhost:27021"
+    },
+    {
+        "host": "localhost:27022"
     }
 ]

@@ -16,3 +16,11 @@ services:
       - '27021:27017'
     volumes:
       - "./example:/provision"
+
+  mongodb3:
+    image: mongo:3.4.19-jessie
+    container_name: vimonga-testdb3
+    ports:
+      - '27022:27017'
+    volumes:
+      - "./example:/provision"

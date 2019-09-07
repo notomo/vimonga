@@ -6,10 +6,10 @@ use crate::domain::repository::{
 };
 
 pub struct CompleteVimongaCommand<'a> {
-    pub database_repository: &'a DatabaseRepository,
-    pub collection_repository: &'a CollectionRepository,
-    pub user_repository: &'a UserRepository,
-    pub index_repository: &'a IndexRepository,
+    pub database_repository: &'a dyn DatabaseRepository,
+    pub collection_repository: &'a dyn CollectionRepository,
+    pub user_repository: &'a dyn UserRepository,
+    pub index_repository: &'a dyn IndexRepository,
     pub current_arg: &'a str,
     pub args: Vec<&'a str>,
 }

@@ -12,7 +12,7 @@ pub struct CommandError {
 }
 
 impl Fail for CommandError {
-    fn cause(&self) -> Option<&Fail> {
+    fn cause(&self) -> Option<&dyn Fail> {
         self.inner.cause()
     }
 

@@ -8,7 +8,7 @@ use bson::Bson;
 use crate::domain::repository::DocumentRepository;
 
 pub struct DocumentListCommand<'a> {
-    pub document_repository: &'a DocumentRepository,
+    pub document_repository: &'a dyn DocumentRepository,
     pub database_name: &'a str,
     pub collection_name: &'a str,
     pub query_json: &'a str,
@@ -63,7 +63,7 @@ impl<'a> Command for DocumentListCommand<'a> {
 }
 
 pub struct DocumentGetCommand<'a> {
-    pub document_repository: &'a DocumentRepository,
+    pub document_repository: &'a dyn DocumentRepository,
     pub database_name: &'a str,
     pub collection_name: &'a str,
     pub id: &'a str,
@@ -82,7 +82,7 @@ impl<'a> Command for DocumentGetCommand<'a> {
 }
 
 pub struct DocumentUpdateCommand<'a> {
-    pub document_repository: &'a DocumentRepository,
+    pub document_repository: &'a dyn DocumentRepository,
     pub database_name: &'a str,
     pub collection_name: &'a str,
     pub id: &'a str,
@@ -103,7 +103,7 @@ impl<'a> Command for DocumentUpdateCommand<'a> {
 }
 
 pub struct DocumentInsertCommand<'a> {
-    pub document_repository: &'a DocumentRepository,
+    pub document_repository: &'a dyn DocumentRepository,
     pub database_name: &'a str,
     pub collection_name: &'a str,
     pub content: &'a str,
@@ -131,7 +131,7 @@ impl<'a> Command for DocumentInsertCommand<'a> {
 }
 
 pub struct DocumentDeleteCommand<'a> {
-    pub document_repository: &'a DocumentRepository,
+    pub document_repository: &'a dyn DocumentRepository,
     pub database_name: &'a str,
     pub collection_name: &'a str,
     pub id: &'a str,

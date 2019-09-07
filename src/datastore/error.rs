@@ -10,7 +10,7 @@ use serde_json::Error as SerdeJsonError;
 use std::num::ParseIntError;
 
 impl Fail for RepositoryError {
-    fn cause(&self) -> Option<&Fail> {
+    fn cause(&self) -> Option<&dyn Fail> {
         self.inner.cause()
     }
 

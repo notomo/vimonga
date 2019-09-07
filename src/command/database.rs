@@ -4,7 +4,7 @@ use crate::command::Command;
 use crate::domain::repository::DatabaseRepository;
 
 pub struct DatabaseListCommand<'a> {
-    pub database_repository: &'a DatabaseRepository,
+    pub database_repository: &'a dyn DatabaseRepository,
 }
 
 impl<'a> Command for DatabaseListCommand<'a> {
@@ -17,7 +17,7 @@ impl<'a> Command for DatabaseListCommand<'a> {
 }
 
 pub struct DatabaseDropCommand<'a> {
-    pub database_repository: &'a DatabaseRepository,
+    pub database_repository: &'a dyn DatabaseRepository,
     pub database_names: Vec<&'a str>,
 }
 

@@ -4,7 +4,7 @@ use crate::command::Command;
 use crate::domain::repository::IndexRepository;
 
 pub struct IndexListCommand<'a> {
-    pub index_repository: &'a IndexRepository,
+    pub index_repository: &'a dyn IndexRepository,
     pub database_name: &'a str,
     pub collection_name: &'a str,
 }
@@ -20,7 +20,7 @@ impl<'a> Command for IndexListCommand<'a> {
 }
 
 pub struct IndexCreateCommand<'a> {
-    pub index_repository: &'a IndexRepository,
+    pub index_repository: &'a dyn IndexRepository,
     pub database_name: &'a str,
     pub collection_name: &'a str,
     pub keys_json: &'a str,
@@ -36,7 +36,7 @@ impl<'a> Command for IndexCreateCommand<'a> {
 }
 
 pub struct IndexDropCommand<'a> {
-    pub index_repository: &'a IndexRepository,
+    pub index_repository: &'a dyn IndexRepository,
     pub database_name: &'a str,
     pub collection_name: &'a str,
     pub index_name: &'a str,

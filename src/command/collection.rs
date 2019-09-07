@@ -4,7 +4,7 @@ use crate::command::Command;
 use crate::domain::repository::CollectionRepository;
 
 pub struct CollectionListCommand<'a> {
-    pub collection_repository: &'a CollectionRepository,
+    pub collection_repository: &'a dyn CollectionRepository,
     pub database_name: &'a str,
 }
 
@@ -18,7 +18,7 @@ impl<'a> Command for CollectionListCommand<'a> {
 }
 
 pub struct CollectionCreateCommand<'a> {
-    pub collection_repository: &'a CollectionRepository,
+    pub collection_repository: &'a dyn CollectionRepository,
     pub database_name: &'a str,
     pub collection_names: Vec<&'a str>,
 }
@@ -35,7 +35,7 @@ impl<'a> Command for CollectionCreateCommand<'a> {
 }
 
 pub struct CollectionDropCommand<'a> {
-    pub collection_repository: &'a CollectionRepository,
+    pub collection_repository: &'a dyn CollectionRepository,
     pub database_name: &'a str,
     pub collection_names: Vec<&'a str>,
 }

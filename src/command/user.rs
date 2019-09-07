@@ -5,7 +5,7 @@ use crate::domain::model::UserRole;
 use crate::domain::repository::UserRepository;
 
 pub struct UserListCommand<'a> {
-    pub user_repository: &'a UserRepository,
+    pub user_repository: &'a dyn UserRepository,
     pub database_name: &'a str,
 }
 
@@ -27,7 +27,7 @@ struct CreateInfo<'a> {
 }
 
 pub struct UserCreateCommand<'a> {
-    pub user_repository: &'a UserRepository,
+    pub user_repository: &'a dyn UserRepository,
     pub database_name: &'a str,
     pub create_info_json: &'a str,
 }
@@ -49,7 +49,7 @@ impl<'a> Command for UserCreateCommand<'a> {
 }
 
 pub struct UserDropCommand<'a> {
-    pub user_repository: &'a UserRepository,
+    pub user_repository: &'a dyn UserRepository,
     pub database_name: &'a str,
     pub user_name: &'a str,
 }

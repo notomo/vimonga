@@ -1,3 +1,4 @@
+doautocmd User VimongaSourceLoad
 
 let s:actions = {
     \ 'connection.list': { params -> vimonga#action#connections#list(params) },

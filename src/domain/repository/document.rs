@@ -1,9 +1,11 @@
 use super::error::RepositoryError;
 
+use async_trait::async_trait;
 use bson::{Bson, Document};
 
+#[async_trait]
 pub trait DocumentRepository {
-    fn find(
+    async fn find(
         &self,
         database_name: &str,
         collection_name: &str,
@@ -11,24 +13,24 @@ pub trait DocumentRepository {
         projection_json: &str,
         sort_json: &str,
         limit: i64,
-        skip: i64,
+        skip: u64,
     ) -> Result<Vec<Document>, RepositoryError>;
 
-    fn find_by_id(
+    async fn find_by_id(
         &self,
         database_name: &str,
         collection_name: &str,
         id: &str,
     ) -> Result<Document, RepositoryError>;
 
-    fn get_count(
+    async fn get_count(
         &self,
         database_name: &str,
         collection_name: &str,
         query_json: &str,
-    ) -> Result<i64, RepositoryError>;
+    ) -> Result<u64, RepositoryError>;
 
-    fn update_one(
+    async fn update_one(
         &self,
         database_name: &str,
         collection_name: &str,
@@ -36,14 +38,14 @@ pub trait DocumentRepository {
         update_document: &str,
     ) -> Result<(), RepositoryError>;
 
-    fn insert_one(
+    async fn insert_one(
         &self,
         database_name: &str,
         collection_name: &str,
         insert_document: &str,
-    ) -> Result<Option<Bson>, RepositoryError>;
+    ) -> Result<Bson, RepositoryError>;
 
-    fn delete_one(
+    async fn delete_one(
         &self,
         database_name: &str,
         collection_name: &str,

@@ -1,9 +1,7 @@
-#![feature(slice_patterns)]
-
-use clap::{App, AppSettings, Arg, SubCommand};
+use clap::{Command, Arg};
 
 mod command;
-use command::Command;
+use command::Command as DefinedCommand;
 mod datastore;
 mod domain;
 
@@ -12,276 +10,233 @@ extern crate serde_derive;
 
 use failure::Fail;
 
-fn main() {
-    let app = App::new("monga")
+#[tokio::main]
+async fn main() {
+    let cmd = Command::new("monga")
         .version("0.0.1")
-        .setting(AppSettings::ArgRequiredElseHelp)
         .subcommand(
-            SubCommand::with_name("complete")
+            Command::new("complete")
                 .arg(
-                    Arg::with_name("current_arg")
+                    Arg::new("current_arg")
                         .long("current")
-                        .takes_value(true)
                         .default_value("")
                         .required(false),
                 )
                 .arg(
-                    Arg::with_name("args")
+                    Arg::new("args")
                         .long("args")
-                        .multiple(true)
-                        .takes_value(true)
                         .required(false),
                 )
                 .arg(
-                    Arg::with_name("host")
-                        .short("h")
+                    Arg::new("host")
                         .long("host")
-                        .takes_value(true)
                         .required(true),
                 )
-                .subcommand(SubCommand::with_name("vimonga")),
+                .subcommand(Command::new("vimonga")),
         )
         .subcommand(
-            SubCommand::with_name("connection").subcommand(
-                SubCommand::with_name("list").arg(
-                    Arg::with_name("file")
+            Command::new("connection").subcommand(
+                Command::new("list").arg(
+                    Arg::new("file")
                         .long("file")
-                        .takes_value(true)
                         .required(true),
                 ),
             ),
         )
         .subcommand(
-            SubCommand::with_name("database")
+            Command::new("database")
                 .arg(
-                    Arg::with_name("host")
-                        .short("h")
+                    Arg::new("host")
                         .long("host")
-                        .takes_value(true)
                         .required(true),
                 )
-                .subcommand(SubCommand::with_name("list"))
+                .subcommand(Command::new("list"))
                 .subcommand(
-                    SubCommand::with_name("drop").arg(
-                        Arg::with_name("database_names")
+                    Command::new("drop").arg(
+                        Arg::new("database_names")
                             .long("databases")
-                            .takes_value(true)
                             .required(true)
-                            .multiple(true)
-                            .min_values(1),
+                            // .min_values(1)
+                            ,
                     ),
                 ),
         )
         .subcommand(
-            SubCommand::with_name("user")
+            Command::new("user")
                 .arg(
-                    Arg::with_name("database_name")
+                    Arg::new("database_name")
                         .long("database")
-                        .takes_value(true)
                         .required(true),
                 )
                 .arg(
-                    Arg::with_name("host")
-                        .short("h")
+                    Arg::new("host")
                         .long("host")
-                        .takes_value(true)
                         .required(true),
                 )
-                .subcommand(SubCommand::with_name("list"))
+                .subcommand(Command::new("list"))
                 .subcommand(
-                    SubCommand::with_name("create").arg(
-                        Arg::with_name("info")
+                    Command::new("create").arg(
+                        Arg::new("info")
                             .long("info")
-                            .takes_value(true)
                             .required(true),
                     ),
                 )
                 .subcommand(
-                    SubCommand::with_name("drop").arg(
-                        Arg::with_name("name")
+                    Command::new("drop").arg(
+                        Arg::new("name")
                             .long("name")
-                            .takes_value(true)
                             .required(true),
                     ),
                 ),
         )
         .subcommand(
-            SubCommand::with_name("collection")
+            Command::new("collection")
                 .arg(
-                    Arg::with_name("database_name")
+                    Arg::new("database_name")
                         .long("database")
-                        .takes_value(true)
                         .required(true),
                 )
                 .arg(
-                    Arg::with_name("host")
-                        .short("h")
+                    Arg::new("host")
                         .long("host")
-                        .takes_value(true)
                         .required(true),
                 )
-                .subcommand(SubCommand::with_name("list"))
+                .subcommand(Command::new("list"))
                 .subcommand(
-                    SubCommand::with_name("create").arg(
-                        Arg::with_name("collection_names")
+                    Command::new("create").arg(
+                        Arg::new("collection_names")
                             .long("collections")
-                            .takes_value(true)
-                            .required(true)
-                            .multiple(true)
-                            .min_values(1),
+                            .required(true),
                     ),
                 )
                 .subcommand(
-                    SubCommand::with_name("drop").arg(
-                        Arg::with_name("collection_names")
+                    Command::new("drop").arg(
+                        Arg::new("collection_names")
                             .long("collections")
-                            .takes_value(true)
-                            .required(true)
-                            .multiple(true)
-                            .min_values(1),
+                            .required(true),
                     ),
                 ),
         )
         .subcommand(
-            SubCommand::with_name("index")
+            Command::new("index")
                 .arg(
-                    Arg::with_name("database_name")
+                    Arg::new("database_name")
                         .long("database")
-                        .takes_value(true)
                         .required(true),
                 )
                 .arg(
-                    Arg::with_name("collection_name")
+                    Arg::new("collection_name")
                         .long("collection")
-                        .takes_value(true)
                         .required(true),
                 )
                 .arg(
-                    Arg::with_name("host")
-                        .short("h")
+                    Arg::new("host")
                         .long("host")
-                        .takes_value(true)
                         .required(true),
                 )
-                .subcommand(SubCommand::with_name("list"))
+                .subcommand(Command::new("list"))
                 .subcommand(
-                    SubCommand::with_name("create").arg(
-                        Arg::with_name("keys")
+                    Command::new("create").arg(
+                        Arg::new("keys")
                             .long("keys")
-                            .takes_value(true)
                             .required(true),
                     ),
                 )
                 .subcommand(
-                    SubCommand::with_name("drop").arg(
-                        Arg::with_name("name")
+                    Command::new("drop").arg(
+                        Arg::new("name")
                             .long("name")
-                            .takes_value(true)
                             .required(true),
                     ),
                 ),
         )
         .subcommand(
-            SubCommand::with_name("document")
+            Command::new("document")
                 .arg(
-                    Arg::with_name("database_name")
+                    Arg::new("database_name")
                         .long("database")
-                        .takes_value(true)
                         .required(true),
                 )
                 .arg(
-                    Arg::with_name("collection_name")
+                    Arg::new("collection_name")
                         .long("collection")
-                        .takes_value(true)
                         .required(true),
                 )
                 .arg(
-                    Arg::with_name("host")
-                        .short("h")
+                    Arg::new("host")
                         .long("host")
-                        .takes_value(true)
                         .required(true),
                 )
                 .subcommand(
-                    SubCommand::with_name("get").arg(
-                        Arg::with_name("id")
+                    Command::new("get").arg(
+                        Arg::new("id")
                             .long("id")
-                            .takes_value(true)
                             .required(true),
                     ),
                 )
                 .subcommand(
-                    SubCommand::with_name("delete").arg(
-                        Arg::with_name("id")
+                    Command::new("delete").arg(
+                        Arg::new("id")
                             .long("id")
-                            .takes_value(true)
                             .required(true),
                     ),
                 )
                 .subcommand(
-                    SubCommand::with_name("insert").arg(
-                        Arg::with_name("content")
+                    Command::new("insert").arg(
+                        Arg::new("content")
                             .long("content")
-                            .takes_value(true)
                             .required(true),
                     ),
                 )
                 .subcommand(
-                    SubCommand::with_name("update")
+                    Command::new("update")
                         .arg(
-                            Arg::with_name("id")
+                            Arg::new("id")
                                 .long("id")
-                                .takes_value(true)
                                 .required(true),
                         )
                         .arg(
-                            Arg::with_name("content")
+                            Arg::new("content")
                                 .long("content")
-                                .takes_value(true)
                                 .required(true),
                         ),
                 )
                 .subcommand(
-                    SubCommand::with_name("find")
+                    Command::new("find")
                         .arg(
-                            Arg::with_name("limit")
+                            Arg::new("limit")
                                 .long("limit")
-                                .takes_value(true)
                                 .default_value("10")
                                 .required(false),
                         )
                         .arg(
-                            Arg::with_name("offset")
+                            Arg::new("offset")
                                 .long("offset")
-                                .takes_value(true)
                                 .default_value("0")
                                 .required(false),
                         )
                         .arg(
-                            Arg::with_name("query")
+                            Arg::new("query")
                                 .long("query")
-                                .takes_value(true)
                                 .default_value("{}")
                                 .required(false),
                         )
                         .arg(
-                            Arg::with_name("projection")
+                            Arg::new("projection")
                                 .long("projection")
-                                .takes_value(true)
                                 .default_value("{}")
                                 .required(false),
                         )
                         .arg(
-                            Arg::with_name("sort")
+                            Arg::new("sort")
                                 .long("sort")
-                                .takes_value(true)
                                 .default_value("{}")
                                 .required(false),
                         ),
                 ),
         );
 
-    match get_command_result(app) {
+    match get_command_result(cmd) {
         Ok(content) => println!("{}", content),
         Err(err) => {
             eprintln!("{}", err);
@@ -293,15 +248,15 @@ fn main() {
     }
 }
 
-fn get_command_result(app: clap::App) -> Result<String, command::CommandError> {
-    let matches = app.get_matches();
+fn get_command_result(cmd: clap::Command) -> Result<String, command::CommandError> {
+    let matches = cmd.get_matches();
     match matches.subcommand() {
-        ("complete", Some(cmd)) => {
-            let host = cmd.value_of("host").unwrap();
+        Some(("complete", arg_matches)) => {
+            let host = arg_matches.get_one::<String>("host").unwrap();
             let connection_factory = datastore::ConnectionFactory::new(host)?;
 
-            let current_arg = cmd.value_of("current_arg").unwrap();
-            let args: Vec<_> = cmd.values_of("args").unwrap_or_default().collect();
+            let current_arg = arg_matches.get_one::<String>("current_arg").unwrap();
+            let args = arg_matches.get_many::<String>("args").unwrap_or_default().map(|x| x.as_str()).collect();
             let db_repo = datastore::DatabaseRepositoryImpl {
                 connection_factory: &connection_factory,
             };
@@ -314,10 +269,10 @@ fn get_command_result(app: clap::App) -> Result<String, command::CommandError> {
             let index_repo = datastore::IndexRepositoryImpl {
                 connection_factory: &connection_factory,
             };
-            match cmd.subcommand() {
-                ("vimonga", Some(_)) => command::CompleteVimongaCommand {
-                    current_arg: current_arg,
-                    args: args,
+            match arg_matches.subcommand() {
+                Some(("vimonga", _)) => command::CompleteVimongaCommand {
+                    current_arg,
+                    args,
                     database_repository: &db_repo,
                     collection_repository: &coll_repo,
                     user_repository: &user_repo,
@@ -327,56 +282,57 @@ fn get_command_result(app: clap::App) -> Result<String, command::CommandError> {
                 _ => command::HelpCommand {}.run(),
             }
         }
-        ("connection", Some(cmd)) => match cmd.subcommand() {
-            ("list", Some(cmd)) => {
-                let config_file_path = cmd.value_of("file").unwrap();
+        Some(("connection", arg_matches)) => match arg_matches.subcommand() {
+            Some(("list", cmd)) => {
+                let config_file_path = cmd.get_one::<String>("file").unwrap();
                 command::ConnectionListCommand { config_file_path }.run()
             }
             _ => command::HelpCommand {}.run(),
         },
-        ("database", Some(cmd)) => {
-            let host = cmd.value_of("host").unwrap();
+        Some(("database", arg_matches)) => {
+            let host = arg_matches.get_one::<String>("host").unwrap();
             let connection_factory = datastore::ConnectionFactory::new(host)?;
 
             let repo = datastore::DatabaseRepositoryImpl {
                 connection_factory: &connection_factory,
             };
-            match cmd.subcommand() {
-                ("list", Some(_)) => command::DatabaseListCommand {
+            match arg_matches.subcommand() {
+                Some(("list", _)) => command::DatabaseListCommand {
                     database_repository: &repo,
                 }
                 .run(),
-                ("drop", Some(cmd)) => {
-                    let database_names: Vec<_> = cmd
-                        .values_of("database_names")
+                Some(("drop", arg_matches)) => {
+                    let database_names = arg_matches
+                        .get_many::<String>("database_names")
                         .unwrap_or_default()
+                        .map(|x| x.as_str())
                         .collect();
                     command::DatabaseDropCommand {
                         database_repository: &repo,
-                        database_names: database_names,
+                        database_names,
                     }
                     .run()
                 }
                 _ => command::HelpCommand {}.run(),
             }
         }
-        ("user", Some(cmd)) => {
-            let host = cmd.value_of("host").unwrap();
+        Some(("user", arg_matches)) => {
+            let host = arg_matches.get_one::<String>("host").unwrap();
             let connection_factory = datastore::ConnectionFactory::new(host)?;
 
-            let database_name = cmd.value_of("database_name").unwrap();
+            let database_name = arg_matches.get_one::<String>("database_name").unwrap();
 
             let repo = datastore::UserRepositoryImpl {
                 connection_factory: &connection_factory,
             };
-            match cmd.subcommand() {
-                ("list", Some(_)) => command::UserListCommand {
+            match arg_matches.subcommand() {
+                Some(("list", _)) => command::UserListCommand {
                     user_repository: &repo,
                     database_name,
                 }
                 .run(),
-                ("create", Some(cmd)) => {
-                    let create_info_json = cmd.value_of("info").unwrap();
+                Some(("create", arg_matches)) => {
+                    let create_info_json = arg_matches.get_one::<String>("info").unwrap();
                     command::UserCreateCommand {
                         user_repository: &repo,
                         database_name,
@@ -384,8 +340,8 @@ fn get_command_result(app: clap::App) -> Result<String, command::CommandError> {
                     }
                     .run()
                 }
-                ("drop", Some(cmd)) => {
-                    let user_name = cmd.value_of("name").unwrap();
+                Some(("drop", arg_matches)) => {
+                    let user_name = arg_matches.get_one::<String>("name").unwrap();
                     command::UserDropCommand {
                         user_repository: &repo,
                         database_name,
@@ -396,25 +352,26 @@ fn get_command_result(app: clap::App) -> Result<String, command::CommandError> {
                 _ => command::HelpCommand {}.run(),
             }
         }
-        ("collection", Some(cmd)) => {
-            let host = cmd.value_of("host").unwrap();
+        Some(("collection", arg_matches)) => {
+            let host = arg_matches.get_one::<String>("host").unwrap();
             let connection_factory = datastore::ConnectionFactory::new(host)?;
 
-            let database_name = cmd.value_of("database_name").unwrap();
+            let database_name = arg_matches.get_one::<String>("database_name").unwrap();
 
             let repo = datastore::CollectionRepositoryImpl {
                 connection_factory: &connection_factory,
             };
-            match cmd.subcommand() {
-                ("list", Some(_)) => command::CollectionListCommand {
+            match arg_matches.subcommand() {
+                Some(("list", _)) => command::CollectionListCommand {
                     collection_repository: &repo,
                     database_name,
                 }
                 .run(),
-                ("create", Some(cmd)) => {
-                    let collection_names: Vec<_> = cmd
-                        .values_of("collection_names")
+                Some(("create", arg_matches)) => {
+                    let collection_names = arg_matches
+                        .get_many::<String>("collection_names")
                         .unwrap_or_default()
+                        .map(|x| x.as_str())
                         .collect();
                     command::CollectionCreateCommand {
                         collection_repository: &repo,
@@ -423,10 +380,11 @@ fn get_command_result(app: clap::App) -> Result<String, command::CommandError> {
                     }
                     .run()
                 }
-                ("drop", Some(cmd)) => {
-                    let collection_names: Vec<_> = cmd
-                        .values_of("collection_names")
+                Some(("drop", arg_matches)) => {
+                    let collection_names = arg_matches
+                        .get_many::<String>("collection_names")
                         .unwrap_or_default()
+                        .map(|x| x.as_str())
                         .collect();
                     command::CollectionDropCommand {
                         collection_repository: &repo,
@@ -438,25 +396,25 @@ fn get_command_result(app: clap::App) -> Result<String, command::CommandError> {
                 _ => command::HelpCommand {}.run(),
             }
         }
-        ("index", Some(cmd)) => {
-            let host = cmd.value_of("host").unwrap();
+        Some(("index", arg_matches)) => {
+            let host = arg_matches.get_one::<String>("host").unwrap();
             let connection_factory = datastore::ConnectionFactory::new(host)?;
 
-            let database_name = cmd.value_of("database_name").unwrap();
-            let collection_name = cmd.value_of("collection_name").unwrap();
+            let database_name = arg_matches.get_one::<String>("database_name").unwrap();
+            let collection_name = arg_matches.get_one::<String>("collection_name").unwrap();
 
             let repo = datastore::IndexRepositoryImpl {
                 connection_factory: &connection_factory,
             };
-            match cmd.subcommand() {
-                ("list", Some(_)) => command::IndexListCommand {
+            match arg_matches.subcommand() {
+                Some(("list", _)) => command::IndexListCommand {
                     index_repository: &repo,
                     database_name,
                     collection_name,
                 }
                 .run(),
-                ("create", Some(cmd)) => {
-                    let keys_json = cmd.value_of("keys").unwrap();
+                Some(("create", arg_matches)) => {
+                    let keys_json = arg_matches.get_one::<String>("keys").unwrap();
 
                     command::IndexCreateCommand {
                         index_repository: &repo,
@@ -466,8 +424,8 @@ fn get_command_result(app: clap::App) -> Result<String, command::CommandError> {
                     }
                 }
                 .run(),
-                ("drop", Some(cmd)) => {
-                    let index_name = cmd.value_of("name").unwrap();
+                Some(("drop", arg_matches)) => {
+                    let index_name = arg_matches.get_one::<String>("name").unwrap();
 
                     command::IndexDropCommand {
                         index_repository: &repo,
@@ -480,19 +438,19 @@ fn get_command_result(app: clap::App) -> Result<String, command::CommandError> {
                 _ => command::HelpCommand {}.run(),
             }
         }
-        ("document", Some(cmd)) => {
-            let host = cmd.value_of("host").unwrap();
+        Some(("document", arg_matches)) => {
+            let host = arg_matches.get_one::<String>("host").unwrap();
             let connection_factory = datastore::ConnectionFactory::new(host)?;
 
-            let database_name = cmd.value_of("database_name").unwrap();
-            let collection_name = cmd.value_of("collection_name").unwrap();
+            let database_name = arg_matches.get_one::<String>("database_name").unwrap();
+            let collection_name = arg_matches.get_one::<String>("collection_name").unwrap();
 
             let repo = datastore::DocumentRepositoryImpl {
                 connection_factory: &connection_factory,
             };
-            match cmd.subcommand() {
-                ("get", Some(cmd)) => {
-                    let id = cmd.value_of("id").unwrap();
+            match arg_matches.subcommand() {
+                Some(("get", arg_matches)) => {
+                    let id = arg_matches.get_one::<String>("id").unwrap();
 
                     command::DocumentGetCommand {
                         document_repository: &repo,
@@ -502,8 +460,8 @@ fn get_command_result(app: clap::App) -> Result<String, command::CommandError> {
                     }
                     .run()
                 }
-                ("delete", Some(cmd)) => {
-                    let id = cmd.value_of("id").unwrap();
+                Some(("delete", arg_matches)) => {
+                    let id = arg_matches.get_one::<String>("id").unwrap();
 
                     command::DocumentDeleteCommand {
                         document_repository: &repo,
@@ -513,8 +471,8 @@ fn get_command_result(app: clap::App) -> Result<String, command::CommandError> {
                     }
                     .run()
                 }
-                ("insert", Some(cmd)) => {
-                    let content = cmd.value_of("content").unwrap();
+                Some(("insert", arg_matches)) => {
+                    let content = arg_matches.get_one::<String>("content").unwrap();
 
                     command::DocumentInsertCommand {
                         document_repository: &repo,
@@ -524,9 +482,9 @@ fn get_command_result(app: clap::App) -> Result<String, command::CommandError> {
                     }
                     .run()
                 }
-                ("update", Some(cmd)) => {
-                    let id = cmd.value_of("id").unwrap();
-                    let content = cmd.value_of("content").unwrap();
+                Some(("update", arg_matches)) => {
+                    let id = arg_matches.get_one::<String>("id").unwrap();
+                    let content = arg_matches.get_one::<String>("content").unwrap();
 
                     command::DocumentUpdateCommand {
                         document_repository: &repo,
@@ -537,12 +495,12 @@ fn get_command_result(app: clap::App) -> Result<String, command::CommandError> {
                     }
                     .run()
                 }
-                ("find", Some(cmd)) => {
-                    let query_json = cmd.value_of("query").unwrap();
-                    let projection_json = cmd.value_of("projection").unwrap();
-                    let sort_json = cmd.value_of("sort").unwrap();
-                    let limit = cmd.value_of("limit").unwrap().parse().unwrap();
-                    let offset = cmd.value_of("offset").unwrap().parse().unwrap();
+                Some(("find", arg_matches)) => {
+                    let query_json = arg_matches.get_one::<String>("query").unwrap();
+                    let projection_json = arg_matches.get_one::<String>("projection").unwrap();
+                    let sort_json = arg_matches.get_one::<String>("sort").unwrap();
+                    let limit = arg_matches.get_one::<String>("limit").unwrap().parse().unwrap();
+                    let offset = arg_matches.get_one::<String>("offset").unwrap().parse().unwrap();
 
                     command::DocumentListCommand {
                         document_repository: &repo,

@@ -5,10 +5,7 @@ use super::connection::ConnectionFactory;
 
 use bson::{Bson, Document};
 
-use mongodb::db::options::CreateUserOptions;
 use mongodb::db::roles::{Role, SingleDatabaseRole};
-use mongodb::db::ThreadedDatabase;
-use mongodb::ThreadedClient;
 
 pub struct UserRepositoryImpl<'a> {
     pub connection_factory: &'a ConnectionFactory<'a>,
@@ -17,7 +14,7 @@ pub struct UserRepositoryImpl<'a> {
 impl<'a> UserRepository for UserRepositoryImpl<'a> {
     fn get_documents(&self, database_name: &str) -> Result<Vec<Document>, RepositoryError> {
         let client = self.connection_factory.get()?;
-        let documents = client.db(database_name).get_all_users(false)?;
+        let documents = client.database(database_name).get_all_users(false)?;
 
         Ok(documents)
     }
@@ -25,7 +22,7 @@ impl<'a> UserRepository for UserRepositoryImpl<'a> {
     fn get_names(&self, database_name: &str) -> Result<Vec<String>, RepositoryError> {
         let client = self.connection_factory.get()?;
         let names = client
-            .db(database_name)
+            .database(database_name)
             .get_all_users(false)?
             .iter()
             .map(|doc| {
@@ -76,7 +73,7 @@ impl<'a> UserRepository for UserRepositoryImpl<'a> {
             .collect();
 
         client
-            .db(database_name)
+            .database(database_name)
             .create_user(name, password, Some(create_option))?;
 
         Ok(())
@@ -84,7 +81,7 @@ impl<'a> UserRepository for UserRepositoryImpl<'a> {
 
     fn drop(&self, database_name: &str, name: &str) -> Result<(), RepositoryError> {
         let client = self.connection_factory.get()?;
-        client.db(database_name).drop_user(name, None)?;
+        client.database(database_name).drop_user(name, None)?;
 
         Ok(())
     }

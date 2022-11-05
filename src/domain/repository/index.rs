@@ -1,28 +1,30 @@
 use super::error::RepositoryError;
 
+use async_trait::async_trait;
 use bson::Document;
 
+#[async_trait]
 pub trait IndexRepository {
-    fn get_documents(
+    async fn get_documents(
         &self,
         database_name: &str,
         collection_name: &str,
     ) -> Result<Vec<Document>, RepositoryError>;
 
-    fn get_names(
+    async fn get_names(
         &self,
         database_name: &str,
         collection_name: &str,
     ) -> Result<Vec<String>, RepositoryError>;
 
-    fn create(
+    async fn create(
         &self,
         database_name: &str,
         collection_name: &str,
         keys_json: &str,
     ) -> Result<(), RepositoryError>;
 
-    fn drop(
+    async fn drop(
         &self,
         database_name: &str,
         collection_name: &str,

@@ -4,12 +4,10 @@ use super::connection::ConnectionFactory;
 
 use std::collections::HashMap;
 
+use async_trait::async_trait;
 use bson::{Bson, Document};
 
 use serde_json::Value;
-
-use mongodb::db::ThreadedDatabase;
-use mongodb::ThreadedClient;
 
 pub struct IndexRepositoryImpl<'a> {
     pub connection_factory: &'a ConnectionFactory<'a>,
@@ -32,32 +30,34 @@ impl<'a> IndexRepositoryImpl<'a> {
     }
 }
 
+#[async_trait]
 impl<'a> IndexRepository for IndexRepositoryImpl<'a> {
-    fn get_documents(
+    async fn get_documents(
         &self,
         database_name: &str,
         collection_name: &str,
     ) -> Result<Vec<Document>, RepositoryError> {
         let client = self.connection_factory.get()?;
         let cursor = client
-            .db(database_name)
+            .database(database_name)
             .collection(collection_name)
-            .list_indexes()?;
+            .list_indexes(None);
 
         let documents: Vec<Document> = cursor.map(|index| index.unwrap()).collect();
         Ok(documents)
     }
 
-    fn get_names(
+    async fn get_names(
         &self,
         database_name: &str,
         collection_name: &str,
     ) -> Result<Vec<String>, RepositoryError> {
         let client = self.connection_factory.get()?;
         let cursor = client
-            .db(database_name)
-            .collection(collection_name)
-            .list_indexes()?;
+            .database(database_name)
+            .collection::<Document>(collection_name)
+            .list_indexes(None)
+            .await?;
 
         let names = cursor
             .map(|doc| {
@@ -75,7 +75,7 @@ impl<'a> IndexRepository for IndexRepositoryImpl<'a> {
         Ok(names)
     }
 
-    fn create(
+    async fn create(
         &self,
         database_name: &str,
         collection_name: &str,
@@ -85,14 +85,14 @@ impl<'a> IndexRepository for IndexRepositoryImpl<'a> {
 
         let client = self.connection_factory.get()?;
         client
-            .db(database_name)
-            .collection(collection_name)
-            .create_index(keys, None)?;
+            .database(database_name)
+            .collection::<Document>(collection_name)
+            .create_index(keys, None);
 
         Ok(())
     }
 
-    fn drop(
+    async fn drop(
         &self,
         database_name: &str,
         collection_name: &str,
@@ -100,9 +100,9 @@ impl<'a> IndexRepository for IndexRepositoryImpl<'a> {
     ) -> Result<(), RepositoryError> {
         let client = self.connection_factory.get()?;
         client
-            .db(database_name)
-            .collection(collection_name)
-            .drop_index_string(name.to_string())?;
+            .database(database_name)
+            .collection::<Document>(collection_name)
+            .drop_index(name.to_string(), None);
 
         Ok(())
     }

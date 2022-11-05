@@ -1,6 +1,8 @@
 use super::error::RepositoryError;
+use async_trait::async_trait;
 
+#[async_trait]
 pub trait DatabaseRepository {
-    fn get_names(&self) -> Result<Vec<String>, RepositoryError>;
-    fn drop(&self, database_name: &str) -> Result<(), RepositoryError>;
+    async fn get_names(&self) -> Result<Vec<String>, RepositoryError>;
+    async fn drop(&self, database_name: &str) -> Result<(), RepositoryError>;
 }

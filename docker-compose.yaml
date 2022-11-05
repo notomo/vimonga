@@ -2,7 +2,7 @@ version: '3'
 
 services:
   mongodb:
-    image: mongo:3.4.19-jessie
+    image: mongo:3.6
     container_name: vimonga-testdb1
     ports:
       - '27020:27017'
@@ -10,7 +10,7 @@ services:
       - "./example:/provision"
 
   mongodb2:
-    image: mongo:3.4.19-jessie
+    image: mongo:3.6
     container_name: vimonga-testdb2
     ports:
       - '27021:27017'
@@ -18,7 +18,7 @@ services:
       - "./example:/provision"
 
   mongodb3:
-    image: mongo:3.4.19-jessie
+    image: mongo:3.6
     container_name: vimonga-testdb3
     ports:
       - '27022:27017'

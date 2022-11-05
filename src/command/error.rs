@@ -72,7 +72,7 @@ impl From<RepositoryError> for CommandError {
 
         CommandError {
             inner: Context::new(message),
-            is_backtrace: is_backtrace,
+            is_backtrace,
         }
     }
 }

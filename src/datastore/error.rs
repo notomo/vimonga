@@ -4,7 +4,8 @@ use failure::{Backtrace, Context, Fail};
 pub use crate::domain::repository::{RepositoryError, RepositoryErrorKind};
 
 use bson::oid::Error as OidError;
-use mongodb::Error as MongodbError;
+use mongodb::error::Error as MongodbError;
+use mongodb::error::ErrorKind as MongodbErrorKind;
 use serde_json::error::Category as SerdeJsonErrorCategory;
 use serde_json::Error as SerdeJsonError;
 use std::num::ParseIntError;
@@ -35,7 +36,7 @@ impl From<RepositoryErrorKind> for RepositoryError {
 
 impl From<Context<RepositoryErrorKind>> for RepositoryError {
     fn from(inner: Context<RepositoryErrorKind>) -> RepositoryError {
-        RepositoryError { inner: inner }
+        RepositoryError { inner }
     }
 }
 
@@ -44,7 +45,7 @@ impl From<SerdeJsonError> for RepositoryError {
         let message = e.to_string();
         let kind = match e.classify() {
             SerdeJsonErrorCategory::Syntax | SerdeJsonErrorCategory::Eof => {
-                RepositoryErrorKind::DocumentSyntaxError { message: message }
+                RepositoryErrorKind::DocumentSyntaxError { message }
             }
             _ => RepositoryErrorKind::InternalError { message },
         };
@@ -57,19 +58,19 @@ impl From<SerdeJsonError> for RepositoryError {
 impl From<MongodbError> for RepositoryError {
     fn from(e: MongodbError) -> Self {
         let message = e.to_string();
-        let kind = match &e {
-            MongodbError::OperationError(_)
+        let kind = match *e.kind {
+            MongodbErrorKind::Command(_)
                 if message.starts_with("User ") && message.ends_with(" not found") =>
             {
-                RepositoryErrorKind::NotFound { message: message }
+                RepositoryErrorKind::NotFound { message }
             }
-            MongodbError::OperationError(_) if message.starts_with("index not found with name") => {
-                RepositoryErrorKind::NotFound { message: message }
+            MongodbErrorKind::Command(_) if message.starts_with("index not found with name") => {
+                RepositoryErrorKind::NotFound { message }
             }
-            MongodbError::OperationError(_)
+            MongodbErrorKind::Command(_)
                 if message.starts_with("a ") && message.ends_with(" already exists") =>
             {
-                RepositoryErrorKind::AlreadyExists { message: message }
+                RepositoryErrorKind::AlreadyExists { message }
             }
             _ => RepositoryErrorKind::InternalError { message },
         };

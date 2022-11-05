@@ -1,24 +1,23 @@
 use crate::domain::repository::{DatabaseRepository, RepositoryError};
 
 use super::connection::ConnectionFactory;
-
-use mongodb::ThreadedClient;
+use async_trait::async_trait;
 
 pub struct DatabaseRepositoryImpl<'a> {
     pub connection_factory: &'a ConnectionFactory<'a>,
 }
 
+#[async_trait]
 impl<'a> DatabaseRepository for DatabaseRepositoryImpl<'a> {
-    fn get_names(&self) -> Result<Vec<String>, RepositoryError> {
+    async fn get_names(&self) -> Result<Vec<String>, RepositoryError> {
         let client = self.connection_factory.get()?;
-        let names = client.database_names()?;
-
+        let names = client.list_database_names(None, None).await?;
         Ok(names)
     }
 
-    fn drop(&self, database_name: &str) -> Result<(), RepositoryError> {
+    async fn drop(&self, database_name: &str) -> Result<(), RepositoryError> {
         let client = self.connection_factory.get()?;
-        client.drop_database(database_name)?;
+        client.database(database_name).drop(None).await?;
         Ok(())
     }
 }

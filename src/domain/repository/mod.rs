@@ -3,6 +3,7 @@ pub use database::DatabaseRepository;
 
 mod collection;
 pub use collection::CollectionRepository;
+pub use collection::Item;
 
 mod index;
 pub use index::IndexRepository;

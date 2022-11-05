@@ -1,6 +1,9 @@
 use crate::domain::repository::{RepositoryError, RepositoryErrorKind};
 
-use mongodb::{Client, ClientOptions, ThreadedClient};
+use std::time::Duration;
+
+use mongodb::Client;
+use mongodb::options::ClientOptions;
 
 pub struct ConnectionFactory<'a> {
     pub host_name: &'a str,
@@ -20,14 +23,15 @@ impl<'a> ConnectionFactory<'a> {
 
         Ok(ConnectionFactory {
             host_name: host_port[0],
-            port: port,
+            port,
         })
     }
 
     pub fn get(&self) -> Result<Client, RepositoryError> {
-        let mut options = ClientOptions::new();
-        options.server_selection_timeout_ms = 100;
-        let client = Client::connect_with_options(self.host_name, self.port, options)?;
+        let mut options = ClientOptions::default();
+        options.server_selection_timeout = Some(Duration::from_millis(100));
+        options.hosts = vec![self.host_name];
+        let client = Client::with_options(self.host_name, self.port, options)?;
         Ok(client)
     }
 }
